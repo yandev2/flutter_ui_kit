@@ -1,0 +1,257 @@
+================================================
+FLUTTER UI KIT PACKAGE - PROJECT CONCEPT
+================================================
+*File ini adalah pengingat untuk agen AI agar dapat melanjutkan progres
+dan menjaga arsitektur aplikasi di sesi pengembangan berikutnya.*
+
+0. ARSITEKTUR & STRUKTUR FOLDER
+--------------------------------
+State saat ini: Flutter package `flutter_ui_kit` (private GitHub).
+Entry consumer: `import 'package:flutter_ui_kit/flutter_ui_kit.dart';`
+Demo: `example/lib/main.dart` → ScreenUtilInit(390×844) → GetMaterialApp → ViewDemoUi
+publish_to: 'none' (git dependency private, bukan pub.dev).
+
+flutter_ui_kit/                    # root = package library
+├── lib/
+│   ├── flutter_ui_kit.dart        # Master barrel export
+│   ├── theme/
+│   │   ├── theme_exports.dart
+│   │   ├── scale.dart             # AppScale (responsive sizing)
+│   │   ├── color.dart             # AppColors
+│   │   └── theme.dart             # AppTheme (lightTheme / darkTheme)
+│   ├── core/
+│   │   ├── core_exports.dart
+│   │   ├── formatters/
+│   │   │   └── currency_input_formatter.dart
+│   │   └── extensions/
+│   │       ├── extensions.dart    # Barrel export semua extension
+│   │       ├── datetime_format_extension.dart
+│   │       ├── int_currency_format_extension.dart
+│   │       ├── double_percent_format_extension.dart
+│   │       ├── glassy_extension.dart      # Widget.glassy()
+│   │       └── animated_extension.dart  # Widget.animated()
+│   └── ui/
+│       ├── ui_exports.dart        # 39 widget publik
+│       ├── buttons/       app_button.dart
+│       ├── card_detail/   app_card_detail1.dart
+│       ├── dialogs/       app_dialog, app_image_viewer_dialog
+│       │                    (+ internal: file_image stub, tidak di-export)
+│       ├── image/         app_image.dart
+│       ├── inputs/        (14 file)
+│       ├── navigation/    app_navigation_bar, app_welcome_app_bar
+│       ├── profile/       app_profile_card1, app_profile_card2
+│       ├── stats_overview/ app_stats_overview1, app_stats_glassy_style
+│       ├── status/        app_empty_state, app_progress_bar, app_snackbar,
+│       │                  app_circular_percent
+│       └── data_display/  app_card_style1–8, app_avatar_stack, app_timeline
+├── test/
+│   └── export_smoke_test.dart     # Verifikasi barrel export
+└── example/                       # Living catalog demo
+    ├── lib/main.dart
+    ├── lib/presentation/
+    │   ├── view/view_demo_ui.dart
+    │   └── controller/view_demo_ui_controller.dart
+    └── test/widget_test.dart      # Smoke test ViewDemoUi
+
+Tidak ada routing multi-halaman (belum ada GetPage / routes).
+
+1. TUJUAN UTAMA
+Package UI kustom yang fleksibel, elegan, modern, dan mandiri.
+Install via GitHub private:
+  flutter_ui_kit:
+    git:
+      url: git@github.com:USERNAME/flutter_ui_kit.git
+      ref: v1.0.0
+
+2. KONSEP INTI (CORE CONCEPTS)
+- Responsivitas Tinggi: AppScale (sp, w, h, r); desktop ≥1024px tanpa scaling
+- Sistem Desain: AppColors light/dark; toggle via ViewDemoUiController (demo)
+- Clean & Modern UI: Glassmorphism, animasi halus, sudut membulat
+- GetX wajib: AppScale (Get.width), AppColors (Get.isDarkMode), AppDialog, AppSnackbar
+
+3. ATURAN PENTING KODE (RULES)
+- "Jika Null, Maka Hidden": parameter null tidak dirender + spacing bersyarat
+- Reactive State: Obx/GetX di demo; controller .obs / Rxn<T>
+- isLoading:
+  * Cards & data display → Skeletonizer / Skeleton.replace / Bone
+  * Input interaktif → CircularProgressIndicator atau disable, BUKAN Skeletonizer
+
+4. KOMPONEN YANG TELAH SELESAI (INVENTORI LENGKAP)
+
+[A] Inputs — lib/ui/inputs/ (14 file)
+- AppTextField, AppPasswordField
+- AppCheckbox, AppRadio, AppSwitch, AppSegmentedSwitch
+- AppSelectionPill, AppSelectionTile
+- AppDropdown (single + multi-select, chip + clear)
+- AppDatePicker, AppTimePicker, AppYearPicker, AppMonthPicker
+- AppOtpForm (codeLength custom, dark mode box fix)
+
+[B] Buttons & Dialogs
+- AppButton (multi-variant, isLoading)
+- AppDialog (Get.dialog)
+- AppImageViewerDialog (online/offline, zoom + pan)
+
+[C] Data Display — lib/ui/data_display/ + card_detail/
+- AppCardStyle1–8, AppCardDetail1
+- AppAvatarStack, AppTimeline
+
+[D] Navigation & Profile
+- AppNavigationBar, AppWelcomeAppBar
+- AppProfileCard1, AppProfileCard2
+
+[E] Status & Stats
+- AppEmptyState, AppProgressBar, AppSnackbar
+- AppCircularPercent, AppStatsOverview1, AppStatsGlassyStyle
+
+[F] Image
+- AppImage (cached_network_image, placeholder Bone)
+
+[G] Core Extensions
+- DateTime / String format (ID month names)
+- int/num → Rupiah / Dollar; double → percent
+- Widget.glassy() — glassmorphism theme-aware
+- Widget.animated() — float vertical/horizontal, shake; intensity 0–1
+
+5. CATATAN TEKNIS
+- Glassmorphism: dua teknik di card style 1/2; extension glassy() terpisah
+- Popup picker: PopupMenuItem(enabled: false) + fixed BoxConstraints
+- AppStatsOverview1: Skeleton.replace per-field (bukan wrap seluruh card)
+- AppStatsGlassyStyle: konten di Positioned.fill agar Spacer valid
+
+6. VALIDASI & AUDIT
+----------------------------------------------------
+flutter analyze (root + example): PASS — 0 issue
+flutter test (export_smoke_test): PASS
+flutter test (example smoke ViewDemoUi @ 390×844): PASS
+
+7. DEPENDENSI UTAMA
+- get, flutter_screenutil, skeletonizer, cached_network_image
+- heroicons, dotted_border, intl
+
+8. PEKERJAAN LANJUTAN (OPSIONAL)
+- isLoading untuk komponen status yang belum punya
+- Golden tests per komponen
+- Demo format extensions (datetime/currency/percent)
+
+9. LANGKAH PUSH KE GITHUB (PRIVATE REPO)
+----------------------------------------------------
+Prasyarat:
+- Akun GitHub + repo private kosong (mis. nama: flutter_ui_kit)
+- Git terinstall di mesin lokal
+- Autentikasi: SSH key ATAU Personal Access Token (PAT) dengan scope repo
+- Flutter SDK terinstall (untuk verifikasi sebelum push)
+
+A. Persiapan folder sebelum commit
+----------------------------------
+1. Pastikan tidak ada proses flutter/dart yang masih berjalan
+2. Bersihkan artefak build:
+     cd <folder_proyek>
+     flutter clean
+     cd example && flutter clean && cd ..
+3. (Opsional) Verifikasi terakhir:
+     flutter pub get
+     flutter analyze
+     flutter test
+     cd example && flutter pub get && flutter analyze && flutter test
+
+B. Buat repository private di GitHub
+--------------------------------------
+1. Login GitHub → New repository
+2. Nama: flutter_ui_kit (atau sesuai keinginan)
+3. Visibility: Private
+4. JANGAN centang "Add README" / .gitignore (sudah ada lokal)
+5. Salin URL repo:
+   - SSH:  git@github.com:USERNAME/flutter_ui_kit.git
+   - HTTPS: https://github.com/USERNAME/flutter_ui_kit.git
+
+C. Inisialisasi Git & commit pertama (jika belum ada git)
+---------------------------------------------------------
+cd <folder_proyek>
+
+git init
+git branch -M main
+
+# Cek file yang akan di-commit (pastikan .dart_tool/ & build/ tidak ikut)
+git status
+
+git add .
+git commit -m "Initial release: flutter_ui_kit v1.0.0"
+
+D. Hubungkan remote & push
+--------------------------
+# SSH (disarankan)
+git remote add origin git@github.com:USERNAME/flutter_ui_kit.git
+
+# ATAU HTTPS
+# git remote add origin https://github.com/USERNAME/flutter_ui_kit.git
+
+git push -u origin main
+
+E. Tag versi (untuk pinning di consumer pubspec)
+------------------------------------------------
+git tag v1.0.0
+git push origin v1.0.0
+
+# Tag berikutnya saat rilis baru: v1.0.1, v1.1.0, dst.
+
+F. Pasang di project Flutter lain (consumer)
+--------------------------------------------
+pubspec.yaml consumer:
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_ui_kit:
+    git:
+      url: git@github.com:USERNAME/flutter_ui_kit.git
+      ref: v1.0.0        # gunakan tag, atau branch: main
+  get: ^4.7.3
+  flutter_screenutil: ^5.9.3
+
+Lalu:
+  flutter pub get
+
+Setup main.dart consumer (WAJIB):
+  ScreenUtilInit → GetMaterialApp → AppTheme.lightTheme / darkTheme
+
+Import:
+  import 'package:flutter_ui_kit/flutter_ui_kit.dart';
+
+Catatan akses private repo:
+- SSH: pastikan ssh key terdaftar di GitHub account
+- HTTPS: git akan minta username + PAT (bukan password akun)
+- CI/CD: simpan PAT atau deploy key di secrets
+
+G. Update rilis berikutnya (workflow rutin)
+--------------------------------------------
+1. Ubah version di pubspec.yaml (mis. 1.0.0+1 → 1.0.1+1)
+2. Update CHANGELOG.md
+3. flutter analyze && flutter test (root + example)
+4. git add .
+5. git commit -m "Release v1.0.1: <ringkasan perubahan>"
+6. git push origin main
+7. git tag v1.0.1 && git push origin v1.0.1
+8. Consumer update ref di pubspec: ref: v1.0.1 → flutter pub get
+
+H. File yang TIDAK perlu / otomatis diabaikan (.gitignore)
+-----------------------------------------------------------
+- .dart_tool/
+- build/
+- .flutter-plugins-dependencies
+- .idea/, *.iml
+- example/.dart_tool/, example/build/
+
+Yang WAJIB masuk repo:
+- lib/ (seluruh package)
+- test/
+- example/ (demo app)
+- pubspec.yaml, pubspec.lock
+- README.md, CHANGELOG.md, PROJECT_CONCEPT.txt
+- analysis_options.yaml, .gitignore
+
+I. Troubleshooting singkat
+---------------------------
+- "Permission denied (publickey)" → setup SSH key di GitHub
+- "Repository not found" → cek nama repo + akses private + akun yang login
+- Consumer gagal pub get → pastikan PAT/SSH punya akses read ke repo private
+- Setelah clone/zip: jalankan flutter pub get di root DAN di example/
