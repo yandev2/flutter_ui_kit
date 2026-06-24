@@ -20,7 +20,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.10.x' # Sesuai dengan sdk environment di pubspec.yaml
+          flutter-version: 'any' # Akan mengambil versi Flutter terbaru (yang mendukung Dart 3.10.4)
 
       - name: Install dependencies
         working-directory: ./example
