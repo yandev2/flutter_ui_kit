@@ -251,7 +251,7 @@ class AppCardStyle6 extends StatelessWidget {
           ),
           padding: EdgeInsets.all(AppScale.w(4)),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.white,
             ),
@@ -290,7 +290,7 @@ class AppCardStyle6 extends StatelessWidget {
             child: Container(
               width: AppScale.w(6),
               height: AppScale.w(6),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.white,
               ),

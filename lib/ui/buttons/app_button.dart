@@ -27,6 +27,9 @@ class AppButton extends StatelessWidget {
   final List<Color>? gradientColors;
   final bool isFullWidth;
   final bool isLoading;
+  
+  final double? iconSize;
+  final double? textSize;
 
   const AppButton({
     super.key,
@@ -43,6 +46,8 @@ class AppButton extends StatelessWidget {
     this.gradientColors,
     this.isFullWidth = false,
     this.isLoading = false,
+    this.iconSize,
+    this.textSize,
   }) : assert(
          text != null || icon != null || customIcon != null,
          'Tombol harus memiliki teks atau ikon',
@@ -60,6 +65,8 @@ class AppButton extends StatelessWidget {
     this.textColor,
     this.gradientColors,
     this.isLoading = false,
+    this.iconSize,
+    this.textSize,
   }) : text = null,
        customIcon = null,
        isFullWidth = false,
@@ -79,6 +86,8 @@ class AppButton extends StatelessWidget {
     this.gradientColors,
     this.isFullWidth = false,
     this.isLoading = false,
+    this.iconSize,
+    this.textSize,
   }) : variant = AppButtonVariant.text;
 
   // Resolving Dimensions
@@ -112,6 +121,7 @@ class AppButton extends StatelessWidget {
   }
 
   double get _fontSize {
+    if (textSize != null) return textSize!;
     switch (size) {
       case AppButtonSize.small:
         return AppScale.sp(12);
@@ -123,6 +133,7 @@ class AppButton extends StatelessWidget {
   }
 
   double get _iconSize {
+    if (iconSize != null) return iconSize!;
     switch (size) {
       case AppButtonSize.small:
         return AppScale.r(16);

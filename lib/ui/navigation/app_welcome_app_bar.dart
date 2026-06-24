@@ -7,21 +7,35 @@ import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 
 class AppWelcomeAppBar extends StatelessWidget {
+  final Widget? leadingWidget;
   final String? imageUrl;
   final String? greeting;
   final String? title;
   final bool isVerified;
+
+  // Notification Icon
   final HeroIcons? notificationIcon;
   final int? notificationCount;
   final VoidCallback? onNotificationTap;
+  final Color? notificationBackgroundColor;
+
+  // Action Icon (Extra)
+  final HeroIcons? actionIcon;
+  final int? actionCount;
+  final VoidCallback? onActionTap;
+  final Color? actionBackgroundColor;
+
   final VoidCallback? onProfileTap;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? padding;
   final double? avatarSize;
   final bool isLoading;
 
+  final bool isSliver;
+
   const AppWelcomeAppBar({
     super.key,
+    this.leadingWidget,
     this.imageUrl,
     this.greeting,
     this.title,
@@ -29,20 +43,56 @@ class AppWelcomeAppBar extends StatelessWidget {
     this.notificationIcon,
     this.notificationCount,
     this.onNotificationTap,
+    this.notificationBackgroundColor,
+    this.actionIcon,
+    this.actionCount,
+    this.onActionTap,
+    this.actionBackgroundColor,
     this.onProfileTap,
     this.backgroundColor,
     this.padding,
     this.avatarSize,
     this.isLoading = false,
-  });
+  }) : isSliver = false;
+
+  const AppWelcomeAppBar.sliver({
+    super.key,
+    this.leadingWidget,
+    this.imageUrl,
+    this.greeting,
+    this.title,
+    this.isVerified = false,
+    this.notificationIcon,
+    this.notificationCount,
+    this.onNotificationTap,
+    this.notificationBackgroundColor,
+    this.actionIcon,
+    this.actionCount,
+    this.onActionTap,
+    this.actionBackgroundColor,
+    this.onProfileTap,
+    this.backgroundColor,
+    this.padding,
+    this.avatarSize,
+    this.isLoading = false,
+  }) : isSliver = true;
 
   @override
   Widget build(BuildContext context) {
+    final content = _buildContent(context);
+    if (isSliver) {
+      return SliverToBoxAdapter(child: content);
+    }
+    return content;
+  }
+
+  Widget _buildContent(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final avatarDiameter = avatarSize ?? AppScale.w(52);
     final hasText = greeting != null || title != null;
-    final hasLeading = imageUrl != null || hasText;
+    final hasLeading = leadingWidget != null || imageUrl != null || hasText;
     final showNotification = onNotificationTap != null;
+    final showAction = onActionTap != null;
 
     final textColor = isDark ? AppColors.white : AppColors.neutral900;
     final greetingColor = isDark ? AppColors.neutral400 : AppColors.neutral500;
@@ -54,7 +104,8 @@ class AppWelcomeAppBar extends StatelessWidget {
       child: Container(
         width: double.infinity,
         color: backgroundColor ?? Colors.transparent,
-        padding: padding ??
+        padding:
+            padding ??
             EdgeInsets.symmetric(
               horizontal: AppScale.w(16),
               vertical: AppScale.h(12),
@@ -68,7 +119,9 @@ class AppWelcomeAppBar extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   child: Row(
                     children: [
-                      if (imageUrl != null) ...[
+                      if (leadingWidget != null)
+                        leadingWidget!
+                      else if (imageUrl != null) ...[
                         Skeleton.replace(
                           replace: isLoading,
                           replacement: Bone.circle(size: avatarDiameter),
@@ -76,13 +129,16 @@ class AppWelcomeAppBar extends StatelessWidget {
                             imageUrl: imageUrl!,
                             width: avatarDiameter,
                             height: avatarDiameter,
-                            borderRadius:
-                                BorderRadius.circular(avatarDiameter / 2),
+                            borderRadius: BorderRadius.circular(
+                              avatarDiameter / 2,
+                            ),
                             fit: BoxFit.cover,
                           ),
                         ),
-                        if (hasText) SizedBox(width: AppScale.w(12)),
                       ],
+                      if ((leadingWidget != null || imageUrl != null) &&
+                          hasText)
+                        SizedBox(width: AppScale.w(12)),
                       if (hasText)
                         Expanded(
                           child: Column(
@@ -140,14 +196,24 @@ class AppWelcomeAppBar extends StatelessWidget {
                   ),
                 ),
               ),
-            if (hasLeading && showNotification)
+            if (hasLeading && (showNotification || showAction))
               SizedBox(width: AppScale.w(12)),
+            if (showAction) ...[
+              _buildNotificationButton(
+                icon: actionIcon ?? HeroIcons.sparkles,
+                count: actionCount,
+                onTap: onActionTap!,
+                backgroundColor: actionBackgroundColor ?? btnBg,
+                iconColor: btnIconColor,
+              ),
+              if (showNotification) SizedBox(width: AppScale.w(8)),
+            ],
             if (showNotification)
               _buildNotificationButton(
                 icon: notificationIcon ?? HeroIcons.bell,
                 count: notificationCount,
                 onTap: onNotificationTap!,
-                backgroundColor: btnBg,
+                backgroundColor: notificationBackgroundColor ?? btnBg,
                 iconColor: btnIconColor,
               ),
           ],
@@ -176,7 +242,7 @@ class AppWelcomeAppBar extends StatelessWidget {
             size: AppScale.w(22),
           ),
           onPressed: onTap,
-          variant: AppButtonVariant.raised,
+          variant: AppButtonVariant.solid,
           shape: AppButtonShape.square,
           size: AppButtonSize.small,
           color: backgroundColor,

@@ -133,16 +133,16 @@ Banyak card menerima `isMax: true` agar lebar mengisi parent (`double.infinity`)
 
 ### 4.1 AppColors
 
-Token warna statis dan getter responsif (otomatis light/dark via GetX).
+Token warna statis dan getter responsif (otomatis light/dark via GetX). Semua warna statis (Brand, Status, Neutral) dapat dioverride melalui `AppColors.overrideColors({...})` saat inisialisasi aplikasi.
 
-#### Brand (const)
+#### Brand
 
 | Token | Hex | Keterangan |
 |-------|-----|------------|
 | `AppColors.primary` | `#4A3AFF` | Ungu brand utama |
 | `AppColors.primaryDark` | `#3829E0` | Ungu lebih gelap |
 
-#### Status (const)
+#### Status
 
 | Token | Hex |
 |-------|-----|
@@ -151,7 +151,7 @@ Token warna statis dan getter responsif (otomatis light/dark via GetX).
 | `AppColors.warning` | `#F59E0B` |
 | `AppColors.info` | `#3B82F6` |
 
-#### Neutral (const)
+#### Neutral
 
 `white`, `black`, `neutral100` … `neutral900` — skala abu-abu Tailwind-style.
 
@@ -411,6 +411,8 @@ Tombol multi-variant dengan dukungan ikon, gradient, loading, dan berbagai bentu
 | `gradientColors` | `List<Color>?` | — | Untuk variant `gradient` |
 | `isFullWidth` | `bool` | `false` | Lebar penuh |
 | `isLoading` | `bool` | `false` | Spinner + disable tap |
+| `iconSize` | `double?` | — | Kustom ukuran ikon |
+| `textSize` | `double?` | — | Kustom ukuran teks |
 
 > **Assert:** minimal satu dari `text`, `icon`, atau `customIcon` harus ada.
 
@@ -858,6 +860,7 @@ Bottom navigation bar dengan berbagai variant visual.
 | `prominentCenterIndex` | `int?` | — |
 | `isCenterFloating` | `bool` | `false` |
 | `backgroundColor` | `Color?` | — |
+| `selectedItemColor` | `Color?` | — |
 
 ---
 
@@ -867,6 +870,7 @@ App bar sambutan dengan avatar, greeting, dan notifikasi. Cocok untuk `SliverApp
 
 | Parameter | Tipe | Default |
 |-----------|------|---------|
+| `leadingWidget` | `Widget?` | Mengganti avatar |
 | `imageUrl` | `String?` | Avatar |
 | `greeting` | `String?` | Teks kecil atas |
 | `title` | `String?` | Nama/judul |
@@ -874,11 +878,18 @@ App bar sambutan dengan avatar, greeting, dan notifikasi. Cocok untuk `SliverApp
 | `notificationIcon` | `HeroIcons?` | — |
 | `notificationCount` | `int?` | Badge count |
 | `onNotificationTap` | `VoidCallback?` | Null → tombol notif hidden |
+| `notificationBackgroundColor` | `Color?` | — |
+| `actionIcon` | `HeroIcons?` | Ikon ekstra |
+| `actionCount` | `int?` | Badge count aksi |
+| `onActionTap` | `VoidCallback?` | Null → hidden |
+| `actionBackgroundColor` | `Color?` | — |
 | `onProfileTap` | `VoidCallback?` | — |
 | `backgroundColor` | `Color?` | — |
 | `padding` | `EdgeInsetsGeometry?` | — |
 | `avatarSize` | `double?` | — |
 | `isLoading` | `bool` | `false` |
+
+**Named Constructor**: `AppWelcomeAppBar.sliver(...)` membungkus otomatis dengan `SliverToBoxAdapter`.
 
 **Null → hidden:** badge hanya jika `count > 0`; verified badge hanya jika `isVerified`.
 
@@ -1199,6 +1210,7 @@ Kartu statistik glassmorphism dengan noise texture.
 | `gradientColors` | `List<Color>?` | `defaultGradientColors` |
 | `title`, `label`, `value` | `String?` | — |
 | `icon` | `HeroIcons?` | — |
+| `child` | `Widget?` | Jika diisi, menimpa seluruh konten text/icon default |
 | `onTap` | `VoidCallback?` | — |
 | `width`, `height` | `double?` | — |
 | `isMax`, `isLoading` | `bool` | — |

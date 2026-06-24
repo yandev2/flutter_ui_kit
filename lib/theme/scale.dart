@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+export 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class AppScale {
   // Breakpoints
   static const double mobileBreakpoint = 600.0;

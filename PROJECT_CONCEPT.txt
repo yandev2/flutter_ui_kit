@@ -113,6 +113,9 @@ Install via GitHub private:
 - Widget.animated() — float vertical/horizontal, shake; intensity 0–1
 
 5. CATATAN TEKNIS
+- AppColors kini bersifat mutable dan dapat dioverride via `AppColors.overrideColors(...)`
+- AppWelcomeAppBar mendukung varian `.sliver()`, `leadingWidget`, dan dual action icon.
+- AppStatsGlassyStyle mendukung parameter `child` untuk menimpa konten bawaan.
 - Glassmorphism: dua teknik di card style 1/2; extension glassy() terpisah
 - Popup picker: PopupMenuItem(enabled: false) + fixed BoxConstraints
 - AppStatsOverview1: Skeleton.replace per-field (bukan wrap seluruh card)

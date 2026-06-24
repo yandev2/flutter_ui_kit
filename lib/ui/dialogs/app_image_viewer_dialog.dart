@@ -82,7 +82,7 @@ class AppImageViewerDialog extends StatelessWidget {
           child: SizedBox(
             width: AppScale.w(36),
             height: AppScale.w(36),
-            child: const CircularProgressIndicator(
+            child: CircularProgressIndicator(
               strokeWidth: 2,
               color: AppColors.white,
             ),

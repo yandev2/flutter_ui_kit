@@ -95,10 +95,10 @@ class AppCircularPercent extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.black.withValues(
-                        alpha: isDark ? 0.28 : 0.08,
+                        alpha: isDark ? 0.28 : 0.04,
                       ),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      blurRadius: isDark ? 18 : 12,
+                      offset: Offset(0, isDark ? 8 : 4),
                     ),
                   ],
                   border: isDark

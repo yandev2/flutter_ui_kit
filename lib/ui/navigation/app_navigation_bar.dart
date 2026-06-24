@@ -31,6 +31,7 @@ class AppNavigationBar extends StatelessWidget {
   final int? prominentCenterIndex;
   final bool isCenterFloating;
   final Color? backgroundColor;
+  final Color? selectedItemColor;
 
   const AppNavigationBar({
     super.key,
@@ -41,6 +42,7 @@ class AppNavigationBar extends StatelessWidget {
     this.prominentCenterIndex,
     this.isCenterFloating = false,
     this.backgroundColor,
+    this.selectedItemColor,
   });
 
   @override
@@ -160,7 +162,7 @@ class AppNavigationBar extends StatelessWidget {
       );
     }
 
-    final activeColor = isDark ? Colors.white : AppColors.primary;
+    final activeColor = selectedItemColor ?? (isDark ? Colors.white : AppColors.primary);
     final inactiveColor = isDark ? AppColors.neutral400 : AppColors.neutral500;
 
     final color = isSelected ? activeColor : inactiveColor;

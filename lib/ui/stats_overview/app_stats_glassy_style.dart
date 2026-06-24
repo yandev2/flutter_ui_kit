@@ -17,6 +17,8 @@ class AppStatsGlassyStyle extends StatelessWidget {
   final double? height;
   final bool isMax;
   final bool isLoading;
+  final Widget? child;
+  final Color? backgroundColor;
 
   const AppStatsGlassyStyle({
     super.key,
@@ -30,6 +32,8 @@ class AppStatsGlassyStyle extends StatelessWidget {
     this.height,
     this.isMax = false,
     this.isLoading = false,
+    this.child,
+    this.backgroundColor,
   });
 
   static const List<Color> defaultGradientColors = [
@@ -72,9 +76,9 @@ class AppStatsGlassyStyle extends StatelessWidget {
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF0D0D12)
-                        : const Color(0xFF14121F),
+                    color: backgroundColor ?? (isDark
+                        ? AppColors.surface
+                        : AppColors.white),
                   ),
                 ),
               ),
@@ -88,7 +92,17 @@ class AppStatsGlassyStyle extends StatelessWidget {
                   ),
                 ),
               ),
-              if (hasTop || hasBottom)
+              if (child != null)
+                Positioned.fill(
+                  child: Skeletonizer(
+                    enabled: isLoading,
+                    child: Padding(
+                      padding: EdgeInsets.all(AppScale.w(24)),
+                      child: child!,
+                    ),
+                  ),
+                )
+              else if (hasTop || hasBottom)
                 Positioned.fill(
                   child: Skeletonizer(
                     enabled: isLoading,
