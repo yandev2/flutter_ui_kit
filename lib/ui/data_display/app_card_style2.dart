@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
@@ -28,6 +28,10 @@ class AppCardStyle2 extends StatelessWidget {
   final double? progress;
   final bool isMax;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? subtitleSize;
+  final double? footerTextSize;
 
   const AppCardStyle2({
     super.key,
@@ -48,6 +52,9 @@ class AppCardStyle2 extends StatelessWidget {
     this.progress,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.subtitleSize,
+    this.footerTextSize,
   });
 
   @override
@@ -239,7 +246,7 @@ class AppCardStyle2 extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: AppScale.sp(18),
+                        fontSize: titleSize ?? AppScale.sp(18),
                         fontWeight: FontWeight.bold,
                         color: textColor,
                       ),
@@ -251,7 +258,7 @@ class AppCardStyle2 extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: AppScale.sp(14),
+                          fontSize: subtitleSize ?? AppScale.sp(14),
                           color: subtitleColor,
                         ),
                       ),
@@ -307,7 +314,7 @@ class AppCardStyle2 extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: AppScale.sp(14),
+                    fontSize: footerTextSize ?? AppScale.sp(14),
                     fontWeight: FontWeight.w500,
                     color: subtitleColor,
                   ),
@@ -333,7 +340,7 @@ class AppCardStyle2 extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: AppScale.sp(14),
+                    fontSize: footerTextSize ?? AppScale.sp(14),
                     fontWeight: FontWeight.w500,
                     color: subtitleColor,
                   ),

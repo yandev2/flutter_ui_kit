@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppYearPicker extends StatelessWidget {
@@ -9,6 +9,12 @@ class AppYearPicker extends StatelessWidget {
   final String? hint;
   final IconData? prefixIcon;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? textSize;
+  final double? hintSize;
+  
+  final Color? fillColor;
 
   const AppYearPicker({
     super.key,
@@ -18,6 +24,10 @@ class AppYearPicker extends StatelessWidget {
     this.hint,
     this.prefixIcon,
     this.isLoading = false,
+    this.titleSize,
+    this.textSize,
+    this.hintSize,
+    this.fillColor,
   });
 
   @override
@@ -32,7 +42,7 @@ class AppYearPicker extends StatelessWidget {
           Text(
             title!,
             style: TextStyle(
-              fontSize: AppScale.sp(14),
+              fontSize: titleSize ?? AppScale.sp(14),
               fontWeight: FontWeight.bold,
               color: theme.textTheme.bodyLarge?.color,
             ),
@@ -66,7 +76,7 @@ class AppYearPicker extends StatelessWidget {
               vertical: AppScale.h(12),
             ),
             decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
+              color: fillColor ?? theme.scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(AppScale.r(8)),
               border: Border.all(
                 color: AppColors.border,
@@ -90,7 +100,7 @@ class AppYearPicker extends StatelessWidget {
                       color: displayValue != null
                           ? theme.textTheme.bodyLarge?.color
                           : AppColors.textSecondary,
-                      fontSize: AppScale.sp(14),
+                      fontSize: (displayValue != null ? textSize : hintSize) ?? AppScale.sp(14),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

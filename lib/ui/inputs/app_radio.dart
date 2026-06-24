@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 enum AppRadioVariant { solid, outline, dotOnly }
@@ -12,6 +12,8 @@ class AppRadio<T> extends StatelessWidget {
   final Color? activeColor;
   final Color? dotColor;
   final double? size;
+  
+  final Color? backgroundColor;
 
   const AppRadio({
     super.key,
@@ -22,6 +24,7 @@ class AppRadio<T> extends StatelessWidget {
     this.activeColor,
     this.dotColor,
     this.size,
+    this.backgroundColor,
   });
 
   bool get isSelected => value == groupValue;
@@ -44,7 +47,7 @@ class AppRadio<T> extends StatelessWidget {
           borderColor = color;
           innerDotColor = dotColor ?? Colors.white;
         } else {
-          backgroundColor = theme.cardColor;
+          backgroundColor = this.backgroundColor ?? theme.cardColor;
           borderColor = AppColors.border;
         }
         break;

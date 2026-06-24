@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/inputs/app_checkbox.dart';
 
@@ -15,6 +15,11 @@ class AppDropdown extends StatefulWidget {
   final IconData? prefixIcon;
   final bool isLoading;
   final bool showClearButton;
+  
+  final double? titleSize;
+  final double? textSize;
+  final double? hintSize;
+  final Color? fillColor;
 
   const AppDropdown({
     super.key,
@@ -29,6 +34,10 @@ class AppDropdown extends StatefulWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.showClearButton = true,
+    this.titleSize,
+    this.textSize,
+    this.hintSize,
+    this.fillColor,
   }) : assert(
           !isMultiSelect || onMultiChanged != null,
           'onMultiChanged is required when isMultiSelect is true',
@@ -73,7 +82,7 @@ class _AppDropdownState extends State<AppDropdown> {
 
   BoxDecoration _triggerDecoration(ThemeData theme) {
     return BoxDecoration(
-      color: theme.scaffoldBackgroundColor,
+      color: widget.fillColor ?? theme.scaffoldBackgroundColor,
       borderRadius: BorderRadius.circular(AppScale.r(8)),
       border: Border.all(
         color: AppColors.border,
@@ -123,6 +132,7 @@ class _AppDropdownState extends State<AppDropdown> {
             label: item,
             isSelected: isSelected,
             showCheckbox: false,
+            textSize: widget.textSize,
           ),
         );
       }).toList(),
@@ -186,6 +196,7 @@ class _AppDropdownState extends State<AppDropdown> {
                             label: item,
                             isSelected: isSelected,
                             showCheckbox: true,
+                            textSize: widget.textSize,
                           ),
                         ),
                       );
@@ -215,7 +226,7 @@ class _AppDropdownState extends State<AppDropdown> {
         color: _hasSelection
             ? theme.textTheme.bodyLarge?.color
             : AppColors.textSecondary,
-        fontSize: AppScale.sp(14),
+        fontSize: (_hasSelection ? widget.textSize : widget.hintSize) ?? AppScale.sp(14),
       ),
       overflow: TextOverflow.ellipsis,
     );
@@ -229,7 +240,7 @@ class _AppDropdownState extends State<AppDropdown> {
         widget.hint ?? '',
         style: TextStyle(
           color: AppColors.textSecondary,
-          fontSize: AppScale.sp(14),
+          fontSize: widget.hintSize ?? AppScale.sp(14),
         ),
       );
     }
@@ -272,7 +283,7 @@ class _AppDropdownState extends State<AppDropdown> {
           Text(
             widget.title!,
             style: TextStyle(
-              fontSize: AppScale.sp(14),
+              fontSize: widget.titleSize ?? AppScale.sp(14),
               fontWeight: FontWeight.bold,
               color: theme.textTheme.bodyLarge?.color,
             ),
@@ -403,11 +414,13 @@ class _MenuItemRow extends StatelessWidget {
   final String label;
   final bool isSelected;
   final bool showCheckbox;
+  final double? textSize;
 
   const _MenuItemRow({
     required this.label,
     required this.isSelected,
     required this.showCheckbox,
+    this.textSize,
   });
 
   @override
@@ -420,7 +433,7 @@ class _MenuItemRow extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: AppScale.sp(14),
+              fontSize: textSize ?? AppScale.sp(14),
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               color: isSelected
                   ? AppColors.primary

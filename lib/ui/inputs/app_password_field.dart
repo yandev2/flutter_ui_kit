@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/inputs/app_textfield.dart';
 
@@ -12,6 +12,14 @@ class AppPasswordField extends StatefulWidget {
   final bool showStrengthIndicator;
   final ValueChanged<String>? onChanged;
 
+  final double? titleSize;
+  final double? textSize;
+  final double? hintSize;
+  final double? helperSize;
+  final double? errorSize;
+
+  final Color? fillColor;
+
   const AppPasswordField({
     super.key,
     this.title = 'Password',
@@ -21,6 +29,12 @@ class AppPasswordField extends StatefulWidget {
     this.prefixIcon = Icons.lock_outline,
     this.showStrengthIndicator = true,
     this.onChanged,
+    this.titleSize,
+    this.textSize,
+    this.hintSize,
+    this.helperSize,
+    this.errorSize,
+    this.fillColor,
   });
 
   @override
@@ -56,6 +70,12 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
           errorText: widget.errorText,
           prefixIcon: widget.prefixIcon,
           obscureText: _obscureText,
+          titleSize: widget.titleSize,
+          textSize: widget.textSize,
+          hintSize: widget.hintSize,
+          helperSize: widget.helperSize,
+          errorSize: widget.errorSize,
+          fillColor: widget.fillColor,
           onChanged: (val) {
             setState(() {
               _passwordText = val;

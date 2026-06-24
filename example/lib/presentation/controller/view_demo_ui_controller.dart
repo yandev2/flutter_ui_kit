@@ -34,6 +34,7 @@ class ViewDemoUiController extends GetxController {
     DemoCategory('Profile Cards'),
     DemoCategory('Stats Overview'),
     DemoCategory('Extensions'),
+    DemoCategory('Quick Actions'),
   ];
 
   void scrollToCategory(int index) {

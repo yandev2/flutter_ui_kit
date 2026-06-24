@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:heroicons/heroicons.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 
 class AppAvatarStack extends StatelessWidget {
   final List<String> imageUrls;
@@ -12,6 +12,7 @@ class AppAvatarStack extends StatelessWidget {
   final double borderWidth;
   final Color? borderColor;
   final bool showOnlineIndicator;
+  final double? textSize;
 
   const AppAvatarStack({
     super.key,
@@ -23,6 +24,7 @@ class AppAvatarStack extends StatelessWidget {
     this.borderWidth = 2.0,
     this.borderColor,
     this.showOnlineIndicator = false,
+    this.textSize,
   });
 
   @override
@@ -70,7 +72,7 @@ class AppAvatarStack extends StatelessWidget {
                   style: TextStyle(
                     color: AppColors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: size * 0.35, // Scale text based on size
+                    fontSize: textSize ?? (size * 0.35), // Scale text based on size or use custom
                   ),
                 ),
               ),

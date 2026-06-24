@@ -5,7 +5,7 @@ import '../widgets/demo_sidebar.dart';
 import '../widgets/demo_section.dart';
 
 // Import all UI Kit components
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/dialogs/app_dialog.dart';
 import 'package:flutter_ui_kit/ui/dialogs/app_image_viewer_dialog.dart';
@@ -29,6 +29,7 @@ import 'package:flutter_ui_kit/ui/status/app_empty_state.dart';
 import 'package:flutter_ui_kit/ui/navigation/app_navigation_bar.dart';
 import 'package:flutter_ui_kit/ui/navigation/app_welcome_app_bar.dart';
 import 'package:flutter_ui_kit/ui/navigation/app_main_app_bar.dart';
+import 'package:flutter_ui_kit/ui/navigation/app_quick_action.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_ui_kit/ui/status/app_snackbar.dart';
 import 'package:flutter_ui_kit/ui/data_display/app_avatar_stack.dart';
@@ -43,6 +44,15 @@ import 'package:flutter_ui_kit/ui/data_display/app_card_style5.dart';
 import 'package:flutter_ui_kit/ui/data_display/app_card_style6.dart';
 import 'package:flutter_ui_kit/ui/data_display/app_card_style7.dart';
 import 'package:flutter_ui_kit/ui/data_display/app_card_style8.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style9.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style10.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style11.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style12.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style13.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style14.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style15.dart';
+import 'package:flutter_ui_kit/ui/data_display/app_card_style16.dart';
+import 'package:flutter_ui_kit/ui/stats_overview/app_stats_card_style1.dart';
 import 'package:flutter_ui_kit/ui/card_detail/app_card_detail1.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 import 'package:flutter_ui_kit/ui/stats_overview/app_stats_overview1.dart';
@@ -135,6 +145,8 @@ class ViewDemoUi extends StatelessWidget {
                         _buildStatsOverviewSection(),
                         // 15: Extensions
                         _buildExtensionsSection(context),
+                        // 16: Quick Actions
+                        _buildQuickActionsSection(),
 
                         SizedBox(height: AppScale.h(100)), // Bottom padding
                       ],
@@ -1012,10 +1024,13 @@ class ViewDemoUi extends StatelessWidget {
       child: Column(
         children: [
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+            scrollDirection: Axis.vertical,
+            physics: NeverScrollableScrollPhysics(),
             clipBehavior: Clip.none,
-            child: Row(
+            child: Column(
+              spacing: AppScale.h(20),
               children: [
+                Text("AppCardStyle1"),
                 AppCardStyle1(
                   variant: AppCardStyle1Variant.solid,
                   imageUrl:
@@ -1023,9 +1038,15 @@ class ViewDemoUi extends StatelessWidget {
                   title: 'Sophie Bennett',
                   subtitle: 'Product Designer',
                   isVerified: true,
+                  footerItem1Icon: HeroIcons.star,
+                  footerItem1Text: '4.9',
+                  footerItem2Icon: HeroIcons.clock,
+                  footerItem2Text: '12 mins',
+                  buttonText: 'Follow',
                   onButtonTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle2"),
                 AppCardStyle2(
                   variant: AppCardStyle2Variant.solid,
                   imageUrl:
@@ -1034,20 +1055,28 @@ class ViewDemoUi extends StatelessWidget {
                   subtitle: 'Premium economy',
                   footerItem1Icon: HeroIcons.tag,
                   footerItem1Text: 'from \$240',
+                  footerItem2Icon: HeroIcons.star,
+                  footerItem2Text: '4.8',
                   isFavorite: true,
                   progress: 0.35,
+                  buttonText: 'Book Now',
                   onButtonTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle3"),
                 AppCardStyle3(
                   imageUrl:
                       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
-                  title: 'Santorini Loft',
-                  price: '\$890',
-                  rating: 4.8,
+                  title: 'La Brisa Vales',
+                  location: 'Ubud, Bali, Indonesia',
+                  price: '\$980',
+                  priceUnit: '/Night',
+                  rating: 4.9,
+                  reviewsText: '(1,982 Reviews)',
                   onButtonTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle4"),
                 AppCardStyle4(
                   imageUrl:
                       'https://images.unsplash.com/photo-1542314831-c6a4d14b837c?auto=format&fit=crop&w=600&q=80',
@@ -1056,43 +1085,130 @@ class ViewDemoUi extends StatelessWidget {
                   location: 'Ubud, Bali',
                   rating: 4.9,
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle5"),
                 AppCardStyle5(
                   imageUrl:
                       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
                   title: 'Sam Rivers',
                   subtitle: 'Photographer',
-                  stats: [AppCardStyle5Stat(title: 'Rating', value: '4.9')],
+                  stats: [
+                    AppCardStyle5Stat(title: 'Rating', value: '4.9'),
+                    AppCardStyle5Stat(title: 'Posts', value: '128'),
+                  ],
+                  primaryButtonText: 'Follow',
+                  secondaryButtonText: 'Message',
                   onPrimaryButtonTap: () {},
+                  onSecondaryButtonTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle6"),
                 AppCardStyle6(
                   imageUrl:
                       'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=600&q=80',
                   title: 'Film Coverage Guide',
                   author: 'By Cameron',
                   tagText: 'Production',
+                  onTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle7"),
                 AppCardStyle7(
                   imageUrl:
                       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80',
                   title: 'Richard Wyatt',
                   subtitle: 'Director',
                   badgeText: 'Mentor',
+                  onTap: () {},
                 ),
-                SizedBox(width: AppScale.w(16)),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle8"),
                 AppCardStyle8(
                   isMax: false,
                   imageUrl: 'https://logo.clearbit.com/stripe.com',
                   title: 'Stripe',
                   subtitle: 'Payment APIs',
                   description: 'A suite of payment APIs.',
+                  onTap: () {},
+                ),
+                SizedBox(height: AppScale.w(16)),
+                Text("AppCardStyle9"),
+                AppCardStyle9(
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80',
+                  badgeText: 'FRONTEND',
+                  title:
+                      "Beginner's Guide To Becoming A Professional Frontend Developer",
+                  progress: 0.65,
+                  authorImageUrls: [
+                    'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+                    'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+                  ],
+                  authorName: 'Prashant Kumar Singh',
+                  authorRole: 'Software Developer',
                 ),
               ],
             ),
           ),
           SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle11"),
+          SizedBox(height: AppScale.h(16)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: AppCardStyle11(
+                  variant: AppCardStyle11Variant.style1,
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+                  title: 'Pooja Arora',
+                  isVerified: true,
+                  description:
+                      'I build user-friendly products, focusing on clear design and great experiences.',
+                  stats: const [
+                    AppCardStyle11Stat(
+                      value: '4.1',
+                      label: 'Rating',
+                      icon: HeroIcons.star,
+                    ),
+                    AppCardStyle11Stat(value: '80', label: 'Projects'),
+                    AppCardStyle11Stat(value: '\$40/hr', label: 'Price'),
+                  ],
+                  primaryButtonText: 'Get In Touch',
+                  primaryButtonIcon: HeroIcons.envelope,
+                  onPrimaryButtonTap: () {},
+                  onBookmarkTap: () {},
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: AppCardStyle11(
+                  variant: AppCardStyle11Variant.style2,
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+                  title: 'Pooja Arora',
+                  isVerified: true,
+                  description:
+                      'I build user-friendly products, focusing on clear design and great experiences.',
+                  stats: const [
+                    AppCardStyle11Stat(
+                      value: '4.1',
+                      label: 'Rating',
+                      icon: HeroIcons.star,
+                    ),
+                    AppCardStyle11Stat(value: '80', label: 'Projects'),
+                    AppCardStyle11Stat(value: '\$40/hr', label: 'Price'),
+                  ],
+                  primaryButtonText: 'Get In Touch',
+                  primaryButtonIcon: HeroIcons.envelope,
+                  onPrimaryButtonTap: () {},
+                  onBookmarkTap: () {},
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardDetail1"),
           AppCardDetail1(
             imageUrl:
                 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
@@ -1109,6 +1225,97 @@ class ViewDemoUi extends StatelessWidget {
             description:
                 'This is a description of the card detail which supports full width and detailed data representations.',
           ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle12"),
+          AppCardStyle12(
+            idText: 'ID 92839DOORIN',
+            badgeText: 'Canceled',
+            badgeColor: AppColors.error,
+            imageUrl:
+                'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=400&q=80',
+            title: 'Cliffside Escape',
+            location: 'Gianyar, Bali, Indonesia',
+            checkInLabel: 'Check in',
+            checkInValue: '10 June, 2024',
+            checkOutLabel: 'Check Out',
+            checkOutValue: '12 June, 2024',
+            buttonText: 'Order Again',
+            onButtonTap: () {},
+          ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle13"),
+          AppCardStyle13(
+            imageUrl:
+                'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80',
+            title: 'Robotics school for kids',
+            subtitle: 'Merit Academy',
+            isVerified: true,
+            floatingIcon: HeroIcons.truck,
+            floatingIconColor: AppColors.success,
+            progress: 0.75,
+            progressColor: AppColors.success,
+            targetText: 'Target: \$23,000',
+            percentageText: '75%',
+            onTap: () {},
+            onFloatingIconTap: () {},
+          ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle14"),
+          AppCardStyle14(
+            title: 'Medical Checks',
+            description: 'Check your health consultant regularly to minimize the incidence of disease in the future',
+            buttonText: 'Check Now',
+            onButtonTap: () {},
+            // Use a local asset image if available, else omit.
+            // Assuming no specific doctor image asset is provided, I'll pass a placeholder or null if the user wants to test it later.
+            // If the user has an image, they can replace 'assets/images/doctor.png' with their own local asset.
+            imageAsset: null, // Left as null so it doesn't break. The user can add their local asset path.
+            backgroundColor: AppColors.primary,
+            showDots: true,
+            totalDots: 3,
+            activeDotIndex: 0,
+          ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle15"),
+          SizedBox(height: AppScale.h(8)),
+          AppCardStyle15(
+            imageUrl:
+                'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&q=80',
+            badgeText: '5 Days Left',
+            badgeColor: AppColors.error,
+            badgeBackgroundColor: AppColors.error.withValues(alpha: 0.1),
+            avatarUrl:
+                'https://images.unsplash.com/photo-1537151608804-ea6fac25d471?auto=format&fit=crop&w=100&q=80',
+            authorName: 'Ohayo Animal Shelter',
+            isVerified: true,
+            title: 'Help Build a Safe Haven for Cats',
+            progress: 0.65,
+            amountRaisedValue: '\$1,875.00',
+            buttonText: 'Donate Now',
+            buttonColor: const Color(0xFFFFC107), // Yellow color from screenshot
+            onButtonTap: () {},
+          ),
+          SizedBox(height: AppScale.h(24)),
+          Text("AppCardStyle16"),
+          SizedBox(height: AppScale.h(8)),
+          AppCardStyle16(
+            imageUrl:
+                'https://images.unsplash.com/photo-1593113563332-ce014490bd02?auto=format&fit=crop&w=400&q=80',
+            title: 'Help Feed Hungry Families',
+            category: 'Food Donation',
+            badgeText: 'Active',
+            badgeColor: AppColors.success,
+            badgeBackgroundColor: AppColors.success.withValues(alpha: 0.1),
+            progress: 0.1,
+            amountRaisedText: 'Amount Raised \$150.00',
+            percentageText: '10%',
+            stats: const [
+              AppCardStyle16Stat(label: 'Amount Target', value: '\$1,500.00'),
+              AppCardStyle16Stat(label: 'Donators', value: '129'),
+              AppCardStyle16Stat(label: 'Duration', value: '30 Days'),
+            ],
+            onTap: () {},
+          ),
         ],
       ),
     );
@@ -1123,26 +1330,82 @@ class ViewDemoUi extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: AppProfileCard1(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-              title: 'Tobias Whetton',
-              subtitle: '@tobias',
-              footerItem1: const AppProfileCard1FooterItem(
-                value: '321',
-                label: 'Points',
-              ),
+            child: Column(
+              children: [
+                Text("AppProfileCard1"),
+                SizedBox(height: AppScale.h(8)),
+                AppProfileCard1(
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+                  title: 'Tobias Whetton',
+                  subtitle: '@tobias',
+                  footerItem1: const AppProfileCard1FooterItem(
+                    value: '321',
+                    label: 'Points',
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(width: 16),
           Expanded(
-            child: AppProfileCard2.network(
-              imageUrl:
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-              name: 'Sarah Johnson',
-              email: 'sarah.j@email.com',
-              badgeText: 'Premium Member',
-              badgeBackgroundColor: AppColors.primary,
+            child: Column(
+              children: [
+                Text("AppProfileCard2"),
+                SizedBox(height: AppScale.h(8)),
+                AppProfileCard2.network(
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+                  name: 'Sarah Johnson',
+                  email: 'sarah.j@email.com',
+                  badgeText: 'Premium Member',
+                  badgeBackgroundColor: AppColors.primary,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              children: [
+                Text("AppCardStyle10 (Style 1)"),
+                SizedBox(height: AppScale.h(8)),
+                AppCardStyle10(
+                  variant: AppCardStyle10Variant.solid,
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+                  name: 'Sophie Bennett',
+                  isVerified: true,
+                  description: 'Product Designer who focuses on simplicity & usability.',
+                  stat1Icon: HeroIcons.users,
+                  stat1Value: '312',
+                  stat2Icon: HeroIcons.squares2x2,
+                  stat2Value: '48',
+                  onButtonTap: () {},
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              children: [
+                Text("AppCardStyle10 (Blurred)"),
+                SizedBox(height: AppScale.h(8)),
+                AppCardStyle10(
+                  variant: AppCardStyle10Variant.blurred,
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+                  name: 'Sophie Bennett',
+                  isVerified: true,
+                  description: 'A Product Designer focused on intuitive user experiences.',
+                  stat1Icon: HeroIcons.users,
+                  stat1Value: '312',
+                  stat2Icon: HeroIcons.squares2x2,
+                  stat2Value: '48',
+                  onButtonTap: () {},
+                ),
+              ],
             ),
           ),
         ],
@@ -1156,7 +1419,58 @@ class ViewDemoUi extends StatelessWidget {
       title: 'Stats Overview',
       description: 'Card ringkasan statistik, saldo, dan laporan.',
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text("AppStatsCardStyle1"),
+          SizedBox(height: AppScale.h(8)),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            child: Row(
+              children: [
+                AppStatsCardStyle1(
+                  label: 'Followers',
+                  value: '1,863',
+                  icon: Icons.face,
+                  iconColor: const Color(0xFF8B5CF6),
+                  trendPercentage: 2.1,
+                  trendDescription: 'vs last 7 days',
+                  width: AppScale.w(160),
+                ),
+                SizedBox(width: AppScale.w(16)),
+                AppStatsCardStyle1(
+                  label: 'Likes',
+                  value: '15.9k',
+                  icon: Icons.favorite,
+                  iconColor: const Color(0xFFEF4444),
+                  trendPercentage: 2.1,
+                  trendDescription: 'vs last 7 days',
+                  width: AppScale.w(160),
+                ),
+                SizedBox(width: AppScale.w(16)),
+                AppStatsCardStyle1(
+                  label: 'Comments',
+                  value: '9,873',
+                  icon: Icons.chat_bubble_outline,
+                  iconColor: const Color(0xFF3B82F6),
+                  trendPercentage: 2.1,
+                  trendDescription: 'vs last 7 days',
+                  width: AppScale.w(160),
+                ),
+                SizedBox(width: AppScale.w(16)),
+                AppStatsCardStyle1(
+                  label: 'Reach',
+                  value: '256.18k',
+                  icon: Icons.flag,
+                  iconColor: const Color(0xFFF97316),
+                  trendPercentage: 2.1,
+                  trendDescription: 'vs last 7 days',
+                  width: AppScale.w(160),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16),
           AppStatsOverview1(
             title: 'Hey, Sandro',
             subtitle: 'Balance',
@@ -1291,6 +1605,52 @@ class ViewDemoUi extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsSection() {
+    return DemoSection(
+      sectionKey: controller.categories[16].key,
+      title: 'Quick Actions',
+      description: 'Navigasi aksi cepat dalam bentuk icon kotak dengan sudut melengkung.',
+      child: Column(
+        children: [
+          Text("AppQuickAction"),
+          SizedBox(height: AppScale.h(16)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+          AppQuickAction(
+            icon: HeroIcons.heart,
+            iconColor: Colors.blue,
+            backgroundColor: Colors.blue.withValues(alpha: 0.1),
+            label: 'Health',
+            onTap: () {},
+          ),
+          AppQuickAction(
+            customIcon: Icon(Icons.school, color: Colors.orange),
+            backgroundColor: Colors.orange.withValues(alpha: 0.1),
+            label: 'Education',
+            onTap: () {},
+          ),
+          AppQuickAction(
+            icon: HeroIcons.exclamationTriangle,
+            iconColor: Colors.red,
+            backgroundColor: Colors.red.withValues(alpha: 0.1),
+            label: 'Disaster',
+            onTap: () {},
+          ),
+          AppQuickAction(
+            icon: HeroIcons.bars3,
+            iconColor: Colors.teal,
+            backgroundColor: Colors.teal.withValues(alpha: 0.1),
+            label: 'See all',
+            onTap: () {},
+          ),
+        ],
+      ),
+        ],
       ),
     );
   }

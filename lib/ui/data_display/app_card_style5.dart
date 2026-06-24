@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
@@ -25,6 +25,12 @@ class AppCardStyle5 extends StatelessWidget {
   final double? width;
   final bool isMax;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? subtitleSize;
+  final double? descriptionSize;
+  final double? statTitleSize;
+  final double? statValueSize;
 
   const AppCardStyle5({
     super.key,
@@ -40,6 +46,11 @@ class AppCardStyle5 extends StatelessWidget {
     this.width,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.subtitleSize,
+    this.descriptionSize,
+    this.statTitleSize,
+    this.statValueSize,
   });
 
   @override
@@ -111,7 +122,7 @@ class AppCardStyle5 extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: AppScale.sp(22),
+                                fontSize: titleSize ?? AppScale.sp(22),
                                 fontWeight: FontWeight.bold,
                                 color: textColor,
                               ),
@@ -124,7 +135,7 @@ class AppCardStyle5 extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: AppScale.sp(14),
+                                fontSize: subtitleSize ?? AppScale.sp(14),
                                 color: subtitleColor,
                               ),
                             ),
@@ -139,8 +150,10 @@ class AppCardStyle5 extends StatelessWidget {
             if (description != null)
               Text(
                 description!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: AppScale.sp(14),
+                  fontSize: descriptionSize ?? AppScale.sp(14),
                   color: subtitleColor,
                   height: 1.5,
                 ),
@@ -167,7 +180,7 @@ class AppCardStyle5 extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: AppScale.sp(11),
+                              fontSize: statTitleSize ?? AppScale.sp(11),
                               color: subtitleColor,
                             ),
                           ),
@@ -177,7 +190,7 @@ class AppCardStyle5 extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: AppScale.sp(18),
+                              fontSize: statValueSize ?? AppScale.sp(18),
                               fontWeight: FontWeight.bold,
                               color: textColor,
                             ),

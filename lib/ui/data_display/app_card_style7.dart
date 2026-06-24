@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 
@@ -15,6 +15,10 @@ class AppCardStyle7 extends StatelessWidget {
   final double? avatarSize;
   final bool isMax;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? subtitleSize;
+  final double? badgeTextSize;
 
   const AppCardStyle7({
     super.key,
@@ -28,6 +32,9 @@ class AppCardStyle7 extends StatelessWidget {
     this.avatarSize,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.subtitleSize,
+    this.badgeTextSize,
   });
 
   static const Color _defaultBadgeColor = Color(0xFFF97316);
@@ -102,7 +109,7 @@ class AppCardStyle7 extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppScale.sp(16),
+                            fontSize: titleSize ?? AppScale.sp(16),
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
@@ -115,7 +122,7 @@ class AppCardStyle7 extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppScale.sp(13),
+                            fontSize: subtitleSize ?? AppScale.sp(13),
                             color: subtitleColor,
                           ),
                         ),
@@ -128,6 +135,7 @@ class AppCardStyle7 extends StatelessWidget {
                   text: badgeText!,
                   color: badgeBg,
                   isLoading: isLoading,
+                  textSize: badgeTextSize,
                 ),
               ],
             ],
@@ -142,6 +150,7 @@ class AppCardStyle7 extends StatelessWidget {
     required String text,
     required Color color,
     required bool isLoading,
+    double? textSize,
   }) {
     final badgeRadius = BorderRadius.circular(AppScale.r(24));
 
@@ -167,7 +176,7 @@ class AppCardStyle7 extends StatelessWidget {
         child: Text(
           text.toUpperCase(),
           style: TextStyle(
-            fontSize: AppScale.sp(11),
+            fontSize: textSize ?? AppScale.sp(11),
             fontWeight: FontWeight.bold,
             color: AppColors.white,
             letterSpacing: 0.6,

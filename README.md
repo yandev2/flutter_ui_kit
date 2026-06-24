@@ -215,6 +215,30 @@ Keduanya mengatur `primaryColor`, `colorScheme.primary/secondary/error`, dan `ap
 
 ---
 
+### 4.4 Kustomisasi Tema Dinamis (Runtime)
+
+Anda dapat membuat fitur kustomisasi tema secara *live* (misalnya fitur *Color Picker* buatan user) dengan membuat fungsi pembuat tema khusus yang menerima input warna, lalu memanggil `Get.changeTheme()`. Karena seluruh package ini kini berorientasi pada `Get.theme` secara dinamis, UI akan langsung berubah tanpa direstart.
+
+```dart
+// Contoh membuat fungsi pembuat tema kustom
+ThemeData customTheme(Color userPrimaryColor) {
+  final customAppColors = AppTheme.lightTheme.extension<AppColorsExtension>()!.copyWith(
+    success: Colors.teal, // Bebas ditimpa
+  );
+
+  return ThemeData(
+    brightness: Brightness.light,
+    primaryColor: userPrimaryColor,
+    colorScheme: ColorScheme.fromSeed(seedColor: userPrimaryColor),
+    extensions: [customAppColors],
+  );
+}
+
+// Menerapkan tema saat runtime
+Get.changeTheme(customTheme(Colors.pink));
+```
+
+
 ## 5. Extensions
 
 ### 5.1 DateTime & String — Format Tanggal
@@ -352,6 +376,145 @@ Icon(Icons.notifications).animated(
   variant: AppAnimationVariant.shake,
   intensity: 0.8,
 )
+```
+
+---
+
+### 5.6 String — Manipulasi & Parsing (`StringFormatExtension`)
+
+| Method | Keterangan |
+|--------|------------|
+| `toIntOrNull()` | Parse string ke `int?`. Mengembalikan `null` jika gagal. |
+| `toInt({defaultValue})` | Parse string ke `int`. Mengembalikan `defaultValue` (default 0) jika gagal. |
+| `toDoubleOrNull()` | Parse string ke `double?`. Mengembalikan `null` jika gagal. |
+| `toDouble({defaultValue})` | Parse string ke `double`. Mengembalikan `defaultValue` (default 0.0) jika gagal. |
+| `capitalize()` | Mengubah huruf pertama menjadi kapital ("hello" -> "Hello"). |
+| `toTitleCase()` | Mengubah setiap awal kata menjadi kapital ("hello world" -> "Hello World"). |
+| `truncate(int maxLength)` | Memotong string panjang dan menambahkan `...` di akhir. |
+| `toColor()` | Mengubah hex string (cth: `"#FF5733"`) menjadi `Color`. |
+
+```dart
+"123".toInt();                      // 123
+"abc".toInt(defaultValue: -1);      // -1
+"hello world".toTitleCase();        // "Hello World"
+"Lorem ipsum dolor sit amet".truncate(11); // "Lorem ipsum..."
+"#FF5733".toColor();                // Color(0xFFFF5733)
+```
+
+---
+
+### 5.7 Num — Format Angka Ringkas (`NumFormatExtension`)
+
+Sangat berguna untuk tampilan UI statisitik (followers, likes, views).
+
+| Method | Keterangan |
+|--------|------------|
+| `toCompact()` | Format angka panjang menjadi ringkas (K, M, B). |
+
+```dart
+1500.toCompact();         // "1.5K"
+2000000.toCompact();      // "2M"
+```
+
+---
+
+### 5.8 BuildContext — Akses Cepat (`ContextExtension`)
+
+Mengurangi boilerplate pemanggilan `Theme` dan `MediaQuery`.
+
+| Method/Property | Keterangan |
+|-----------------|------------|
+| `context.theme` | Sama dengan `Theme.of(context)` |
+| `context.textTheme` | Sama dengan `Theme.of(context).textTheme` |
+| `context.colorScheme` | Sama dengan `Theme.of(context).colorScheme` |
+| `context.screenWidth` | Sama dengan `MediaQuery.of(context).size.width` |
+| `context.screenHeight`| Sama dengan `MediaQuery.of(context).size.height` |
+| `context.isDarkMode`  | Cek apakah aplikasi menggunakan tema gelap |
+| `context.showSnackBar(msg)` | Menampilkan snackbar cepat dari ScaffoldMessenger |
+
+```dart
+Container(
+  width: context.screenWidth * 0.8,
+  color: context.colorScheme.primary,
+  child: Text('Halo', style: context.textTheme.bodyLarge),
+);
+
+// Menampilkan snackbar
+context.showSnackBar('Berhasil disimpan!');
+```
+
+---
+
+### 5.9 Widget — UI Declarative (`WidgetExtension`)
+
+Mengurangi level nesting UI yang dalam (padding, center, dll).
+
+| Method | Keterangan |
+|--------|------------|
+| `.paddingAll(double)` | Membungkus widget dengan `Padding` merata. |
+| `.paddingSymmetric(...)` | Membungkus widget dengan `Padding` simetris. |
+| `.paddingOnly(...)` | Membungkus widget dengan `Padding` pada sisi tertentu. |
+| `.expanded([flex])` | Membungkus widget dengan `Expanded`. |
+| `.flexible([flex])` | Membungkus widget dengan `Flexible`. |
+| `.center()` | Membungkus widget dengan `Center`. |
+| `.onTap(VoidCallback)` | Membungkus widget dengan `GestureDetector` (hit behavior: opaque). |
+
+```dart
+Text('Klik Saya')
+  .paddingSymmetric(horizontal: 16, vertical: 8)
+  .center()
+  .expanded()
+  .onTap(() => print('Diklik!'));
+```
+
+---
+
+### 5.10 Iterable — Manipulasi List (`IterableExtension`)
+
+Membantu rendering list data ke dalam UI.
+
+| Method | Keterangan |
+|--------|------------|
+| `.firstWhereOrNull(...)` | Mendapatkan item pertama yang sesuai, atau `null`. |
+| `.mapIndexed((i, e) => ...)` | Melakukan `.map` dengan membawa serta index elemen. |
+| `.separateWith(Widget)` | Menyisipkan widget separator di antara elemen-elemen list. |
+
+```dart
+// Contoh separateWith untuk Row/Column
+Column(
+  children: items
+      .map((e) => Text(e.name))
+      .separateWith(SizedBox(height: 8)),
+);
+
+// Contoh mapIndexed
+Row(
+  children: items.mapIndexed((i, e) {
+    return Container(color: i.isEven ? Colors.red : Colors.blue);
+  }).toList(),
+);
+```
+
+---
+
+### 5.11 Color — Manipulasi Warna (`ColorExtension`)
+
+Mempermudah dalam menghasilkan warna yang lebih gelap atau lebih terang secara dinamis dari warna dasar.
+
+| Method | Keterangan |
+|--------|------------|
+| `.darken([amount])` | Menggelapkan warna sebesar persentase (0.0 - 1.0). Default `0.1` |
+| `.lighten([amount])`| Mencerahkan warna sebesar persentase (0.0 - 1.0). Default `0.1` |
+| `.toHex()` | Mengembalikan string hex dari warna tersebut (contoh: `"#FF5733"`) |
+
+```dart
+final baseColor = Colors.blue;
+
+// Menghasilkan warna biru yang 20% lebih gelap
+final hoverColor = baseColor.darken(0.2);
+
+// Menghasilkan warna biru yang 15% lebih terang
+final highlightColor = baseColor.lighten(0.15);
 ```
 
 ---

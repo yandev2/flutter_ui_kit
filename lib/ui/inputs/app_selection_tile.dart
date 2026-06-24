@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppSelectionTile extends StatelessWidget {
@@ -8,6 +8,9 @@ class AppSelectionTile extends StatelessWidget {
   final String? description;
   final bool isSelected;
   final ValueChanged<bool> onChanged;
+  
+  final double? titleSize;
+  final double? descriptionSize;
 
   const AppSelectionTile({
     super.key,
@@ -16,6 +19,8 @@ class AppSelectionTile extends StatelessWidget {
     this.description,
     required this.isSelected,
     required this.onChanged,
+    this.titleSize,
+    this.descriptionSize,
   });
 
   @override
@@ -37,7 +42,7 @@ class AppSelectionTile extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: AppScale.sp(14),
+                    fontSize: titleSize ?? AppScale.sp(14),
                     fontWeight: FontWeight.bold,
                     color: theme.textTheme.bodyLarge?.color,
                   ),
@@ -47,7 +52,7 @@ class AppSelectionTile extends StatelessWidget {
                   Text(
                     description!,
                     style: TextStyle(
-                      fontSize: AppScale.sp(12),
+                      fontSize: descriptionSize ?? AppScale.sp(12),
                       color: AppColors.textSecondary,
                     ),
                   ),

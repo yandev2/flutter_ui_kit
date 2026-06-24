@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 enum AppTimelineStatus { completed, active, inactive, disabled }
@@ -10,6 +10,9 @@ class AppTimelineNode {
   final AppTimelineStatus status;
   final bool isHighlighted;
   final Widget? content;
+  
+  final double? titleSize;
+  final double? subtitleSize;
 
   const AppTimelineNode({
     required this.title,
@@ -17,6 +20,8 @@ class AppTimelineNode {
     this.status = AppTimelineStatus.inactive,
     this.isHighlighted = false,
     this.content,
+    this.titleSize,
+    this.subtitleSize,
   });
 }
 
@@ -256,7 +261,7 @@ class AppTimeline extends StatelessWidget {
         Text(
           node.title,
           style: TextStyle(
-            fontSize: AppScale.sp(14),
+            fontSize: node.titleSize ?? AppScale.sp(14),
             fontWeight: FontWeight.bold,
             color: titleColor,
           ),
@@ -266,7 +271,7 @@ class AppTimeline extends StatelessWidget {
           Text(
             node.subtitle!,
             style: TextStyle(
-              fontSize: AppScale.sp(12),
+              fontSize: node.subtitleSize ?? AppScale.sp(12),
               color: subtitleColor,
             ),
           ),

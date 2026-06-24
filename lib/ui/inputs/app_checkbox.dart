@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 enum AppCheckboxVariant { solid, outline, checkOnly }
@@ -11,6 +11,8 @@ class AppCheckbox extends StatelessWidget {
   final Color? activeColor;
   final Color? checkColor;
   final double? size;
+  
+  final Color? backgroundColor;
 
   const AppCheckbox({
     super.key,
@@ -20,6 +22,7 @@ class AppCheckbox extends StatelessWidget {
     this.activeColor,
     this.checkColor,
     this.size,
+    this.backgroundColor,
   });
 
   @override
@@ -42,7 +45,7 @@ class AppCheckbox extends StatelessWidget {
           borderColor = color;
           iconColor = checkColor ?? Colors.white;
         } else {
-          backgroundColor = theme.cardColor;
+          backgroundColor = this.backgroundColor ?? theme.cardColor;
           borderColor = AppColors.border;
         }
         break;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppSegmentedSwitch extends StatefulWidget {
@@ -9,6 +9,8 @@ class AppSegmentedSwitch extends StatefulWidget {
   final Color? activeColor;
   final BorderRadiusGeometry? borderRadius;
   final MainAxisSize mainAxisSize;
+  final double? textSize;
+  final Color? backgroundColor;
 
   const AppSegmentedSwitch({
     super.key,
@@ -18,6 +20,8 @@ class AppSegmentedSwitch extends StatefulWidget {
     this.activeColor,
     this.borderRadius,
     this.mainAxisSize = MainAxisSize.max,
+    this.textSize,
+    this.backgroundColor,
   }) : assert(options.length > 1, 'Must provide at least 2 options');
 
   @override
@@ -72,9 +76,10 @@ class _AppSegmentedSwitchState extends State<AppSegmentedSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.activeColor ?? AppColors.primary;
-    final radius =
-        widget.borderRadius ?? BorderRadius.circular(AppScale.r(100));
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final color = widget.backgroundColor ?? (isDark ? AppColors.neutral900 : AppColors.neutral100);
+    final radius = widget.borderRadius ?? BorderRadius.circular(AppScale.r(12));
 
     return Container(
       height: AppScale.h(48),
@@ -124,7 +129,7 @@ class _AppSegmentedSwitchState extends State<AppSegmentedSwitch> {
                   child: AnimatedDefaultTextStyle(
                     duration: const Duration(milliseconds: 250),
                     style: TextStyle(
-                      fontSize: AppScale.sp(14),
+                      fontSize: widget.textSize ?? AppScale.sp(14),
                       fontWeight: FontWeight.bold,
                       color: isSelected ? color : Colors.white,
                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 
@@ -16,6 +16,12 @@ class AppCardStyle4 extends StatelessWidget {
   final double? width;
   final bool isMax;
   final bool isLoading;
+  
+  final double? categorySize;
+  final double? titleSize;
+  final double? locationSize;
+  final double? ratingSize;
+  final double? reviewTextSize;
 
   const AppCardStyle4({
     super.key,
@@ -29,6 +35,11 @@ class AppCardStyle4 extends StatelessWidget {
     this.width,
     this.isMax = false,
     this.isLoading = false,
+    this.categorySize,
+    this.titleSize,
+    this.locationSize,
+    this.ratingSize,
+    this.reviewTextSize,
   });
 
   @override
@@ -90,7 +101,7 @@ class AppCardStyle4 extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: AppScale.sp(12),
+                              fontSize: categorySize ?? AppScale.sp(12),
                               fontWeight: FontWeight.w600,
                               color: subtitleColor,
                             ),
@@ -101,7 +112,7 @@ class AppCardStyle4 extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: AppScale.sp(16),
+                              fontSize: titleSize ?? AppScale.sp(16),
                               fontWeight: FontWeight.bold,
                               color: textColor,
                             ),
@@ -127,7 +138,7 @@ class AppCardStyle4 extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: AppScale.sp(12),
+                                    fontSize: locationSize ?? AppScale.sp(12),
                                     color: subtitleColor,
                                   ),
                                 ),
@@ -156,7 +167,7 @@ class AppCardStyle4 extends StatelessWidget {
                               Text(
                                 rating.toString(),
                                 style: TextStyle(
-                                  fontSize: AppScale.sp(12),
+                                  fontSize: ratingSize ?? AppScale.sp(12),
                                   fontWeight: FontWeight.bold,
                                   color: subtitleColor,
                                 ),
@@ -169,7 +180,7 @@ class AppCardStyle4 extends StatelessWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: AppScale.sp(12),
+                                  fontSize: reviewTextSize ?? AppScale.sp(12),
                                   color: subtitleColor,
                                 ),
                               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppTextField extends StatelessWidget {
@@ -20,6 +20,14 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final List<TextInputFormatter>? inputFormatters;
 
+  final double? titleSize;
+  final double? textSize;
+  final double? hintSize;
+  final double? helperSize;
+  final double? errorSize;
+
+  final Color? fillColor;
+
   const AppTextField({
     super.key,
     this.title,
@@ -35,6 +43,12 @@ class AppTextField extends StatelessWidget {
     this.obscureText = false,
     this.onChanged,
     this.inputFormatters,
+    this.titleSize,
+    this.textSize,
+    this.hintSize,
+    this.helperSize,
+    this.errorSize,
+    this.fillColor,
   });
 
   @override
@@ -72,7 +86,7 @@ class AppTextField extends StatelessWidget {
           Text(
             title!,
             style: TextStyle(
-              fontSize: AppScale.sp(14),
+              fontSize: titleSize ?? AppScale.sp(14),
               fontWeight: FontWeight.bold,
               color: theme.textTheme.bodyLarge?.color,
             ),
@@ -86,16 +100,19 @@ class AppTextField extends StatelessWidget {
           onChanged: onChanged,
           inputFormatters: inputFormatters,
           style: TextStyle(
-            fontSize: AppScale.sp(14),
+            fontSize: textSize ?? AppScale.sp(14),
             color: theme.textTheme.bodyLarge?.color,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
               color: AppColors.textSecondary,
-              fontSize: AppScale.sp(14),
+              fontSize: hintSize ?? AppScale.sp(14),
             ),
             errorText: errorText,
+            errorStyle: TextStyle(
+              fontSize: errorSize ?? AppScale.sp(12),
+            ),
             // Constraints (0,0) agar icon bisa diset padding-nya secara manual
             prefixIconConstraints: const BoxConstraints(
               minWidth: 0,
@@ -132,7 +149,7 @@ class AppTextField extends StatelessWidget {
               vertical: AppScale.h(12),
             ),
             filled: true,
-            fillColor: theme.scaffoldBackgroundColor,
+            fillColor: fillColor ?? theme.scaffoldBackgroundColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppScale.r(8)),
               borderSide: BorderSide(
@@ -168,7 +185,7 @@ class AppTextField extends StatelessWidget {
           Text(
             helperText!,
             style: TextStyle(
-              fontSize: AppScale.sp(12),
+              fontSize: helperSize ?? AppScale.sp(12),
               color: AppColors.textSecondary,
             ),
           ),

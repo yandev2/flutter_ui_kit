@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 
@@ -16,6 +16,10 @@ class AppCardStyle8 extends StatelessWidget {
   final bool isMax;
   final bool isLoading;
 
+  final double? titleSize;
+  final double? subtitleSize;
+  final double? descriptionSize;
+
   const AppCardStyle8({
     super.key,
     this.imageUrl,
@@ -28,6 +32,9 @@ class AppCardStyle8 extends StatelessWidget {
     this.logoSize,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.subtitleSize,
+    this.descriptionSize,
   });
 
   @override
@@ -92,7 +99,7 @@ class AppCardStyle8 extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppScale.sp(16),
+                            fontSize: titleSize ?? AppScale.sp(16),
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
@@ -105,7 +112,7 @@ class AppCardStyle8 extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppScale.sp(13),
+                            fontSize: subtitleSize ?? AppScale.sp(13),
                             color: mutedColor,
                           ),
                         ),
@@ -118,8 +125,10 @@ class AppCardStyle8 extends StatelessWidget {
                       if (description != null)
                         Text(
                           description!,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppScale.sp(14),
+                            fontSize: descriptionSize ?? AppScale.sp(14),
                             color: bodyColor,
                             height: 1.5,
                           ),

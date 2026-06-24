@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
@@ -10,32 +10,50 @@ class AppCardStyle3 extends StatelessWidget {
   final String? imageUrl;
   final String? title;
   final String? price;
+  final String? priceUnit;
   final String? description;
+  final String? location;
   final double? rating;
+  final String? reviewsText;
   final List<String>? tags;
   final String? buttonText;
   final VoidCallback? onButtonTap;
   final bool isBookmarked;
   final VoidCallback? onBookmarkTap;
+  final Widget? footer;
+  
   final double? width;
   final bool isMax;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? priceSize;
+  final double? descriptionSize;
+  final double? chipTextSize;
 
   const AppCardStyle3({
     super.key,
     this.imageUrl,
     this.title,
     this.price,
+    this.priceUnit,
     this.description,
+    this.location,
     this.rating,
+    this.reviewsText,
     this.tags,
     this.buttonText,
     this.onButtonTap,
     this.isBookmarked = false,
     this.onBookmarkTap,
+    this.footer,
     this.width,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.priceSize,
+    this.descriptionSize,
+    this.chipTextSize,
   });
 
   @override
@@ -130,109 +148,179 @@ class AppCardStyle3 extends StatelessWidget {
                 ),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(AppScale.w(20), 0, AppScale.w(20), AppScale.w(20)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (title != null) Expanded(
-                        child: Text(
-                          title!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: AppScale.sp(20),
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                            height: 1.2,
-                          ),
-                        ),
-                      ),
-                      if (price != null) ...[
-                        SizedBox(width: AppScale.w(12)),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: AppScale.w(12), vertical: AppScale.h(6)),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(AppScale.r(20)),
-                          ),
-                          child: Text(
-                            price!,
-                            style: TextStyle(
-                              fontSize: AppScale.sp(13),
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+              Padding(
+                padding: EdgeInsets.fromLTRB(AppScale.w(20), AppScale.h(20), AppScale.w(20), AppScale.w(20)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (title != null) Expanded(
+                          child: Skeleton.replace(
+                            replace: isLoading,
+                            replacement: Bone.text(words: 3),
+                            child: Text(
+                              title!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: titleSize ?? AppScale.sp(20),
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                                height: 1.2,
+                              ),
                             ),
                           ),
                         ),
+                        if (price != null) ...[
+                          SizedBox(width: AppScale.w(12)),
+                          Skeleton.replace(
+                            replace: isLoading,
+                            replacement: Bone.text(words: 1),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  price!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: priceSize ?? AppScale.sp(18),
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                  ),
+                                ),
+                                if (priceUnit != null) ...[
+                                  SizedBox(width: AppScale.w(4)),
+                                  Text(
+                                    priceUnit!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: AppScale.sp(14),
+                                      color: subtitleColor,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                  if (description != null) ...[
-                    SizedBox(height: AppScale.h(12)),
-                    Text(
-                      description!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: AppScale.sp(14),
-                        color: subtitleColor,
-                        height: 1.5,
-                      ),
                     ),
-                  ],
-                  if (rating != null || (tags != null && tags!.isNotEmpty)) ...[
-                    SizedBox(height: AppScale.h(16)),
-                    Wrap(
-                      spacing: AppScale.w(8),
-                      runSpacing: AppScale.h(8),
-                      children: [
-                        if (rating != null) _buildChip(
-                          context,
-                          text: rating.toString(),
-                          icon: HeroIcons.star,
-                          bgColor: chipBgColor,
-                          textColor: chipTextColor,
-                          isLoading: isLoading,
-                        ),
-                        if (tags != null) ...tags!.map(
+                    if (location != null || description != null || rating != null) ...[
+                      SizedBox(height: AppScale.h(12)),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (location != null || description != null) Expanded(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(top: AppScale.h(2)),
+                                  child: HeroIcon(
+                                    HeroIcons.mapPin,
+                                    style: HeroIconStyle.outline,
+                                    size: AppScale.w(16),
+                                    color: subtitleColor,
+                                  ),
+                                ),
+                                SizedBox(width: AppScale.w(6)),
+                                Expanded(
+                                  child: Skeleton.replace(
+                                    replace: isLoading,
+                                    replacement: Bone.text(words: 3),
+                                    child: Text(
+                                      location ?? description!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: descriptionSize ?? AppScale.sp(14),
+                                        color: subtitleColor,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (rating != null) ...[
+                            SizedBox(width: AppScale.w(12)),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                HeroIcon(
+                                  HeroIcons.star,
+                                  style: HeroIconStyle.solid,
+                                  size: AppScale.w(16),
+                                  color: AppColors.warning,
+                                ),
+                                SizedBox(width: AppScale.w(6)),
+                                Skeleton.replace(
+                                  replace: isLoading,
+                                  replacement: Bone.text(words: 2),
+                                  child: Text(
+                                    reviewsText != null ? '${rating!} $reviewsText' : rating!.toString(),
+                                    style: TextStyle(
+                                      fontSize: AppScale.sp(14),
+                                      color: subtitleColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                    if (tags != null && tags!.isNotEmpty) ...[
+                      SizedBox(height: AppScale.h(16)),
+                      Wrap(
+                        spacing: AppScale.w(8),
+                        runSpacing: AppScale.h(8),
+                        children: tags!.map(
                           (tag) => _buildChip(
                             context,
                             text: tag,
                             bgColor: chipBgColor,
                             textColor: chipTextColor,
                             isLoading: isLoading,
+                            textSize: chipTextSize,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (buttonText != null) ...[
-                    SizedBox(height: AppScale.h(24)),
-                    SizedBox(
-                      width: double.infinity,
-                      child: AppButton(
-                        text: buttonText!,
-                        onPressed: onButtonTap ?? () {},
-                        size: AppButtonSize.large,
-                        variant: AppButtonVariant.solid,
-                        shape: AppButtonShape.rounded,
+                        ).toList(),
                       ),
-                    ),
+                    ],
+                    if (buttonText != null) ...[
+                      SizedBox(height: AppScale.h(24)),
+                      SizedBox(
+                        width: double.infinity,
+                        child: AppButton(
+                          text: buttonText!,
+                          onPressed: onButtonTap ?? () {},
+                          size: AppButtonSize.large,
+                          variant: AppButtonVariant.solid,
+                          shape: AppButtonShape.rounded,
+                        ),
+                      ),
+                    ],
+                    if (footer != null) ...[
+                      if (buttonText == null) SizedBox(height: AppScale.h(16)),
+                      footer!,
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
-  Widget _buildChip(BuildContext context, {required String text, HeroIcons? icon, required Color bgColor, required Color textColor, required bool isLoading}) {
+  Widget _buildChip(BuildContext context, {required String text, HeroIcons? icon, required Color bgColor, required Color textColor, required bool isLoading, double? textSize}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: AppScale.w(10), vertical: AppScale.h(6)),
       decoration: BoxDecoration(
@@ -258,7 +346,7 @@ class AppCardStyle3 extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-              fontSize: AppScale.sp(12),
+              fontSize: textSize ?? AppScale.sp(12),
               fontWeight: FontWeight.w600,
               color: textColor,
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppSelectionPill extends StatelessWidget {
@@ -8,6 +8,7 @@ class AppSelectionPill extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   final Widget control;
   final Color? activeColor;
+  final double? textSize;
 
   const AppSelectionPill({
     super.key,
@@ -16,6 +17,7 @@ class AppSelectionPill extends StatelessWidget {
     required this.onChanged,
     required this.control,
     this.activeColor,
+    this.textSize,
   });
 
   @override
@@ -48,7 +50,7 @@ class AppSelectionPill extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                fontSize: AppScale.sp(14),
+                fontSize: textSize ?? AppScale.sp(14),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: theme.textTheme.bodyLarge?.color,
               ),

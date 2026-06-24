@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dotted_border/dotted_border.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
 import 'package:flutter_ui_kit/ui/dialogs/app_dialog.dart';
@@ -19,6 +19,12 @@ class AppImageUpload extends StatefulWidget {
   final VoidCallback? onCancel;
   final String primaryButtonText;
   final String secondaryButtonText;
+  
+  final double? titleSize;
+  final double? descriptionSize;
+  
+  final Color? backgroundColor;
+  final Color? imageAreaColor;
 
   const AppImageUpload({
     super.key,
@@ -31,6 +37,10 @@ class AppImageUpload extends StatefulWidget {
     this.onCancel,
     this.primaryButtonText = 'Pick Image',
     this.secondaryButtonText = 'Cancel',
+    this.titleSize,
+    this.descriptionSize,
+    this.backgroundColor,
+    this.imageAreaColor,
   });
 
   @override
@@ -103,7 +113,7 @@ class _AppImageUploadState extends State<AppImageUpload> {
       width: double.infinity,
       padding: EdgeInsets.all(AppScale.w(24)),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surface : AppColors.white,
+        color: widget.backgroundColor ?? (isDark ? AppColors.surface : AppColors.white),
         borderRadius: BorderRadius.circular(AppScale.r(16)),
         boxShadow: [
           BoxShadow(
@@ -120,7 +130,7 @@ class _AppImageUploadState extends State<AppImageUpload> {
           Text(
             widget.title,
             style: TextStyle(
-              fontSize: AppScale.sp(16),
+              fontSize: widget.titleSize ?? AppScale.sp(16),
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -129,7 +139,7 @@ class _AppImageUploadState extends State<AppImageUpload> {
           Text(
             widget.subtitle,
             style: TextStyle(
-              fontSize: AppScale.sp(12),
+              fontSize: widget.descriptionSize ?? AppScale.sp(12),
               color: AppColors.textSecondary,
             ),
           ),
@@ -153,9 +163,9 @@ class _AppImageUploadState extends State<AppImageUpload> {
                       )
                     : null,
                 decoration: BoxDecoration(
-                  color: isDark 
+                  color: widget.imageAreaColor ?? (isDark 
                       ? AppColors.white.withValues(alpha: 0.02)
-                      : AppColors.neutral100.withValues(alpha: 0.5),
+                      : AppColors.neutral100.withValues(alpha: 0.5)),
                   borderRadius: BorderRadius.circular(AppScale.r(12)),
                 ),
                 child: widget.localImagePath != null

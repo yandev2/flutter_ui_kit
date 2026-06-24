@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/buttons/app_button.dart';
 
@@ -24,6 +24,13 @@ class AppOtpForm extends StatefulWidget {
   final double? width;
   final EdgeInsetsGeometry? padding;
 
+  final double? titleSize;
+  final double? descriptionSize;
+  final double? textSize;
+  final double? footerTextSize;
+  final Color? backgroundColor;
+  final Color? fieldBackgroundColor;
+
   const AppOtpForm({
     super.key,
     this.title,
@@ -41,6 +48,12 @@ class AppOtpForm extends StatefulWidget {
     this.autofocus = false,
     this.width,
     this.padding,
+    this.titleSize,
+    this.descriptionSize,
+    this.textSize,
+    this.footerTextSize,
+    this.backgroundColor,
+    this.fieldBackgroundColor,
   }) : assert(codeLength > 0, 'codeLength must be greater than 0');
 
   @override
@@ -185,7 +198,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
   double _otpGap(int codeLength) => AppScale.w(codeLength > 4 ? 8 : 12);
 
   double _otpFontSize(double boxSize) =>
-      AppScale.sp(math.min(22, boxSize * 0.42));
+      widget.textSize ?? AppScale.sp(math.min(22, boxSize * 0.42));
 
   Widget _buildOtpField({
     required int index,
@@ -246,7 +259,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final boxBg = isDark ? AppColors.neutral900 : AppColors.neutral100;
+    final boxBg = widget.fieldBackgroundColor ?? (isDark ? AppColors.neutral900 : AppColors.neutral100);
     final boxIdleBorder = isDark ? AppColors.border : Colors.transparent;
     final boxFocusedBorder = AppColors.primary;
 
@@ -260,7 +273,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
               vertical: AppScale.h(32),
             ),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surface : AppColors.white,
+          color: widget.backgroundColor ?? (isDark ? AppColors.surface : AppColors.white),
           borderRadius: BorderRadius.circular(AppScale.r(20)),
           border: isDark
               ? Border.all(color: AppColors.border, width: 1)
@@ -285,7 +298,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
                   widget.title!,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: AppScale.sp(20),
+                    fontSize: widget.titleSize ?? AppScale.sp(20),
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
@@ -301,7 +314,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
                   widget.description!,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: AppScale.sp(14),
+                    fontSize: widget.descriptionSize ?? AppScale.sp(14),
                     height: 1.5,
                     color: AppColors.textSecondary,
                   ),
@@ -368,7 +381,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
                       Text(
                         widget.footerText!,
                         style: TextStyle(
-                          fontSize: AppScale.sp(14),
+                          fontSize: widget.footerTextSize ?? AppScale.sp(14),
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -378,7 +391,7 @@ class _AppOtpFormState extends State<AppOtpForm> {
                         child: Text(
                           widget.footerActionText!,
                           style: TextStyle(
-                            fontSize: AppScale.sp(14),
+                            fontSize: widget.footerTextSize ?? AppScale.sp(14),
                             fontWeight: FontWeight.w600,
                             color: AppColors.primary,
                           ),

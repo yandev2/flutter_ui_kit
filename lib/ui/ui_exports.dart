@@ -40,6 +40,7 @@ export 'profile/app_profile_card2.dart';
 // Stats overview
 export 'stats_overview/app_stats_glassy_style.dart';
 export 'stats_overview/app_stats_overview1.dart';
+export 'stats_overview/app_stats_card_style1.dart';
 
 // Status
 export 'status/app_circular_percent.dart';
@@ -57,4 +58,7 @@ export 'data_display/app_card_style5.dart';
 export 'data_display/app_card_style6.dart';
 export 'data_display/app_card_style7.dart';
 export 'data_display/app_card_style8.dart';
+export 'data_display/app_card_style9.dart';
+export 'data_display/app_card_style10.dart';
+export 'data_display/app_card_style11.dart';
 export 'data_display/app_timeline.dart';

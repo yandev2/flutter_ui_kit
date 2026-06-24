@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppCircularPercent extends StatelessWidget {
@@ -106,17 +106,31 @@ class AppCircularPercent extends StatelessWidget {
                       : null,
                 ),
               ),
-              CustomPaint(
-                size: Size(widgetSize, widgetSize),
-                painter: _CircularPercentPainter(
-                  progress: _safeProgress,
-                  gradientColors: colors,
-                  trackColor: ringTrackColor,
-                  strokeWidth: ringWidth,
+              Skeleton.replace(
+                replace: isLoading,
+                replacement: Container(
+                  width: widgetSize,
+                  height: widgetSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: ringWidth,
+                    ),
+                  ),
+                ),
+                child: CustomPaint(
+                  size: Size(widgetSize, widgetSize),
+                  painter: _CircularPercentPainter(
+                    progress: _safeProgress,
+                    gradientColors: colors,
+                    trackColor: ringTrackColor,
+                    strokeWidth: ringWidth,
+                  ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(ringWidth + AppScale.w(10)),
+                padding: EdgeInsets.all(ringWidth + AppScale.w(20)),
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 import 'package:flutter_ui_kit/ui/image/app_image.dart';
 
@@ -19,6 +19,11 @@ class AppCardStyle6 extends StatelessWidget {
   final double? imageHeight;
   final bool isMax;
   final bool isLoading;
+  
+  final double? titleSize;
+  final double? authorSize;
+  final double? dateSize;
+  final double? tagTextSize;
 
   const AppCardStyle6({
     super.key,
@@ -35,6 +40,10 @@ class AppCardStyle6 extends StatelessWidget {
     this.imageHeight,
     this.isMax = false,
     this.isLoading = false,
+    this.titleSize,
+    this.authorSize,
+    this.dateSize,
+    this.tagTextSize,
   });
 
   static const Color _defaultTagColor = Color(0xFFE85D5C);
@@ -134,7 +143,7 @@ class AppCardStyle6 extends StatelessWidget {
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: AppScale.sp(18),
+                                    fontSize: titleSize ?? AppScale.sp(18),
                                     fontWeight: FontWeight.bold,
                                     color: textColor,
                                     height: 1.35,
@@ -159,7 +168,7 @@ class AppCardStyle6 extends StatelessWidget {
                                       Text(
                                         author!,
                                         style: TextStyle(
-                                          fontSize: AppScale.sp(13),
+                                          fontSize: authorSize ?? AppScale.sp(13),
                                           color: subtitleColor,
                                         ),
                                       ),
@@ -183,7 +192,7 @@ class AppCardStyle6 extends StatelessWidget {
                                           Text(
                                             date!,
                                             style: TextStyle(
-                                              fontSize: AppScale.sp(13),
+                                              fontSize: dateSize ?? AppScale.sp(13),
                                               color: subtitleColor,
                                             ),
                                           ),
@@ -195,11 +204,12 @@ class AppCardStyle6 extends StatelessWidget {
                             if (tagText != null) ...[
                               if (title != null || hasMetadata)
                                 SizedBox(height: AppScale.h(16)),
-                              _buildTag(
-                                text: tagText!,
-                                color: badgeColor,
-                                isLoading: isLoading,
-                              ),
+                                _buildTag(
+                                  text: tagText!,
+                                  color: badgeColor,
+                                  isLoading: isLoading,
+                                  textSize: tagTextSize,
+                                ),
                             ],
                           ],
                         ),
@@ -270,6 +280,7 @@ class AppCardStyle6 extends StatelessWidget {
     required String text,
     required Color color,
     required bool isLoading,
+    double? textSize,
   }) {
     return Skeleton.leaf(
       child: Container(
@@ -300,7 +311,7 @@ class AppCardStyle6 extends StatelessWidget {
           Text(
             text.toUpperCase(),
             style: TextStyle(
-              fontSize: AppScale.sp(11),
+              fontSize: textSize ?? AppScale.sp(10),
               fontWeight: FontWeight.bold,
               color: AppColors.white,
               letterSpacing: 0.8,

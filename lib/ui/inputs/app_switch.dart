@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_kit/theme/color.dart';
+import 'package:flutter_ui_kit/theme/theme.dart';
 import 'package:flutter_ui_kit/theme/scale.dart';
 
 class AppSwitch extends StatelessWidget {
@@ -9,6 +9,7 @@ class AppSwitch extends StatelessWidget {
   final String? textOff;
   final Color? activeColor;
   final Color? inactiveColor;
+  final double? textSize;
 
   const AppSwitch({
     super.key,
@@ -18,6 +19,7 @@ class AppSwitch extends StatelessWidget {
     this.textOff = 'OFF',
     this.activeColor,
     this.inactiveColor,
+    this.textSize,
   });
 
   @override
@@ -59,7 +61,7 @@ class AppSwitch extends StatelessWidget {
                           : (theme.brightness == Brightness.dark
                                 ? Colors.white
                                 : AppColors.textSecondary),
-                      fontSize: AppScale.sp(12),
+                      fontSize: textSize ?? AppScale.sp(12),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
