@@ -175,7 +175,7 @@ git branch -M main
 git status
 
 git add .
-git commit -m "Initial release: flutter_ui_kit v1.0.0"
+git commit -m "Initial release: flutter_ui_kit v1.0.0"    
 
 D. Hubungkan remote & push
 --------------------------
