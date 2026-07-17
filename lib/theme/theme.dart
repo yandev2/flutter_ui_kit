@@ -64,7 +64,6 @@ class AppTheme {
   // Main Light Theme
   static ThemeData get lightTheme {
     return ThemeData.light().copyWith(
-      primaryColor: AppColors.primaryLight,
       scaffoldBackgroundColor: AppColors.backgroundLight,
       cardColor: AppColors.cardLight,
       disabledColor: AppColors.disabledLight,
@@ -76,9 +75,13 @@ class AppTheme {
       ),
       colorScheme: const ColorScheme.light(
         primary: AppColors.primaryLight,
+        onPrimary: AppColors.onPrimaryLight,
         secondary: AppColors.secondaryLight,
+        onSecondary: AppColors.onSecondaryLight,
         error: AppColors.errorLight,
+        onError: AppColors.onErrorLight,
         surface: AppColors.surfaceLight,
+        onSurface: AppColors.onSurfaceLight,
       ),
       extensions: <ThemeExtension<dynamic>>[defaultUIComponentThemeLight],
     );
@@ -87,7 +90,6 @@ class AppTheme {
   // Main Dark Theme
   static ThemeData get darkTheme {
     return ThemeData.dark().copyWith(
-      primaryColor: AppColors.primaryDark,
       scaffoldBackgroundColor: AppColors.backgroundDark,
       cardColor: AppColors.cardDark,
       disabledColor: AppColors.disabledDark,
@@ -99,9 +101,13 @@ class AppTheme {
       ),
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primaryDark,
+        onPrimary: AppColors.onPrimaryDark,
         secondary: AppColors.secondaryDark,
+        onSecondary: AppColors.onSecondaryDark,
         error: AppColors.errorDark,
+        onError: AppColors.onErrorDark,
         surface: AppColors.surfaceDark,
+        onSurface: AppColors.onSurfaceDark,
       ),
       extensions: <ThemeExtension<dynamic>>[defaultUIComponentThemeDark],
     );
@@ -110,5 +116,11 @@ class AppTheme {
 
 // Extension on BuildContext for easier access
 extension UIComponentThemeExtension on BuildContext {
-  UIComponentTheme get uiTheme => Theme.of(this).extension<UIComponentTheme>()!;
+  UIComponentTheme get uiTheme {
+    final extension = Theme.of(this).extension<UIComponentTheme>();
+    if (extension != null) return extension;
+    return Theme.of(this).brightness == Brightness.dark
+        ? AppTheme.defaultUIComponentThemeDark
+        : AppTheme.defaultUIComponentThemeLight;
+  }
 }

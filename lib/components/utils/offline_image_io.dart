@@ -19,3 +19,11 @@ Widget buildOfflineImage({
     errorBuilder: (_, _, _) => errorBuilder('Failed to load image'),
   );
 }
+
+Widget buildPathImage({
+  required String imagePath,
+  BoxFit fit = BoxFit.cover,
+}) {
+  final file = File(imagePath);
+  return Image.file(file, fit: fit);
+}

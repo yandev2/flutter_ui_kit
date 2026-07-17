@@ -361,9 +361,9 @@ class AppTimeline extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(size(12)),
           decoration: BoxDecoration(
-            color: theme.cardColor.withValues(alpha: 0.5),
+            color: uiTheme.cardColor.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(size(12)),
-            border: Border.all(color: theme.cardColor),
+            border: Border.all(color: uiTheme.cardColor),
           ),
           child: content,
         ),

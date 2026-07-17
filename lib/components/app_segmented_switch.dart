@@ -99,7 +99,7 @@ class _AppSegmentedSwitchState<T> extends State<AppSegmentedSwitch<T>> {
     final bgColor =
         widget.backgroundColor ??
         (isDark ? uiTheme.surface : uiTheme.borderColor);
-    final activeCol = widget.activeColor ?? theme.primaryColor;
+    final activeCol = widget.activeColor ?? uiTheme.primary;
     final activeTextCol = widget.activeTextColor ?? Colors.white;
     final inactiveCol = widget.inactiveColor ?? uiTheme.hintColor;
     final radius = widget.borderRadius ?? BorderRadius.circular(scale.size(12));

@@ -261,11 +261,10 @@ class AppBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final uiTheme = context.uiTheme;
 
-    final actualBackgroundColor = backgroundColor ?? theme.cardColor;
-    final actualSelectedColor = selectedItemColor ?? theme.primaryColor;
+    final actualBackgroundColor = backgroundColor ?? uiTheme.cardColor;
+    final actualSelectedColor = selectedItemColor ?? uiTheme.primary;
     final actualUnselectedColor = unselectedItemColor ?? uiTheme.disabledColor;
     final actualShadowColor = shadowColor ?? uiTheme.shadowColor;
     final actualIconSize = iconSize ?? scale.size(24);

@@ -1,11 +1,10 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import '../ui_component_flutter.dart';
+import 'utils/offline_image.dart';
 
 class AppImageUpload extends StatefulWidget {
   final String title;
@@ -181,15 +180,10 @@ class _AppImageUploadState extends State<AppImageUpload> {
                 child: widget.localImagePath != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(size(12)),
-                        child: kIsWeb
-                            ? Image.network(
-                                widget.localImagePath!,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                File(widget.localImagePath!),
-                                fit: BoxFit.cover,
-                              ),
+                        child: buildPathImage(
+                          imagePath: widget.localImagePath!,
+                          fit: BoxFit.cover,
+                        ),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,

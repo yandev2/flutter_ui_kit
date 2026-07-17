@@ -11,13 +11,13 @@ extension ContextExtension on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
   /// Mendapatkan ukuran layar
-  Size get screenSize => MediaQuery.of(this).size;
+  Size get screenSize => MediaQuery.sizeOf(this);
 
   /// Mendapatkan lebar layar
-  double get screenWidth => MediaQuery.of(this).size.width;
+  double get screenWidth => MediaQuery.sizeOf(this).width;
 
   /// Mendapatkan tinggi layar
-  double get screenHeight => MediaQuery.of(this).size.height;
+  double get screenHeight => MediaQuery.sizeOf(this).height;
 
   /// Mengecek apakah aplikasi sedang dalam mode gelap
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
