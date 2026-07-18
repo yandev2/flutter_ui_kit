@@ -8,9 +8,7 @@ class AnimationDemoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Animation Extension Demo'),
-        backgroundColor: context.uiTheme.primary,
-        foregroundColor: context.uiTheme.onPrimary,
+        title: const Text('Animation Extension Demo')
       ),
       body: Center(
         child: SingleChildScrollView(

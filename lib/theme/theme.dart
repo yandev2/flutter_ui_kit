@@ -61,27 +61,68 @@ class AppTheme {
     defaultRadius: AppRadius.md,
   );
 
+  static const ColorScheme _lightColorScheme = ColorScheme.light(
+    primary: AppColors.primaryLight,
+    onPrimary: AppColors.onPrimaryLight,
+    secondary: AppColors.secondaryLight,
+    onSecondary: AppColors.onSecondaryLight,
+    error: AppColors.errorLight,
+    onError: AppColors.onErrorLight,
+    surface: AppColors.surfaceLight,
+    onSurface: AppColors.onSurfaceLight,
+  );
+
+  static const ColorScheme _darkColorScheme = ColorScheme.dark(
+    primary: AppColors.primaryDark,
+    onPrimary: AppColors.onPrimaryDark,
+    secondary: AppColors.secondaryDark,
+    onSecondary: AppColors.onSecondaryDark,
+    error: AppColors.errorDark,
+    onError: AppColors.onErrorDark,
+    surface: AppColors.surfaceDark,
+    onSurface: AppColors.onSurfaceDark,
+  );
+
   // Main Light Theme
   static ThemeData get lightTheme {
-    return ThemeData.light().copyWith(
+    return ThemeData(
+      colorScheme: _lightColorScheme,
       scaffoldBackgroundColor: AppColors.backgroundLight,
-      cardColor: AppColors.cardLight,
-      disabledColor: AppColors.disabledLight,
-      hintColor: AppColors.hintLight,
-      dividerColor: AppColors.borderLight,
       textTheme: AppTypography.textTheme.apply(
         bodyColor: AppColors.onBackgroundLight,
         displayColor: AppColors.onBackgroundLight,
       ),
-      colorScheme: const ColorScheme.light(
-        primary: AppColors.primaryLight,
-        onPrimary: AppColors.onPrimaryLight,
-        secondary: AppColors.secondaryLight,
-        onSecondary: AppColors.onSecondaryLight,
-        error: AppColors.errorLight,
-        onError: AppColors.onErrorLight,
-        surface: AppColors.surfaceLight,
-        onSurface: AppColors.onSurfaceLight,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.primaryLight,
+        foregroundColor: AppColors.onPrimaryLight,
+        surfaceTintColor: Colors.transparent,
+        iconTheme: IconThemeData(color: AppColors.onPrimaryLight),
+        titleTextStyle: AppTypography.titleLarge.copyWith(
+          color: AppColors.onPrimaryLight,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationThemeData(
+        filled: true,
+        isDense: true,
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryLight,
+          foregroundColor: AppColors.onPrimaryLight,
+          elevation: 0,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.onSurfaceLight,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryLight,
+        ),
       ),
       extensions: <ThemeExtension<dynamic>>[defaultUIComponentThemeLight],
     );
@@ -89,25 +130,44 @@ class AppTheme {
 
   // Main Dark Theme
   static ThemeData get darkTheme {
-    return ThemeData.dark().copyWith(
+    return ThemeData(
+      colorScheme: _darkColorScheme,
       scaffoldBackgroundColor: AppColors.backgroundDark,
-      cardColor: AppColors.cardDark,
-      disabledColor: AppColors.disabledDark,
-      hintColor: AppColors.hintDark,
-      dividerColor: AppColors.borderDark,
       textTheme: AppTypography.textTheme.apply(
         bodyColor: AppColors.onBackgroundDark,
         displayColor: AppColors.onBackgroundDark,
       ),
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.primaryDark,
-        onPrimary: AppColors.onPrimaryDark,
-        secondary: AppColors.secondaryDark,
-        onSecondary: AppColors.onSecondaryDark,
-        error: AppColors.errorDark,
-        onError: AppColors.onErrorDark,
-        surface: AppColors.surfaceDark,
-        onSurface: AppColors.onSurfaceDark,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.primaryDark,
+        foregroundColor: AppColors.onPrimaryDark,
+        surfaceTintColor: Colors.transparent,
+        iconTheme: IconThemeData(color: AppColors.onPrimaryDark),
+        titleTextStyle: AppTypography.titleLarge.copyWith(
+          color: AppColors.onPrimaryDark,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationThemeData(
+        filled: true,
+        isDense: true,
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryDark,
+          foregroundColor: AppColors.onPrimaryDark,
+          elevation: 0,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.onSurfaceDark,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryDark,
+        ),
       ),
       extensions: <ThemeExtension<dynamic>>[defaultUIComponentThemeDark],
     );

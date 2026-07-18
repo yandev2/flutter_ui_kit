@@ -32,10 +32,8 @@ class _AppSegmentedSwitchDemoPageState
           'AppSegmentedSwitch Demo',
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(color: context.uiTheme.onPrimary),
+          ).textTheme.titleLarge,
         ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
         actions: [
           IconButton(
             tooltip: 'Toggle Skeleton',

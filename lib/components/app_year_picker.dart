@@ -296,6 +296,7 @@ class _YearPopupState extends State<_YearPopup> {
                   onPressed: () => Navigator.pop(context, selectedYear),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: uiTheme.primary,
+                    foregroundColor: uiTheme.onPrimary,
                     padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(size(8)),
@@ -304,7 +305,6 @@ class _YearPopupState extends State<_YearPopup> {
                   child: Text(
                     'Pilih',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: uiTheme.onPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

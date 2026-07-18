@@ -12,10 +12,8 @@ class AppDialogDemoPage extends StatelessWidget {
           'AppDialog Demo',
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(color: context.uiTheme.onPrimary),
-        ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
+          ).textTheme.titleLarge,
+        )
       ),
       body: ListView(
         padding: EdgeInsets.all(AppSpacing.xl),

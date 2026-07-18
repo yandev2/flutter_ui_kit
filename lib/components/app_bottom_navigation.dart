@@ -15,7 +15,7 @@ enum AppBottomNavigationVariant { indicator, pill, dot, shift }
 
 class AppBottomNavigation extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTap;
+  final ValueChanged<int> onTap;
   final List<AppBottomNavItem> items;
 
   // Customization Properties

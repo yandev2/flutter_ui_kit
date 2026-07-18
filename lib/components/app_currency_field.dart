@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ui_component_flutter/ui_component_flutter.dart';
+import '../ui_component_flutter.dart';
 
 class AppCurrencyField extends StatelessWidget {
   final String? title;
@@ -20,6 +20,7 @@ class AppCurrencyField extends StatelessWidget {
   final double? errorSize;
 
   final Color? fillColor;
+  final Iterable<String>? autofillHints;
 
   const AppCurrencyField({
     super.key,
@@ -38,6 +39,7 @@ class AppCurrencyField extends StatelessWidget {
     this.helperSize,
     this.errorSize,
     this.fillColor,
+    this.autofillHints,
   });
 
   @override
@@ -48,7 +50,10 @@ class AppCurrencyField extends StatelessWidget {
       helperText: helperText,
       errorText: errorText,
       controller: controller,
-      keyboardType: TextInputType.number,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      textInputAction: TextInputAction.done,
+      autofillHints:
+          autofillHints ?? const [AutofillHints.transactionAmount],
       inputFormatters: [
         CurrencyInputFormatter(
           type: currencyType,

@@ -17,13 +17,10 @@ class _AppImageUploadDemoPageState extends State<AppImageUploadDemoPage> {
       appBar: AppBar(
         title: Text(
           'App Image Upload',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: context.uiTheme.onPrimary,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontSize: size(20),
           ),
-        ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
+        )
       ),
       backgroundColor: context.uiTheme.background,
       body: SingleChildScrollView(

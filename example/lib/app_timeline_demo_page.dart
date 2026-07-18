@@ -18,13 +18,10 @@ class _AppTimelineDemoPageState extends State<AppTimelineDemoPage> {
       appBar: AppBar(
         title: Text(
           'App Timeline',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                color: context.uiTheme.onPrimary,
-                fontSize: size(20),
-              ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontSize: size(20),
+          ),
         ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
         actions: [
           IconButton(
             tooltip: 'Toggle Skeleton',

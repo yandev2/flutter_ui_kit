@@ -303,6 +303,7 @@ class _MonthPopupState extends State<_MonthPopup> {
                   onPressed: () => Navigator.pop(context, selectedMonth),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: uiTheme.primary,
+                    foregroundColor: uiTheme.onPrimary,
                     padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(size(8)),
@@ -311,7 +312,6 @@ class _MonthPopupState extends State<_MonthPopup> {
                   child: Text(
                     'Pilih',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: uiTheme.onPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

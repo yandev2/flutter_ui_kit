@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter/services.dart';
-import 'package:ui_component_flutter/ui_component_flutter.dart';
+import '../ui_component_flutter.dart';
 
 class AppPasswordField extends StatefulWidget {
   final String? title;
@@ -22,6 +22,7 @@ class AppPasswordField extends StatefulWidget {
   final double? errorSize;
 
   final Color? fillColor;
+  final Iterable<String>? autofillHints;
 
   const AppPasswordField({
     super.key,
@@ -41,6 +42,7 @@ class AppPasswordField extends StatefulWidget {
     this.helperSize,
     this.errorSize,
     this.fillColor,
+    this.autofillHints,
   });
 
   @override
@@ -83,8 +85,12 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
           helperSize: widget.helperSize,
           errorSize: widget.errorSize,
           fillColor: widget.fillColor,
+          autofillHints:
+              widget.autofillHints ?? const [AutofillHints.newPassword],
+          textInputAction: TextInputAction.done,
+          keyboardType:
+              widget.keyboardType ?? TextInputType.visiblePassword,
           controller: widget.controller,
-          keyboardType: widget.keyboardType,
           inputFormatters: [
             NoSpaceFormatter(),
             if (widget.inputFormatters != null) ...widget.inputFormatters!,
@@ -93,9 +99,7 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
             setState(() {
               _passwordText = val;
             });
-            if (widget.onChanged != null) {
-              widget.onChanged?.call(val);
-            }
+            widget.onChanged?.call(val);
           },
           suffixWidget: GestureDetector(
             onTap: () {

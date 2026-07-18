@@ -228,8 +228,11 @@ class _AppOtpFormState extends State<AppOtpForm> {
           enabled: !widget.isLoading,
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
+          maxLength: 1,
+          autofillHints: index == 0 ? const [AutofillHints.oneTimeCode] : null,
           cursorColor: uiTheme.primary,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onTapOutside: (_) => _focusNodes[index].unfocus(),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontSize: _otpFontSize(boxSize),
             fontWeight: FontWeight.bold,
@@ -332,26 +335,28 @@ class _AppOtpFormState extends State<AppOtpForm> {
                   );
                 },
               ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final boxSize = _otpBoxSize(constraints.maxWidth);
-                  final gap = _otpGap(widget.codeLength);
+              child: AutofillGroup(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final boxSize = _otpBoxSize(constraints.maxWidth);
+                    final gap = _otpGap(widget.codeLength);
 
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      widget.codeLength,
-                      (index) => _buildOtpField(
-                        index: index,
-                        boxSize: boxSize,
-                        gap: gap,
-                        boxBg: boxBg,
-                        boxFocusedBorder: boxFocusedBorder,
-                        boxIdleBorder: boxIdleBorder,
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        widget.codeLength,
+                        (index) => _buildOtpField(
+                          index: index,
+                          boxSize: boxSize,
+                          gap: gap,
+                          boxBg: boxBg,
+                          boxFocusedBorder: boxFocusedBorder,
+                          boxIdleBorder: boxIdleBorder,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
             if (_showButton) ...[

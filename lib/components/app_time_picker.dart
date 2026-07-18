@@ -418,6 +418,7 @@ class _TimePopupState extends State<_TimePopup> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: uiTheme.primary,
+                  foregroundColor: uiTheme.onPrimary,
                   padding: EdgeInsets.symmetric(vertical: sizeHeight(14)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(size(8)),
@@ -426,7 +427,6 @@ class _TimePopupState extends State<_TimePopup> {
                 child: Text(
                   'Pilih',
                   style: textTheme.bodyMedium?.copyWith(
-                    color: uiTheme.onPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

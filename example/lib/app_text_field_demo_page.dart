@@ -18,10 +18,8 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
           'Text & Password Field',
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(color: context.uiTheme.onPrimary),
-        ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
+          ).textTheme.titleLarge,
+        )
       ),
       body: ListView(
         padding: EdgeInsets.all(AppSpacing.xl),
@@ -31,6 +29,8 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             title: 'Username',
             hint: 'Masukkan username',
             prefixIcon: HeroIcons.user,
+            autofillHints: const [AutofillHints.username],
+            textInputAction: TextInputAction.next,
           ).paddingOnly(bottom: AppSpacing.xl),
 
           _buildSectionTitle('2. Error State Text Field'),
@@ -40,6 +40,8 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             prefixIcon: HeroIcons.envelope,
             errorText: 'Format email tidak valid',
             keyboardType: TextInputType.emailAddress,
+            autofillHints: const [AutofillHints.email],
+            textInputAction: TextInputAction.next,
             inputFormatters: [NoSpaceFormatter()],
           ).paddingOnly(bottom: AppSpacing.xl),
 
@@ -50,6 +52,8 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             prefixIcon: HeroIcons.phone,
             helperText: 'Nomor telepon akan digunakan untuk OTP',
             keyboardType: TextInputType.phone,
+            autofillHints: const [AutofillHints.telephoneNumber],
+            textInputAction: TextInputAction.next,
             inputFormatters: [MaskInputFormatter(mask: '####-####-####-####')],
           ).paddingOnly(bottom: AppSpacing.xl),
 

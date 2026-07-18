@@ -4,7 +4,7 @@ import '../ui_component_flutter.dart';
 
 class AppMainAppbar extends StatefulWidget {
   final String title;
-  final Function(String)? onSearch;
+  final ValueChanged<String>? onSearch;
   final VoidCallback? onReset;
   final VoidCallback? onBack;
   final List<Widget>? actions;
@@ -58,7 +58,7 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top;
+    final topPadding = MediaQuery.paddingOf(context).top;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -85,7 +85,7 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
 
 class _AppbarDelegate extends SliverPersistentHeaderDelegate {
   final String title;
-  final Function(String)? onSearch;
+  final ValueChanged<String>? onSearch;
   final VoidCallback? onReset;
   final VoidCallback? onBack;
   final List<Widget>? actions;

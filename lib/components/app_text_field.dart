@@ -16,6 +16,12 @@ class AppTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final int? maxLines;
+  final int? maxLength;
+  final Iterable<String>? autofillHints;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+  final bool readOnly;
+  final bool enabled;
 
   final double? titleSize;
   final double? textSize;
@@ -39,6 +45,12 @@ class AppTextField extends StatefulWidget {
     this.inputFormatters,
     this.keyboardType,
     this.maxLines = 1,
+    this.maxLength,
+    this.autofillHints,
+    this.textInputAction,
+    this.onSubmitted,
+    this.readOnly = false,
+    this.enabled = true,
     this.titleSize,
     this.textSize,
     this.hintSize,
@@ -126,10 +138,19 @@ class _AppTextFieldState extends State<AppTextField> {
                   controller: widget.controller,
                   focusNode: _focusNode,
                   obscureText: widget.obscureText,
+                  readOnly: widget.readOnly,
+                  enabled: widget.enabled,
+                  autocorrect: !widget.obscureText,
+                  enableSuggestions: !widget.obscureText,
+                  autofillHints: widget.autofillHints,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: widget.onSubmitted,
+                  onTapOutside: (_) => _focusNode.unfocus(),
                   onChanged: widget.onChanged,
                   inputFormatters: widget.inputFormatters,
                   keyboardType: widget.keyboardType,
                   maxLines: widget.maxLines,
+                  maxLength: widget.maxLength,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: uiTheme.onBackground,
                     fontSize: widget.textSize ?? size(14),

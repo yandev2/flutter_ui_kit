@@ -430,6 +430,7 @@ class _CalendarPopupState extends State<_CalendarPopup> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: uiTheme.primary,
+              foregroundColor: uiTheme.onPrimary,
               padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(size(8)),
@@ -438,7 +439,6 @@ class _CalendarPopupState extends State<_CalendarPopup> {
             child: Text(
               'Pilih',
               style: textTheme.bodyMedium?.copyWith(
-                color: uiTheme.onPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -18,13 +18,10 @@ class _AppOtpDemoPageState extends State<AppOtpDemoPage> {
       appBar: AppBar(
         title: Text(
           'App OTP Form',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: context.uiTheme.onPrimary,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontSize: size(20),
           ),
-        ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
+        )
       ),
       backgroundColor: context.uiTheme.background,
       body: SingleChildScrollView(

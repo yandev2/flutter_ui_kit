@@ -33,10 +33,8 @@ class _AppDropdownDemoPageState extends State<AppDropdownDemoPage> {
           'Dropdown & Selection',
           style: Theme.of(
             context,
-          ).textTheme.titleLarge?.copyWith(color: context.uiTheme.onPrimary),
-        ),
-        backgroundColor: context.uiTheme.primary,
-        iconTheme: IconThemeData(color: context.uiTheme.onPrimary),
+          ).textTheme.titleLarge,
+        )
       ),
       body: ListView(
         padding: EdgeInsets.all(AppSpacing.xl),
@@ -67,7 +65,11 @@ class _AppDropdownDemoPageState extends State<AppDropdownDemoPage> {
             control: Checkbox(
               value: _tileSelected,
               onChanged: (_) {},
-              activeColor: context.uiTheme.primary,
+              fillColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? context.uiTheme.primary
+                    : null,
+              ),
             ),
             title: 'Setuju Syarat & Ketentuan',
             description: 'Baca secara detail sebelum menyetujui perjanjian',

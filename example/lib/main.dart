@@ -53,6 +53,11 @@ class MyApp extends StatelessWidget {
 
           // Contoh penggunaan jika User ingin meng-custom warnanya:
           theme: AppTheme.lightTheme.copyWith(
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.indigo,
+              foregroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
             extensions: <ThemeExtension<dynamic>>[
               AppTheme.defaultUIComponentThemeLight.copyWith(
                 primary: Colors.indigo, // User mengubah primary
@@ -78,12 +83,10 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'UI Component',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            color: context.uiTheme.onPrimary,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontSize: size(20),
           ),
         ),
-        backgroundColor: context.uiTheme.primary,
       ),
       body: ListView(
         padding: EdgeInsets.all(AppSpacing.md),

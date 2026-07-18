@@ -10,9 +10,7 @@ class TypographyDemoPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Typography Demo'),
-        backgroundColor: context.uiTheme.primary,
-        foregroundColor: context.uiTheme.onPrimary,
+        title: const Text('Typography Demo')
       ),
       body: ListView(
         padding: EdgeInsets.all(AppSpacing.md),
