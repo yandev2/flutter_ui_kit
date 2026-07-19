@@ -47,6 +47,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
       final FilePickerResult? result = await FilePicker.pickFiles(
         type: widget.allowedExtensions != null ? FileType.custom : FileType.any,
         allowedExtensions: widget.allowedExtensions,
+        // ignore: deprecated_member_use
         allowMultiple: false,
       );
 
