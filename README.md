@@ -1,22 +1,55 @@
 # UI Component Flutter
 
-A highly customizable and fully responsive Flutter UI Component package. Built with modern design system principles, providing seamless support for Light and Dark modes using Flutter's native `ThemeExtension`.
+A highly customizable and fully responsive Flutter UI Component package. Built with modern design system principles (Material 3), providing seamless support for Light and Dark modes using Flutter's native `ThemeExtension`.
+
+## Requirements
+
+| | Minimum |
+|---|---|
+| Flutter | `>=3.44.0` |
+| Dart | `^3.12.0` |
+
+## Installation
+
+```yaml
+dependencies:
+  ui_component_flutter:
+    path: ../ui_component_flutter   # ganti dengan git URL atau pub.dev jika sudah publish
+```
+
+```bash
+flutter pub get
+```
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started — Initialization](#-getting-started)
+- [Responsive Scale (`AppScale`)](#-responsive-scale-appscale)
+- [Customize Theme](#-how-to-customize-the-theme)
+- [Extensions](#-extensions)
+- [Components](#-components)
+- [Dependencies](#-dependencies)
+- [Component Index](#-component-index)
 
 ## Features
-- **Responsive by Default**: All components, paddings, and font sizes scale perfectly across devices using `flutter_screenutil`.
-- **First-class Dark Mode**: Semantic colors and backgrounds are optimized for dark mode to prevent eye strain.
-- **Fully Customizable**: Override any color, spacing, or typography easily using `copyWith` without messy inheritance trees.
+- **Responsive by Default**: All components scale via `AppScaleInit` (built on `flutter_screenutil`) with web-friendly scale capping — no more oversized UI on Flutter Web.
+- **Material 3 Theme**: `ColorScheme`, `InputDecorationTheme`, button themes, and complete on-colors (`onPrimary`, `onSurface`, etc.).
+- **Modern Input APIs**: Autofill, `textInputAction`, `onSubmitted`, `onEditingComplete`, `onTapOutside`, and `maxLength` support across text input components.
+- **First-class Dark Mode**: Semantic colors and backgrounds optimized for dark mode to prevent eye strain.
+- **Web-ready**: Conditional imports for offline images, WASM-safe paths, and capped responsive scale on wide viewports.
+- **Fully Customizable**: Override colors, spacing, typography, form fill colors, timeline indicators, or responsive scale using `copyWith` without messy inheritance trees.
 
 ---
 
 ## 🚀 Getting Started
 
 ### 1. Initialization
-Because this package is strictly responsive based on a design scale, you **must** wrap your `MaterialApp` with `ScreenUtilInit`. 
+
+Because this package is responsive based on a design scale, you **must** wrap your `MaterialApp` with [`AppScaleInit`](lib/theme/app_scale.dart). It replaces direct usage of `ScreenUtilInit` and prevents oversized UI on web / wide screens.
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ui_component_flutter/theme/theme.dart';
 
 void main() {
@@ -28,14 +61,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(360, 690), // Set to your design draft size
-      minTextAdapt: true,
-      splitScreenMode: true,
+    return AppScaleInit(
+      // Recommended: auto-select preset for web vs native mobile
+      config: AppScaleConfig.adaptive(
+        designSize: const Size(375, 812),
+      ),
       builder: (context, child) {
         return MaterialApp(
           title: 'My App',
-          // 2. Set the default theme here
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeMode.system,
@@ -47,11 +80,171 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+> **Note:** You no longer need to import `flutter_screenutil` in your app root. `AppScaleInit` handles `ScreenUtilInit` internally.
+
+---
+
+## 📐 Responsive Scale (`AppScale`)
+
+All components in this package use global helpers from [`lib/theme/app_scale.dart`](lib/theme/app_scale.dart):
+
+| Function | Description |
+|----------|-------------|
+| `size(16)` | Scale horizontal values (padding, width, font size, icon size) |
+| `sizeHeight(12)` | Scale vertical values (height, vertical padding) |
+| `scale()` | Current width scale factor |
+
+### Why `AppScaleInit`?
+
+On wide screens (especially **Flutter Web**), raw `ScreenUtil` scale can grow very large (`screenWidth / designWidth`). For example, at 1440px width with design 375px, scale ≈ **3.84×** — buttons, inputs, and text become huge.
+
+`AppScaleInit` applies configurable **scale caps** so UI stays readable on desktop/web while remaining responsive on phones.
+
+### Presets
+
+| Preset | Best for | Default `maxScale` | Web cap |
+|--------|----------|-------------------|---------|
+| `AppScaleConfig.adaptive()` | Most apps (recommended) | web: `1.0`, mobile: `1.5` | Auto on web |
+| `AppScaleConfig.web()` | Web / desktop / wide layout | `1.0` | Always capped on web |
+| `AppScaleConfig.mobile()` | Native mobile apps | `1.5` | No web-specific cap |
+| `AppScaleConfig(...)` | Full manual control | `1.25` (default) | Configurable |
+
+```dart
+// Web-first app
+AppScaleInit(
+  config: AppScaleConfig.web(
+    designSize: const Size(375, 812),
+  ),
+  builder: (context, child) => MaterialApp(...),
+)
+
+// Native mobile app (more scaling room on tablets)
+AppScaleInit(
+  config: AppScaleConfig.mobile(
+    designSize: const Size(375, 812),
+  ),
+  builder: (context, child) => MaterialApp(...),
+)
+```
+
+### `AppScaleConfig` properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `designSize` | `Size` | `375 × 812` | Design draft reference size |
+| `minTextAdapt` | `bool` | `true` | Passed to `ScreenUtilInit` |
+| `splitScreenMode` | `bool` | `true` | Passed to `ScreenUtilInit` |
+| `scaleFactor` | `double` | `1.0` | Global multiplier applied after ScreenUtil scale |
+| `minScale` | `double` | `0.8` – `0.85` | Minimum allowed scale when cap is active |
+| `maxScale` | `double` | `1.0` – `1.5` | Maximum allowed scale when cap is active |
+| `enableScaleCap` | `bool` | `true` | Enable min/max scale clamping |
+| `autoCapOnWeb` | `bool` | `true` (web preset) | Apply cap automatically on web |
+| `autoCapBreakpoint` | `double?` | `600` / `480` | Apply cap when screen width exceeds this value |
+
+### Custom configuration
+
+```dart
+AppScaleInit(
+  config: AppScaleConfig(
+    designSize: const Size(390, 844),
+    scaleFactor: 1.0,
+    minScale: 0.85,
+    maxScale: 1.1,           // Tight cap for dashboard-style web UI
+    enableScaleCap: true,
+    autoCapOnWeb: true,
+    autoCapBreakpoint: 768,  // Cap when width > 768px
+  ),
+  builder: (context, child) => MaterialApp(...),
+)
+```
+
+Disable capping entirely (legacy ScreenUtil-like behavior):
+
+```dart
+AppScaleInit(
+  config: const AppScaleConfig(
+    enableScaleCap: false,
+  ),
+  builder: (context, child) => MaterialApp(...),
+)
+```
+
+### Override scale in a subtree
+
+Use `AppScaleScope` when a specific screen needs different scale rules (e.g. a wide admin panel):
+
+```dart
+AppScaleScope(
+  config: AppScaleConfig.web(maxScale: 0.95),
+  child: AdminDashboardPage(),
+)
+```
+
+### Using scale in your own widgets
+
+```dart
+import 'package:ui_component_flutter/theme/theme.dart';
+
+Container(
+  padding: EdgeInsets.all(size(16)),
+  height: sizeHeight(48),
+  child: Text(
+    'Hello',
+    style: TextStyle(fontSize: size(14)),
+  ),
+)
+```
+
+Optional: pass `BuildContext` to respect a scoped `AppScaleScope`:
+
+```dart
+padding: EdgeInsets.all(size(16, context)),
+fontSize: context.appSize(14),
+height: context.appSizeHeight(48),
+final factor = context.appScale;
+final config = context.appScaleConfig;
+```
+
+### Testing
+
+Wrap your widget under test with `AppScaleInit`:
+
+```dart
+await tester.pumpWidget(
+  AppScaleInit(
+    config: const AppScaleConfig(designSize: Size(375, 812)),
+    child: const MyApp(),
+  ),
+);
+```
+
+If your `MyApp` already includes `AppScaleInit`, pump it directly:
+
+```dart
+await tester.pumpWidget(const MyApp());
+```
+
+### Migration from `ScreenUtilInit`
+
+| Before | After |
+|--------|-------|
+| `ScreenUtilInit(designSize: ..., builder: ...)` | `AppScaleInit(config: AppScaleConfig(...), builder: ...)` |
+| `import 'package:flutter_screenutil/flutter_screenutil.dart';` | `import 'package:ui_component_flutter/theme/theme.dart';` |
+| Manual scale via `ScreenUtil().scaleWidth` | `size()`, `sizeHeight()`, or `scale()` |
+
 ---
 
 ## 🎨 How to Customize the Theme
 
-This package uses Flutter's `ThemeExtension`, meaning you are not locked into our default "Sky Blue" primary color. You can override **any** base color, semantic color, or component color.
+This package uses Flutter's `ThemeExtension` and Material 3 `ThemeData`, meaning you are not locked into our default "Sky Blue" primary color. You can override **any** base color, semantic color, or component color.
+
+`AppTheme.lightTheme` / `AppTheme.darkTheme` already include:
+
+- `ColorScheme` with full on-colors (`onPrimary`, `onSecondary`, `onError`, `onSurface`, …)
+- `appBarTheme` — primary background, foreground, icon theme
+- `inputDecorationTheme` — filled inputs, dense layout, borderless style
+- `elevatedButtonTheme`, `outlinedButtonTheme`, `textButtonTheme`
+- `UIComponentTheme` extension via `context.uiTheme`
 
 ### Customizing Colors (Light Mode)
 
@@ -61,20 +254,25 @@ To customize the colors, you copy the default `lightTheme` and inject your own c
 MaterialApp(
   title: 'My Custom App',
   theme: AppTheme.lightTheme.copyWith(
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF6200EE),
+      foregroundColor: Colors.white,
+    ),
     extensions: <ThemeExtension<dynamic>>[
-      // Override properties here!
       AppTheme.defaultUIComponentThemeLight.copyWith(
-        primary: const Color(0xFF6200EE), // Custom Primary Color
-        secondary: Colors.amber,          // Custom Secondary Color
-        success: Colors.teal,             // Custom Semantic Color
-        cardColor: Colors.white,          // Custom Card Color
-        disabledColor: Colors.grey[300],  // Custom Component Color
+        primary: const Color(0xFF6200EE),
+        secondary: Colors.amber,
+        success: Colors.teal,
+        cardColor: Colors.white,
+        disabledColor: Colors.grey,
       ),
     ],
   ),
   home: const MyHomePage(),
 );
 ```
+
+> Wrap `MaterialApp` inside `AppScaleInit` at the root (see [Getting Started](#-getting-started)).
 
 ### Customizing Colors (Dark Mode)
 
@@ -458,7 +656,7 @@ AppImageViewerDialog.showOnline(
   imageUrl: 'https://domain.com/photo.jpg',
 );
 
-// 2. Tampilkan Gambar dari Storage Device (Memakai dart:io dengan Fallback otomatis di Web)
+// 2. Tampilkan Gambar dari Storage Device (Aman di Web via conditional import)
 AppImageViewerDialog.showOffline(
   context,
   imagePath: '/storage/emulated/0/DCIM/photo.jpg',
@@ -732,8 +930,15 @@ AppRadio<String>(
 )
 ```
 
-### AppTextField & AppPasswordField
-Komponen input teks yang interaktif dan *theme-aware*, lengkap dengan dukungan *error state*, *helper text*, serta *password strength indicator* untuk pengalaman keamanan pengguna yang lebih baik.
+### AppTextField, AppPasswordField & AppCurrencyField
+Komponen input teks modern yang *theme-aware*, dengan layout prefix/suffix yang konsisten, `fillColor` custom, dan dukungan API input Flutter terbaru.
+
+**Fitur `AppTextField`:**
+- Prefix icon (`HeroIcons`) dan suffix widget opsional — container prefix/suffix **benar-benar dihilangkan** saat null (bukan hanya icon yang disembunyikan), sehingga warna background seragam
+- `fillColor` — warna background field (default: `uiTheme.background`)
+- `onEditingComplete` — callback saat editing selesai, mengembalikan **nilai field saat ini**
+- `onSubmitted`, `onChanged`, `autofillHints`, `textInputAction`, `maxLength`, `readOnly`, `enabled`
+- Tap di luar field otomatis unfocus (`onTapOutside`)
 
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
@@ -745,31 +950,102 @@ AppTextField(
   hint: 'Masukkan username',
   prefixIcon: HeroIcons.user,
   onChanged: (val) => print(val),
+  onEditingComplete: (val) => print('Selesai: $val'),
 )
 
-// 2. Text Field Email (Error State & Formatter)
+// 2. Text Field dengan fillColor custom & suffix
+AppTextField(
+  title: 'Cari Produk',
+  hint: 'Ketik nama produk...',
+  prefixIcon: HeroIcons.magnifyingGlass,
+  fillColor: context.uiTheme.surface,
+  suffixWidget: IconButton(
+    icon: HeroIcon(HeroIcons.xMark),
+    onPressed: () => _controller.clear(),
+  ),
+  controller: _controller,
+  textInputAction: TextInputAction.search,
+  onSubmitted: (val) => search(val),
+)
+
+// 3. Text Field Email (Error State & Formatter)
 AppTextField(
   title: 'Email',
   hint: 'email@domain.com',
   errorText: 'Format email tidak valid!',
   keyboardType: TextInputType.emailAddress,
-  inputFormatters: [NoSpaceFormatter()], // Cegah spasi di input email
+  autofillHints: const [AutofillHints.email],
+  inputFormatters: [NoSpaceFormatter()],
 )
 
-// 3. Password Field dengan Indikator Kekuatan
+// 4. Password Field dengan Indikator Kekuatan
 AppPasswordField(
   title: 'Password Baru',
   hint: 'Minimal 8 karakter',
-  showStrengthIndicator: true, // Akan memunculkan bar indikator kekuatan password
+  showStrengthIndicator: true,
+  autofillHints: const [AutofillHints.newPassword],
+  fillColor: context.uiTheme.background,
   onChanged: (val) => print('Password diubah'),
 )
 
-// 4. Currency Field (Rupiah)
+// 5. Currency Field (Rupiah)
 AppCurrencyField(
   title: 'Nominal Transfer',
   hint: '0',
-  // Secara otomatis memakai format "Rp 1.000.000" dan merubah keyboard menjadi Number
+  prefixIcon: HeroIcons.banknotes,
+  // Otomatis format "Rp 1.000.000" dan keyboard Number
   onChanged: (val) => print('Nominal: $val'),
+)
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `prefixIcon` | `HeroIcons?` | Ikon kiri; seluruh segmen prefix dihilangkan jika null |
+| `suffixWidget` | `Widget?` | Widget kanan; seluruh segmen suffix dihilangkan jika null |
+| `fillColor` | `Color?` | Background field (seragam di prefix, input, suffix) |
+| `onEditingComplete` | `ValueChanged<String>?` | Dipanggil saat editing selesai, return nilai field |
+| `onSubmitted` | `ValueChanged<String>?` | Dipanggil saat user submit (mis. tombol Done keyboard) |
+| `autofillHints` | `Iterable<String>?` | Hint autofill sistem (email, password, dll.) |
+| `textInputAction` | `TextInputAction?` | Aksi tombol keyboard (next, done, search, …) |
+| `maxLength` | `int?` | Batas panjang karakter |
+| `helperText` / `errorText` | `String?` | Teks bantuan atau error di bawah field |
+
+### AppOtpForm
+Komponen form OTP multi-digit dengan navigasi fokus otomatis, `AutofillGroup`, dan skeleton loading.
+
+```dart
+import 'package:ui_component_flutter/ui_component_flutter.dart';
+
+AppOtpForm(
+  title: 'Verifikasi OTP',
+  description: 'Masukkan kode 6 digit yang dikirim ke email Anda',
+  codeLength: 6,
+  buttonText: 'Verifikasi',
+  footerText: 'Belum menerima kode?',
+  footerActionText: 'Kirim Ulang',
+  onCompleted: (code) => print('OTP lengkap: $code'),
+  onVerify: () => verifyOtp(),
+  onFooterActionTap: () => resendOtp(),
+  isLoading: false,
+  fieldBackgroundColor: context.uiTheme.background,
+)
+```
+
+### AppImageUpload
+Komponen unggah gambar dari kamera atau galeri dengan area drag-and-drop bergaya modern. Mendukung preview offline yang aman di web.
+
+```dart
+import 'package:ui_component_flutter/ui_component_flutter.dart';
+
+AppImageUpload(
+  title: 'Upload Foto KTP',
+  subtitle: 'Format JPG atau PNG, maks. 5MB',
+  localImagePath: _imagePath,
+  sourceCamera: true,
+  sourceGallery: true,
+  onImageSelected: (path) => setState(() => _imagePath = path),
+  onCancel: () => setState(() => _imagePath = null),
+  backgroundColor: context.uiTheme.surface,
 )
 ```
 
@@ -854,7 +1130,7 @@ CustomScrollView(
 ```
 
 ### AppMainAppbar
-Komponen `SliverPersistentHeader` untuk halaman utama dengan judul berefek parallax dan kotak pencarian (atau filter tab) yang menempel (pinned) di bagian bawah. Dirancang untuk tampil dinamis saat di-scroll.
+Komponen `SliverPersistentHeader` untuk halaman utama dengan judul berefek parallax dan kotak pencarian (atau filter tab) yang menempel (pinned) di bagian bawah. Search field memakai `AppTextField` dengan `fillColor: uiTheme.surface` agar kontras dengan background app bar.
 
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
@@ -902,14 +1178,19 @@ CustomScrollView(
 ```
 
 ### AppTimeline
-Komponen untuk menampilkan riwayat status atau progres (seperti pelacakan pesanan atau *stepper*). Mendukung tata letak vertikal maupun horizontal, memiliki *Skeletonizer* bawaan untuk status *loading*, dan 4 *state* titik status (`completed`, `active`, `inactive`, `disabled`).
+Komponen untuk menampilkan riwayat status atau progres (pelacakan pesanan, stepper, dll.). Mendukung layout vertikal/horizontal, skeleton loading, 4 status node, **ukuran lingkaran custom**, **warna active/inactive custom**, dan **animasi glow pulse** saat `isHighlighted = true`.
 
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
 
 AppTimeline(
-  direction: Axis.vertical, // Atau Axis.horizontal
-  isLoading: false,         // Jika true, komponen berubah jadi skeleton otomatis
+  direction: Axis.vertical,       // atau Axis.horizontal
+  isLoading: false,
+  indicatorSize: size(28),        // ukuran lingkaran default (semua node)
+  activeColor: context.uiTheme.primary,
+  inactiveColor: context.uiTheme.hintColor,
+  highlightGlowColor: context.uiTheme.success, // warna glow pulse
+  itemWidth: size(140),           // hanya untuk direction horizontal
   nodes: [
     const AppTimelineNode(
       title: 'Pesanan Dibuat',
@@ -918,20 +1199,39 @@ AppTimeline(
     ),
     AppTimelineNode(
       title: 'Pesanan Diproses',
+      subtitle: 'Sedang dikemas',
       status: TimelineStatus.active,
-      isHighlighted: true, // Memberi kotak sorotan pada konten
+      isHighlighted: true,         // glow pulse + kartu sorotan konten
+      indicatorSize: size(32),      // override ukuran per node (opsional)
       content: AppButton(
         text: 'Lacak Lokasi',
+        size: AppButtonSize.small,
         onPressed: () {},
       ),
     ),
     const AppTimelineNode(
-      title: 'Selesai',
+      title: 'Dalam Pengiriman',
       status: TimelineStatus.inactive,
+    ),
+    const AppTimelineNode(
+      title: 'Pesanan Diterima',
+      status: TimelineStatus.disabled,
     ),
   ],
 )
 ```
+
+| Property | Level | Description |
+|----------|-------|-------------|
+| `indicatorSize` | Timeline / Node | Ukuran lingkaran indikator |
+| `activeColor` | Timeline | Warna node `completed` & `active` + garis connector |
+| `inactiveColor` | Timeline | Warna node `inactive` + garis belum selesai |
+| `highlightGlowColor` | Timeline | Warna animasi glow pulse (default: `activeColor`) |
+| `isHighlighted` | Node | Aktifkan glow pada lingkaran + kartu highlight konten |
+| `status` | Node | `completed`, `active`, `inactive`, `disabled` |
+| `content` | Node | Widget custom di bawah title/subtitle |
+| `direction` | Timeline | `Axis.vertical` (default) atau `Axis.horizontal` |
+| `isLoading` | Timeline | Tampilkan skeleton placeholder |
 
 ### AppProgressBar
 Komponen batang progres dinamis dengan dukungan judul, sub-judul, ikon awalan (opsional), dan *Skeletonizer*. Lebar batang fleksibel dan bertransisi secara mulus ketika nilai `progress` (0.0 sampai 1.0) berubah.
@@ -948,3 +1248,49 @@ AppProgressBar(
   isLoading: false,
 )
 ```
+
+---
+
+## 📦 Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `flutter_screenutil` | Base responsive scaling (wrapped by `AppScaleInit`) |
+| `heroicons` | Icon set for form fields, navigation, pickers |
+| `skeletonizer` | Loading skeleton for timeline, OTP, progress bar, etc. |
+| `intl` | Currency and date formatting |
+| `cached_network_image` | Online image loading & caching |
+| `image_picker` | Camera/gallery image selection |
+| `file_picker` | Document/file upload |
+| `dotted_border` | Drag-and-drop upload area styling |
+
+---
+
+## 📋 Component Index
+
+| Component | Description |
+|-----------|-------------|
+| `AppButton` | Flexible button with variants, shapes, icons, loading |
+| `AppDialog` | Themed modal dialogs |
+| `AppImageViewerDialog` | Fullscreen image viewer (online/offline) |
+| `AppBottomNavigation` | Animated bottom navigation bar |
+| `AppSegmentedSwitch` | Segmented control / tab switcher |
+| `AppSwitchButton` | Toggle switch with title & description |
+| `AppDatePicker` | Calendar date picker |
+| `AppYearPicker` | 3D scroll wheel year picker |
+| `AppTimePicker` | Hour/minute/second time picker |
+| `AppMonthPicker` | Month scroll wheel picker |
+| `AppDropdown` | Single & multi select dropdown |
+| `AppSelectionTile` / `AppSelectionPill` / `AppRadio` | Selection controls |
+| `AppTextField` | Text input with prefix/suffix & modern APIs |
+| `AppPasswordField` | Password input with strength indicator |
+| `AppCurrencyField` | Currency-formatted text input |
+| `AppOtpForm` | Multi-digit OTP verification form |
+| `AppImageUpload` | Camera/gallery image upload |
+| `AppFileUpload` | Document/file upload |
+| `AppSnackbar` | Themed snackbar notifications |
+| `AppDashboardAppbar` | Dashboard sliver app bar |
+| `AppMainAppbar` | Main page app bar with search |
+| `AppDetailAppbar` | Detail page curved app bar |
+| `AppTimeline` | Vertical/horizontal status timeline |
+| `AppProgressBar` | Animated progress bar |

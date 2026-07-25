@@ -67,6 +67,10 @@ class _AppTimelineDemoPageState extends State<AppTimelineDemoPage> {
             AppTimeline(
               direction: _direction,
               isLoading: _isLoading,
+              indicatorSize: size(28),
+              activeColor: context.uiTheme.primary,
+              inactiveColor: context.uiTheme.hintColor,
+              highlightGlowColor: context.uiTheme.success,
               nodes: [
                 const AppTimelineNode(
                   title: 'Pesanan Dibuat',

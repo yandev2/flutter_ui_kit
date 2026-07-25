@@ -13,6 +13,7 @@ class AppTimelineNode {
 
   final double? titleSize;
   final double? subtitleSize;
+  final double? indicatorSize;
 
   const AppTimelineNode({
     required this.title,
@@ -22,6 +23,7 @@ class AppTimelineNode {
     this.content,
     this.titleSize,
     this.subtitleSize,
+    this.indicatorSize,
   });
 }
 
@@ -29,7 +31,10 @@ class AppTimeline extends StatelessWidget {
   final List<AppTimelineNode> nodes;
   final Axis direction;
   final Color? activeColor;
-  final double? itemWidth; // Digunakan jika direction == Axis.horizontal
+  final Color? inactiveColor;
+  final Color? highlightGlowColor;
+  final double? indicatorSize;
+  final double? itemWidth;
   final bool isLoading;
 
   const AppTimeline({
@@ -37,9 +42,33 @@ class AppTimeline extends StatelessWidget {
     required this.nodes,
     this.direction = Axis.vertical,
     this.activeColor,
+    this.inactiveColor,
+    this.highlightGlowColor,
+    this.indicatorSize,
     this.itemWidth,
     this.isLoading = false,
   });
+
+  double _resolveIndicatorSize(AppTimelineNode node) {
+    return node.indicatorSize ?? indicatorSize ?? size(24);
+  }
+
+  Color _resolveInactiveColor(BuildContext context) {
+    return inactiveColor ?? context.uiTheme.hintColor.withValues(alpha: 0.5);
+  }
+
+  Color _resolveGlowColor(Color active) {
+    return highlightGlowColor ?? active;
+  }
+
+  double _indicatorTopPadding() {
+    return size(12);
+  }
+
+  double _columnWidth(double indicatorSize, {required bool isHighlighted}) {
+    final baseWidth = indicatorSize + size(16);
+    return isHighlighted ? baseWidth + size(16) : baseWidth;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,31 +119,36 @@ class AppTimeline extends StatelessWidget {
     Color color,
     bool isLoading,
   ) {
-    final uiTheme = context.uiTheme;
     final isFirst = index == 0;
     final isLast = index == nodes.length - 1;
+    final nodeIndicatorSize = _resolveIndicatorSize(node);
+    final indicatorTop = _indicatorTopPadding();
+    final lineCenter = indicatorTop + (nodeIndicatorSize / 2);
+    final inactive = _resolveInactiveColor(context);
 
     final lineColor =
         node.status == TimelineStatus.completed ||
             node.status == TimelineStatus.active
         ? color
-        : uiTheme.hintColor.withValues(alpha: 0.3);
+        : inactive.withValues(alpha: 0.3);
 
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Line & Indicator Column
           SizedBox(
-            width: size(40),
+            width: _columnWidth(
+              nodeIndicatorSize,
+              isHighlighted: node.isHighlighted,
+            ),
             child: Stack(
+              clipBehavior: Clip.none,
               alignment: Alignment.topCenter,
               children: [
-                // The Line
                 Positioned(
-                  top: isFirst ? size(24) : 0,
+                  top: isFirst ? lineCenter : 0,
                   bottom: isLast ? null : 0,
-                  height: isLast ? size(24) : null,
+                  height: isLast ? lineCenter : null,
                   width: size(2),
                   child: Skeleton.replace(
                     replace: isLoading,
@@ -122,19 +156,23 @@ class AppTimeline extends StatelessWidget {
                     child: Container(color: lineColor),
                   ),
                 ),
-                // The Indicator
                 Positioned(
-                  top: size(12),
+                  top: indicatorTop,
                   child: Skeleton.replace(
                     replace: isLoading,
-                    replacement: Bone.circle(size: size(24)),
-                    child: _buildIndicator(context, node, color),
+                    replacement: Bone.circle(size: nodeIndicatorSize),
+                    child: _buildIndicator(
+                      context,
+                      node,
+                      color,
+                      inactive,
+                      nodeIndicatorSize,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          // Content Column
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(bottom: isLast ? 0 : size(24)),
@@ -153,17 +191,24 @@ class AppTimeline extends StatelessWidget {
     Color color,
     bool isLoading,
   ) {
-    final uiTheme = context.uiTheme;
     final isFirst = index == 0;
     final isLast = index == nodes.length - 1;
+    final nodeIndicatorSize = _resolveIndicatorSize(node);
+    final indicatorLeft = _indicatorTopPadding();
+    final lineCenter = indicatorLeft + (nodeIndicatorSize / 2);
+    final inactive = _resolveInactiveColor(context);
 
     final lineColor =
         node.status == TimelineStatus.completed ||
             node.status == TimelineStatus.active
         ? color
-        : uiTheme.hintColor.withValues(alpha: 0.3);
+        : inactive.withValues(alpha: 0.3);
 
     final width = itemWidth ?? size(140);
+    final rowHeight = _columnWidth(
+      nodeIndicatorSize,
+      isHighlighted: node.isHighlighted,
+    );
 
     return SizedBox(
       width: width,
@@ -171,18 +216,17 @@ class AppTimeline extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Line & Indicator
           SizedBox(
-            height: size(40),
+            height: rowHeight,
             width: double.infinity,
             child: Stack(
+              clipBehavior: Clip.none,
               alignment: Alignment.centerLeft,
               children: [
-                // The Line
                 Positioned(
-                  left: isFirst ? size(24) : 0,
+                  left: isFirst ? lineCenter : 0,
                   right: isLast ? null : 0,
-                  width: isLast ? size(24) : null,
+                  width: isLast ? lineCenter : null,
                   height: size(2),
                   child: Skeleton.replace(
                     replace: isLoading,
@@ -190,19 +234,23 @@ class AppTimeline extends StatelessWidget {
                     child: Container(color: lineColor),
                   ),
                 ),
-                // The Indicator
                 Positioned(
-                  left: size(12),
+                  left: indicatorLeft,
                   child: Skeleton.replace(
                     replace: isLoading,
-                    replacement: Bone.circle(size: size(24)),
-                    child: _buildIndicator(context, node, color),
+                    replacement: Bone.circle(size: nodeIndicatorSize),
+                    child: _buildIndicator(
+                      context,
+                      node,
+                      color,
+                      inactive,
+                      nodeIndicatorSize,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          // Content
           Padding(
             padding: EdgeInsets.only(right: size(16)),
             child: _buildNodeContent(context, node, color, isLoading),
@@ -215,19 +263,26 @@ class AppTimeline extends StatelessWidget {
   Widget _buildIndicator(
     BuildContext context,
     AppTimelineNode node,
-    Color color,
+    Color active,
+    Color inactive,
+    double indicatorSize,
   ) {
     final uiTheme = context.uiTheme;
+    final innerSmall = indicatorSize / 3;
+    final innerActive = indicatorSize * (10 / 24);
+    final borderWidth = (indicatorSize * (2 / 24)).clamp(1.0, 4.0);
+
+    Widget indicator;
     switch (node.status) {
       case TimelineStatus.completed:
-        return Container(
-          width: size(24),
-          height: size(24),
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        indicator = Container(
+          width: indicatorSize,
+          height: indicatorSize,
+          decoration: BoxDecoration(color: active, shape: BoxShape.circle),
           child: Center(
             child: Container(
-              width: size(8),
-              height: size(8),
+              width: innerSmall,
+              height: innerSmall,
               decoration: BoxDecoration(
                 color: uiTheme.surface,
                 shape: BoxShape.circle,
@@ -236,41 +291,40 @@ class AppTimeline extends StatelessWidget {
           ),
         );
       case TimelineStatus.active:
-        return Container(
-          width: size(24),
-          height: size(24),
+        indicator = Container(
+          width: indicatorSize,
+          height: indicatorSize,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
+            color: active.withValues(alpha: 0.2),
             shape: BoxShape.circle,
-            border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
+            border: Border.all(color: active.withValues(alpha: 0.5), width: 1),
           ),
           child: Center(
             child: Container(
-              width: size(10),
-              height: size(10),
+              width: innerActive,
+              height: innerActive,
               decoration: BoxDecoration(
-                color: uiTheme.success,
+                color: active,
                 shape: BoxShape.circle,
               ),
             ),
           ),
         );
       case TimelineStatus.inactive:
-        final inactiveColor = uiTheme.hintColor.withValues(alpha: 0.5);
-        return Container(
-          width: size(24),
-          height: size(24),
+        indicator = Container(
+          width: indicatorSize,
+          height: indicatorSize,
           decoration: BoxDecoration(
             color: Colors.transparent,
             shape: BoxShape.circle,
-            border: Border.all(color: inactiveColor, width: size(2)),
+            border: Border.all(color: inactive, width: borderWidth),
           ),
           child: Center(
             child: Container(
-              width: size(8),
-              height: size(8),
+              width: innerSmall,
+              height: innerSmall,
               decoration: BoxDecoration(
-                color: inactiveColor,
+                color: inactive,
                 shape: BoxShape.circle,
               ),
             ),
@@ -278,17 +332,17 @@ class AppTimeline extends StatelessWidget {
         );
       case TimelineStatus.disabled:
         final disabledColor = uiTheme.disabledColor;
-        return Container(
-          width: size(24),
-          height: size(24),
+        indicator = Container(
+          width: indicatorSize,
+          height: indicatorSize,
           decoration: BoxDecoration(
             color: disabledColor,
             shape: BoxShape.circle,
           ),
           child: Center(
             child: Container(
-              width: size(8),
-              height: size(8),
+              width: innerSmall,
+              height: innerSmall,
               decoration: BoxDecoration(
                 color: disabledColor,
                 shape: BoxShape.circle,
@@ -297,6 +351,16 @@ class AppTimeline extends StatelessWidget {
           ),
         );
     }
+
+    if (node.isHighlighted) {
+      return _TimelineGlowIndicator(
+        indicatorSize: indicatorSize,
+        glowColor: _resolveGlowColor(active),
+        child: indicator,
+      );
+    }
+
+    return indicator;
   }
 
   Widget _buildNodeContent(
@@ -311,7 +375,7 @@ class AppTimeline extends StatelessWidget {
     final titleColor = node.status == TimelineStatus.disabled
         ? uiTheme.disabledColor
         : node.isHighlighted
-        ? uiTheme.success
+        ? color
         : theme.textTheme.bodyLarge?.color;
 
     final subtitleColor = node.status == TimelineStatus.disabled
@@ -363,7 +427,7 @@ class AppTimeline extends StatelessWidget {
           decoration: BoxDecoration(
             color: uiTheme.cardColor.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(size(12)),
-            border: Border.all(color: uiTheme.cardColor),
+            border: Border.all(color: color.withValues(alpha: 0.35)),
           ),
           child: content,
         ),
@@ -376,5 +440,83 @@ class AppTimeline extends StatelessWidget {
     }
 
     return content;
+  }
+}
+
+class _TimelineGlowIndicator extends StatefulWidget {
+  final double indicatorSize;
+  final Color glowColor;
+  final Widget child;
+
+  const _TimelineGlowIndicator({
+    required this.indicatorSize,
+    required this.glowColor,
+    required this.child,
+  });
+
+  @override
+  State<_TimelineGlowIndicator> createState() => _TimelineGlowIndicatorState();
+}
+
+class _TimelineGlowIndicatorState extends State<_TimelineGlowIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _pulse = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (context, child) {
+        final t = _pulse.value;
+        return SizedBox(
+          width: widget.indicatorSize,
+          height: widget.indicatorSize,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: widget.indicatorSize,
+                height: widget.indicatorSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: widget.glowColor.withValues(alpha: 0.15 + (0.35 * t)),
+                      blurRadius: size(6) + (size(10) * t),
+                      spreadRadius: size(1) + (size(5) * t),
+                    ),
+                    BoxShadow(
+                      color: widget.glowColor.withValues(alpha: 0.08 + (0.2 * t)),
+                      blurRadius: size(12) + (size(16) * t),
+                      spreadRadius: size(2) + (size(8) * t),
+                    ),
+                  ],
+                ),
+              ),
+              child!,
+            ],
+          ),
+        );
+      },
+      child: widget.child,
+    );
   }
 }

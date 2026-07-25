@@ -20,6 +20,7 @@ class AppTextField extends StatefulWidget {
   final Iterable<String>? autofillHints;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onEditingComplete;
   final bool readOnly;
   final bool enabled;
 
@@ -49,6 +50,7 @@ class AppTextField extends StatefulWidget {
     this.autofillHints,
     this.textInputAction,
     this.onSubmitted,
+    this.onEditingComplete,
     this.readOnly = false,
     this.enabled = true,
     this.titleSize,
@@ -66,10 +68,12 @@ class AppTextField extends StatefulWidget {
 class _AppTextFieldState extends State<AppTextField> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
+  String _currentText = '';
 
   @override
   void initState() {
     super.initState();
+    _currentText = widget.controller?.text ?? '';
     _focusNode.addListener(() {
       setState(() {
         _isFocused = _focusNode.hasFocus;
@@ -81,6 +85,12 @@ class _AppTextFieldState extends State<AppTextField> {
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+  String get _fieldValue => widget.controller?.text ?? _currentText;
+
+  void _handleEditingComplete() {
+    widget.onEditingComplete?.call(_fieldValue);
   }
 
   @override
@@ -97,6 +107,11 @@ class _AppTextFieldState extends State<AppTextField> {
       borderColor = uiTheme.borderColor;
     }
 
+    final fieldFill = widget.fillColor ?? uiTheme.background;
+    final verticalPadding = sizeHeight(12);
+    final hasPrefix = widget.prefixIcon != null;
+    final hasSuffix = widget.suffixWidget != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,67 +127,93 @@ class _AppTextFieldState extends State<AppTextField> {
           SizedBox(height: sizeHeight(8)),
         ],
         Container(
-          padding: EdgeInsets.symmetric(horizontal: size(16)),
           decoration: BoxDecoration(
-            color: widget.fillColor ?? uiTheme.background,
+            color: fieldFill,
             borderRadius: BorderRadius.circular(size(8)),
             border: Border.all(color: borderColor, width: size(1)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (widget.prefixIcon != null) ...[
-                HeroIcon(
-                  widget.prefixIcon!,
-                  color: hasError
-                      ? uiTheme.error
-                      : _isFocused
-                      ? uiTheme.primary
-                      : uiTheme.hintColor,
-                  size: size(20),
-                ),
-                SizedBox(width: size(12)),
-              ],
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  focusNode: _focusNode,
-                  obscureText: widget.obscureText,
-                  readOnly: widget.readOnly,
-                  enabled: widget.enabled,
-                  autocorrect: !widget.obscureText,
-                  enableSuggestions: !widget.obscureText,
-                  autofillHints: widget.autofillHints,
-                  textInputAction: widget.textInputAction,
-                  onSubmitted: widget.onSubmitted,
-                  onTapOutside: (_) => _focusNode.unfocus(),
-                  onChanged: widget.onChanged,
-                  inputFormatters: widget.inputFormatters,
-                  keyboardType: widget.keyboardType,
-                  maxLines: widget.maxLines,
-                  maxLength: widget.maxLength,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: uiTheme.onBackground,
-                    fontSize: widget.textSize ?? size(14),
+              if (hasPrefix)
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: size(16),
+                    top: verticalPadding,
+                    bottom: verticalPadding,
+                    right: size(12),
                   ),
-                  decoration: InputDecoration(
-                    hintText: widget.hint,
-                    hintStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: uiTheme.hintColor,
-                      fontSize: widget.hintSize ?? size(14),
+                  child: HeroIcon(
+                    widget.prefixIcon!,
+                    color: hasError
+                        ? uiTheme.error
+                        : _isFocused
+                        ? uiTheme.primary
+                        : uiTheme.hintColor,
+                    size: size(20),
+                  ),
+                ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: hasPrefix ? 0 : size(16),
+                    right: hasSuffix ? 0 : size(16),
+                    top: verticalPadding,
+                    bottom: verticalPadding,
+                  ),
+                  child: TextField(
+                    controller: widget.controller,
+                    focusNode: _focusNode,
+                    obscureText: widget.obscureText,
+                    readOnly: widget.readOnly,
+                    enabled: widget.enabled,
+                    autocorrect: !widget.obscureText,
+                    enableSuggestions: !widget.obscureText,
+                    autofillHints: widget.autofillHints,
+                    textInputAction: widget.textInputAction,
+                    onSubmitted: widget.onSubmitted,
+                    onEditingComplete: _handleEditingComplete,
+                    onTapOutside: (_) => _focusNode.unfocus(),
+                    onChanged: (value) {
+                      _currentText = value;
+                      widget.onChanged?.call(value);
+                    },
+                    inputFormatters: widget.inputFormatters,
+                    keyboardType: widget.keyboardType,
+                    maxLines: widget.maxLines,
+                    maxLength: widget.maxLength,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: uiTheme.onBackground,
+                      fontSize: widget.textSize ?? size(14),
                     ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: sizeHeight(12),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: fieldFill,
+                      hintText: widget.hint,
+                      hintStyle:
+                          Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: uiTheme.hintColor,
+                        fontSize: widget.hintSize ?? size(14),
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
                 ),
               ),
-              if (widget.suffixWidget != null) ...[
-                SizedBox(width: size(12)),
-                widget.suffixWidget!,
-              ],
+              if (hasSuffix)
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: size(12),
+                    right: size(16),
+                    top: verticalPadding,
+                    bottom: verticalPadding,
+                  ),
+                  child: widget.suffixWidget!,
+                ),
             ],
           ),
         ),

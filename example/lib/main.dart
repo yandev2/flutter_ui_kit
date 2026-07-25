@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ui_component_flutter/theme/theme.dart';
 import 'typography_demo_page.dart';
 import 'animation_demo_page.dart';
@@ -40,11 +39,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Membungkus MaterialApp dengan ScreenUtilInit
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
+    return AppScaleInit(
+      
+      config: AppScaleConfig(
+         minScale: 1.4,
+        designSize: const Size(375, 812),
+      ),
       builder: (context, child) {
         return MaterialApp(
           title: 'UI Component Example',
