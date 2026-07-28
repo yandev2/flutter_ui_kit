@@ -108,11 +108,13 @@ double _getOpacityFromVariant(AppGlassyVariant variant) {
     case AppGlassyVariant.frosted:
       return 1.0;
     case AppGlassyVariant.heavy:
-      return 1.5; // Menguatkan efek opacity di formula
+      return 1.0;
     case AppGlassyVariant.dew:
-      return 0.3; // Sangat tipis warnanya
+      return 0.3;
   }
 }
+
+double _clampAlpha(double alpha) => alpha.clamp(0.0, 1.0);
 
 List<Color> _resolveGradient({
   required bool isDark,
@@ -122,27 +124,26 @@ List<Color> _resolveGradient({
 }) {
   if (customGradient != null && customGradient.isNotEmpty) {
     return customGradient
-        .map((c) => c.withValues(alpha: c.a * opacity))
+        .map((c) => c.withValues(alpha: _clampAlpha(c.a * opacity)))
         .toList();
   }
 
-  // Jika Dew, sedikit beri hint warna biru keputihan
   if (variant == AppGlassyVariant.dew) {
     return [
-      const Color(0xFFE0F7FA).withValues(alpha: 0.15 * opacity),
-      const Color(0xFFB2EBF2).withValues(alpha: 0.05 * opacity),
+      const Color(0xFFE0F7FA).withValues(alpha: _clampAlpha(0.15 * opacity)),
+      const Color(0xFFB2EBF2).withValues(alpha: _clampAlpha(0.05 * opacity)),
     ];
   }
 
   if (isDark) {
     return [
-      Colors.white.withValues(alpha: 0.10 * opacity),
-      Colors.white.withValues(alpha: 0.03 * opacity),
+      Colors.white.withValues(alpha: _clampAlpha(0.10 * opacity)),
+      Colors.white.withValues(alpha: _clampAlpha(0.03 * opacity)),
     ];
   }
 
   return [
-    Colors.white.withValues(alpha: 0.25 * opacity),
-    Colors.black.withValues(alpha: 0.05 * opacity), // Sedikit gelap di bawah
+    Colors.white.withValues(alpha: _clampAlpha(0.25 * opacity)),
+    Colors.black.withValues(alpha: _clampAlpha(0.05 * opacity)),
   ];
 }

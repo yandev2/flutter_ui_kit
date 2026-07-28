@@ -180,7 +180,13 @@ class AppScale {
   static double _applyCap(double rawScale, AppScaleConfig config) {
     var scale = rawScale * config.scaleFactor;
     if (_shouldCap(config)) {
-      scale = scale.clamp(config.minScale, config.maxScale);
+      final lower = config.minScale;
+      final upper = config.maxScale;
+      // clamp() throws ArgumentError when lower > upper (e.g. minScale: 1.4, maxScale: 1.25).
+      scale = scale.clamp(
+        lower <= upper ? lower : upper,
+        lower <= upper ? upper : lower,
+      );
     }
     return scale;
   }
@@ -238,6 +244,7 @@ class AppScaleInit extends StatelessWidget {
       designSize: config.designSize,
       minTextAdapt: config.minTextAdapt,
       splitScreenMode: config.splitScreenMode,
+      ensureScreenSize: kIsWeb,
       builder: (context, screenUtilChild) {
         final resolvedChild = builder?.call(context, screenUtilChild) ??
             child ??

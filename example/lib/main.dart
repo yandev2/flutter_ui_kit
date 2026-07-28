@@ -46,11 +46,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: 'UI Component Example',
-          // Penggunaan default:
-          // theme: AppTheme.lightTheme,
-
-          // Contoh penggunaan jika User ingin meng-custom warnanya:
-          theme: AppTheme.lightTheme.copyWith(
+          theme: AppTheme.lightThemeFor(context).copyWith(
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.indigo,
               foregroundColor: Colors.white,
@@ -58,13 +54,19 @@ class MyApp extends StatelessWidget {
             ),
             extensions: <ThemeExtension<dynamic>>[
               AppTheme.defaultUIComponentThemeLight.copyWith(
-                primary: Colors.indigo, // User mengubah primary
-                success: Colors.teal, // User mengubah success
+                primary: Colors.indigo,
+                success: Colors.teal,
               ),
             ],
           ),
-          darkTheme: AppTheme.darkTheme,
+          darkTheme: AppTheme.darkThemeFor(context),
           themeMode: ThemeMode.light,
+          builder: (context, child) {
+            return MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1.0,
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
           home: const MyHomePage(),
         );
       },

@@ -20,7 +20,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: 'any' # Akan mengambil versi Flutter terbaru (yang mendukung Dart 3.10.4)
+          flutter-version: '3.44.6'
 
       - name: Install dependencies
         working-directory: ./example
@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Web
         working-directory: ./example
-        run: flutter build web --base-href "/flutter_ui_kit/" --release
+        run: flutter build web --base-href "/flutter_ui_kit/" --release --no-wasm-dry-run
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

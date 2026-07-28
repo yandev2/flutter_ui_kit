@@ -32,8 +32,8 @@ class AppTheme {
     disabledColor: AppColors.disabledLight,
     hintColor: AppColors.hintLight,
     shadowColor: AppColors.shadowLight,
-    defaultPadding: AppSpacing.md,
-    defaultRadius: AppRadius.md,
+    defaultPadding: 16,
+    defaultRadius: 8,
   );
 
   // Dark Theme Instance
@@ -57,8 +57,8 @@ class AppTheme {
     disabledColor: AppColors.disabledDark,
     hintColor: AppColors.hintDark,
     shadowColor: AppColors.shadowDark,
-    defaultPadding: AppSpacing.md,
-    defaultRadius: AppRadius.md,
+    defaultPadding: 16,
+    defaultRadius: 8,
   );
 
   static const ColorScheme _lightColorScheme = ColorScheme.light(
@@ -84,11 +84,15 @@ class AppTheme {
   );
 
   // Main Light Theme
-  static ThemeData get lightTheme {
+  static ThemeData lightThemeFor(BuildContext context) {
+    return _buildLightTheme(AppTypography.textThemeFor(context));
+  }
+
+  static ThemeData _buildLightTheme(TextTheme textTheme) {
     return ThemeData(
       colorScheme: _lightColorScheme,
       scaffoldBackgroundColor: AppColors.backgroundLight,
-      textTheme: AppTypography.textTheme.apply(
+      textTheme: textTheme.apply(
         bodyColor: AppColors.onBackgroundLight,
         displayColor: AppColors.onBackgroundLight,
       ),
@@ -128,12 +132,19 @@ class AppTheme {
     );
   }
 
+  // Main Light Theme (tanpa context — ukuran desain dasar)
+  static ThemeData get lightTheme => _buildLightTheme(AppTypography.textTheme);
+
   // Main Dark Theme
-  static ThemeData get darkTheme {
+  static ThemeData darkThemeFor(BuildContext context) {
+    return _buildDarkTheme(AppTypography.textThemeFor(context));
+  }
+
+  static ThemeData _buildDarkTheme(TextTheme textTheme) {
     return ThemeData(
       colorScheme: _darkColorScheme,
       scaffoldBackgroundColor: AppColors.backgroundDark,
-      textTheme: AppTypography.textTheme.apply(
+      textTheme: textTheme.apply(
         bodyColor: AppColors.onBackgroundDark,
         displayColor: AppColors.onBackgroundDark,
       ),
@@ -172,6 +183,8 @@ class AppTheme {
       extensions: <ThemeExtension<dynamic>>[defaultUIComponentThemeDark],
     );
   }
+
+  static ThemeData get darkTheme => _buildDarkTheme(AppTypography.textTheme);
 }
 
 // Extension on BuildContext for easier access
