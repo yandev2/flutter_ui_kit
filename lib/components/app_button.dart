@@ -30,6 +30,7 @@ class AppButton extends StatelessWidget {
 
   final double? iconSize;
   final double? textSize;
+  final TextStyle? textStyle;
 
   const AppButton({
     super.key,
@@ -48,6 +49,7 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.iconSize,
     this.textSize,
+    this.textStyle,
   }) : assert(
          text != null || icon != null || customIcon != null,
          'Tombol harus memiliki teks atau ikon',
@@ -67,6 +69,7 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.iconSize,
     this.textSize,
+    this.textStyle,
   }) : text = null,
        customIcon = null,
        isMax = false,
@@ -88,6 +91,7 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.iconSize,
     this.textSize,
+    this.textStyle,
   }) : variant = AppButtonVariant.text;
 
   // Resolving Dimensions
@@ -185,6 +189,21 @@ class AppButton extends StatelessWidget {
     }
   }
 
+  TextStyle _resolvedTextStyle(BuildContext context) {
+    final defaults = TextStyle(
+      color: _textColor(context),
+      fontSize: _fontSize,
+      fontWeight: FontWeight.bold,
+    );
+
+    if (textStyle == null) return defaults;
+
+    return defaults.merge(textStyle).copyWith(
+      color: textColor ?? textStyle!.color ?? defaults.color,
+      fontSize: textSize ?? textStyle!.fontSize ?? defaults.fontSize,
+    );
+  }
+
   // Build Layout (Row for Left/Right, Column for Top)
   Widget _buildContent(BuildContext context) {
     if (isLoading) {
@@ -211,11 +230,7 @@ class AppButton extends StatelessWidget {
         text!,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: _textColor(context),
-          fontSize: _fontSize,
-          fontWeight: FontWeight.bold,
-        ),
+        style: _resolvedTextStyle(context),
       );
     }
 
@@ -224,11 +239,7 @@ class AppButton extends StatelessWidget {
       text!,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        color: _textColor(context),
-        fontSize: _fontSize,
-        fontWeight: FontWeight.bold,
-      ),
+      style: _resolvedTextStyle(context),
     );
 
     if (iconPosition == IconPosition.top) {

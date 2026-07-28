@@ -12,6 +12,19 @@ class AppMainAppbar extends StatefulWidget {
   final double? borderRadius;
   final String? searchHint;
   final Color? backgroundColor;
+  final TextStyle? titleStyle;
+
+  /// Tinggi area appbar (collapsed/search). Nilai desain, diskalakan via `sizeHeight()`.
+  final double? appBarHeight;
+
+  /// Padding bawah pada area title. Nilai desain, diskalakan via `sizeHeight()`.
+  final double? titleBottomPadding;
+
+  /// App bar tetap di atas saat scroll. Default `true`.
+  final bool pinned;
+
+  /// App bar muncul kembali saat scroll ke atas. Default `false`.
+  final bool floating;
 
   const AppMainAppbar({
     super.key,
@@ -24,6 +37,11 @@ class AppMainAppbar extends StatefulWidget {
     this.borderRadius,
     this.searchHint,
     this.backgroundColor,
+    this.titleStyle,
+    this.appBarHeight,
+    this.titleBottomPadding,
+    this.pinned = true,
+    this.floating = false,
   });
 
   @override
@@ -61,7 +79,8 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
     final topPadding = MediaQuery.paddingOf(context).top;
 
     return SliverPersistentHeader(
-      pinned: true,
+      pinned: widget.pinned,
+      floating: widget.floating,
       delegate: _AppbarDelegate(
         title: widget.title,
         onSearch: widget.onSearch,
@@ -78,6 +97,9 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
         borderRadius: widget.borderRadius ?? size(20),
         searchHint: widget.searchHint ?? 'Cari ...',
         backgroundColor: widget.backgroundColor,
+        titleStyle: widget.titleStyle,
+        appBarHeight: widget.appBarHeight,
+        titleBottomPadding: widget.titleBottomPadding,
       ),
     );
   }
@@ -96,6 +118,9 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
   final double borderRadius;
   final String searchHint;
   final Color? backgroundColor;
+  final TextStyle? titleStyle;
+  final double? appBarHeight;
+  final double? titleBottomPadding;
 
   _AppbarDelegate({
     required this.title,
@@ -110,12 +135,33 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     required this.borderRadius,
     required this.searchHint,
     this.backgroundColor,
+    this.titleStyle,
+    this.appBarHeight,
+    this.titleBottomPadding,
   });
 
   // Base constants
   double get _titleHeight => sizeHeight(45);
-  double get _searchHeight => sizeHeight(70);
-  double get _collapsedHeight => sizeHeight(70);
+  double get _searchHeight => sizeHeight(appBarHeight ?? 70);
+  double get _collapsedHeight => sizeHeight(appBarHeight ?? 70);
+
+  TextStyle _resolvedTitleStyle(ThemeData theme, UIComponentTheme uiTheme) {
+    final defaults = theme.textTheme.titleMedium?.copyWith(
+      color: uiTheme.onPrimary,
+      fontWeight: FontWeight.bold,
+    );
+
+    if (titleStyle == null) {
+      return defaults ?? const TextStyle();
+    }
+
+    return (defaults ?? const TextStyle()).merge(titleStyle).copyWith(
+      color: titleStyle?.color ?? uiTheme.onPrimary,
+    );
+  }
+
+  double get _resolvedTitleBottomPadding =>
+      titleBottomPadding != null ? sizeHeight(titleBottomPadding!) : 0;
 
   @override
   double get maxExtent {
@@ -135,7 +181,10 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
         tabFilter != oldDelegate.tabFilter ||
         actions != oldDelegate.actions ||
         topPadding != oldDelegate.topPadding ||
-        backgroundColor != oldDelegate.backgroundColor;
+        backgroundColor != oldDelegate.backgroundColor ||
+        titleStyle != oldDelegate.titleStyle ||
+        appBarHeight != oldDelegate.appBarHeight ||
+        titleBottomPadding != oldDelegate.titleBottomPadding;
   }
 
   @override
@@ -166,59 +215,59 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
             left: 0,
             right: 0,
             height: _titleHeight,
-            child: Opacity(
-              opacity: titleOpacity,
-              child: Stack(
-                children: [
-                  if (onBack != null)
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: HeroIcon(
-                          HeroIcons.arrowLeft,
-                          size: size(20),
-                          color: uiTheme.onPrimary,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: _resolvedTitleBottomPadding),
+              child: Opacity(
+                opacity: titleOpacity,
+                child: Stack(
+                  children: [
+                    if (onBack != null)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          icon: HeroIcon(
+                            HeroIcons.arrowLeft,
+                            size: size(20),
+                            color: uiTheme.onPrimary,
+                          ),
+                          onPressed: onBack,
                         ),
-                        onPressed: onBack,
+                      ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        title,
+                        style: _resolvedTitleStyle(theme, uiTheme),
                       ),
                     ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: uiTheme.onPrimary,
-                        fontWeight: FontWeight.bold,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Builder(
+                        builder: (context) {
+                          if (hasSearchText) {
+                            return IconButton(
+                              icon: HeroIcon(
+                                HeroIcons.xMark,
+                                color: uiTheme.onPrimary,
+                                style: HeroIconStyle.solid,
+                                size: size(24),
+                              ),
+                              tooltip: 'Reset Filter',
+                              onPressed: onReset,
+                            );
+                          }
+                          if (actions != null) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: actions!,
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Builder(
-                      builder: (context) {
-                        if (hasSearchText) {
-                          return IconButton(
-                            icon: HeroIcon(
-                              HeroIcons.xMark,
-                              color: uiTheme.onPrimary,
-                              style: HeroIconStyle.solid,
-                              size: size(24),
-                            ),
-                            tooltip: 'Reset Filter',
-                            onPressed: onReset,
-                          );
-                        }
-                        if (actions != null) {
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: actions!,
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

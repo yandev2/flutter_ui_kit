@@ -7,6 +7,13 @@ class AppProgressBar extends StatelessWidget {
   final double progress;
   final String? title;
   final String? subtitle;
+
+  /// Ukuran font title (nilai desain, diskalakan via `size()`).
+  final double? titleSize;
+
+  /// Ukuran font subtitle (nilai desain, diskalakan via `size()`).
+  final double? subtitleSize;
+
   final HeroIcons? icon;
   final Color? color;
   final Color? backgroundColor;
@@ -21,6 +28,8 @@ class AppProgressBar extends StatelessWidget {
     required this.progress,
     this.title,
     this.subtitle,
+    this.titleSize,
+    this.subtitleSize,
     this.icon,
     this.color,
     this.backgroundColor,
@@ -54,6 +63,8 @@ class AppProgressBar extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: uiTheme.onBackground,
                         fontWeight: FontWeight.bold,
+                        fontSize:
+                            titleSize != null ? size(titleSize!) : null,
                       ),
                 ),
               if (title != null && subtitle != null) SizedBox(width: size(8)),
@@ -62,6 +73,9 @@ class AppProgressBar extends StatelessWidget {
                   subtitle!,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: uiTheme.hintColor,
+                        fontSize: subtitleSize != null
+                            ? size(subtitleSize!)
+                            : null,
                       ),
                 ),
             ],

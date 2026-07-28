@@ -1,13 +1,58 @@
 import 'package:flutter/material.dart';
-import '../ui_component_flutter.dart';
+import '../theme/theme.dart';
 import '../theme/app_scale.dart' as scale;
+import 'app_image.dart';
 
 enum AppDialogVariant { success, error, info, warning }
+
+/// Menampilkan [AppDialog] via [showDialog].
+Future<void> showAppDialog(
+  BuildContext context, {
+  AppDialogVariant variant = AppDialogVariant.info,
+  required String title,
+  String? description,
+  double? titleSize,
+  String? textLeft,
+  String? textRight,
+  VoidCallback? onLeft,
+  VoidCallback? onRight,
+  Widget? content,
+  String? imageUrl,
+  double? imageWidth,
+  double? imageHeight,
+  BoxFit imageFit = BoxFit.contain,
+  bool barrierDismissible = false,
+}) {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: barrierDismissible,
+    builder: (BuildContext context) {
+      return AppDialog(
+        variant: variant,
+        title: title,
+        description: description,
+        titleSize: titleSize,
+        textLeft: textLeft,
+        textRight: textRight,
+        onLeft: onLeft,
+        onRight: onRight,
+        content: content,
+        imageUrl: imageUrl,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
+        imageFit: imageFit,
+      );
+    },
+  );
+}
 
 class AppDialog extends StatelessWidget {
   final AppDialogVariant variant;
   final String title;
-  final String description;
+  final String? description;
+
+  /// Ukuran font title (nilai desain, diskalakan via `size()`). Default `20`.
+  final double? titleSize;
   final String? textLeft;
   final String? textRight;
   final VoidCallback? onLeft;
@@ -22,7 +67,8 @@ class AppDialog extends StatelessWidget {
     super.key,
     this.variant = AppDialogVariant.info,
     required this.title,
-    required this.description,
+    this.description,
+    this.titleSize,
     this.textLeft,
     this.textRight,
     this.onLeft,
@@ -47,12 +93,13 @@ class AppDialog extends StatelessWidget {
     }
   }
 
-  /// Helper untuk menampilkan dialog secara statis
-  static void show(
+  /// Helper untuk menampilkan dialog secara statis.
+  static Future<void> show(
     BuildContext context, {
     AppDialogVariant variant = AppDialogVariant.info,
     required String title,
-    required String description,
+    String? description,
+    double? titleSize,
     String? textLeft,
     String? textRight,
     VoidCallback? onLeft,
@@ -64,25 +111,22 @@ class AppDialog extends StatelessWidget {
     BoxFit imageFit = BoxFit.contain,
     bool barrierDismissible = false,
   }) {
-    showDialog(
-      context: context,
+    return showAppDialog(
+      context,
+      variant: variant,
+      title: title,
+      description: description,
+      titleSize: titleSize,
+      textLeft: textLeft,
+      textRight: textRight,
+      onLeft: onLeft,
+      onRight: onRight,
+      content: content,
+      imageUrl: imageUrl,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
+      imageFit: imageFit,
       barrierDismissible: barrierDismissible,
-      builder: (BuildContext context) {
-        return AppDialog(
-          variant: variant,
-          title: title,
-          description: description,
-          textLeft: textLeft,
-          textRight: textRight,
-          onLeft: onLeft,
-          onRight: onRight,
-          content: content,
-          imageUrl: imageUrl,
-          imageWidth: imageWidth,
-          imageHeight: imageHeight,
-          imageFit: imageFit,
-        );
-      },
     );
   }
 
@@ -102,7 +146,7 @@ class AppDialog extends StatelessWidget {
       elevation: 0,
       insetPadding: EdgeInsets.symmetric(horizontal: scale.size(24)),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 400),
+        constraints: const BoxConstraints(maxWidth: 400),
         child: Padding(
           padding: EdgeInsets.all(scale.size(24)),
           child: Column(
@@ -125,20 +169,22 @@ class AppDialog extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: scale.size(20),
+                  fontSize: scale.size(titleSize ?? 20),
                   fontWeight: FontWeight.bold,
                   color: context.uiTheme.onSurface,
                 ),
               ),
-              SizedBox(height: scale.sizeHeight(12)),
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: scale.size(14),
-                  color: context.uiTheme.onSurface.withValues(alpha: 0.7),
-                  height: 1.5,
+              if (description != null) ...[
+                SizedBox(height: scale.sizeHeight(12)),
+                Text(
+                  description!,
+                  style: TextStyle(
+                    fontSize: scale.size(14),
+                    color: context.uiTheme.onSurface.withValues(alpha: 0.7),
+                    height: 1.5,
+                  ),
                 ),
-              ),
+              ],
               if (content != null) ...[
                 SizedBox(height: scale.sizeHeight(20)),
                 content!,
@@ -175,7 +221,8 @@ class AppDialog extends StatelessWidget {
                   if (textRight != null) ...[
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: onRight,
+                        onPressed:
+                            onRight ?? () => Navigator.of(context).pop(),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                             vertical: scale.sizeHeight(15),

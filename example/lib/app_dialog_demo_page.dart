@@ -104,6 +104,22 @@ class AppDialogDemoPage extends StatelessWidget {
             },
           ).paddingOnly(bottom: AppSpacing.xl),
 
+          AppButton(
+            text: 'Dialog Tanpa Deskripsi',
+            variant: AppButtonVariant.outline,
+            isMax: true,
+            onPressed: () {
+              showAppDialog(
+                context,
+                title: 'Konfirmasi Keluar',
+                titleSize: 22,
+                variant: AppDialogVariant.warning,
+                textLeft: 'Batal',
+                textRight: 'Keluar',
+              );
+            },
+          ).paddingOnly(bottom: AppSpacing.xl),
+
           Text(
             'Dialog dengan Custom Content',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

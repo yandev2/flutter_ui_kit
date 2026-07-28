@@ -187,6 +187,30 @@ class AppButtonDemoPage extends StatelessWidget {
               ),
             ],
           ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('8. Custom Text Style'),
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.md,
+            children: [
+              AppButton(
+                text: 'Letter Spacing',
+                textStyle: const TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w600,
+                ),
+                onPressed: () {},
+              ),
+              AppButton(
+                text: 'Italic Label',
+                variant: AppButtonVariant.outline,
+                textStyle: const TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ).paddingOnly(bottom: AppSpacing.xl),
         ],
       ),
     );

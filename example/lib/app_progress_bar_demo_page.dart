@@ -53,6 +53,8 @@ class _AppProgressBarDemoPageState extends State<AppProgressBarDemoPage> {
               progress: _progress,
               title: 'Mengunggah Dokumen',
               subtitle: '${(_progress * 100).toInt()}%',
+              titleSize: 18,
+              subtitleSize: 12,
               icon: HeroIcons.documentArrowUp,
               isLoading: _isLoading,
             ),

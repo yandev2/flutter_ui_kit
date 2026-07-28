@@ -12,17 +12,42 @@ class AppDashboardAppbarDemoPage extends StatefulWidget {
 
 class _AppDashboardAppbarDemoPageState extends State<AppDashboardAppbarDemoPage> {
   bool _isDark = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    // Karena komponen berupa SliverAppBar, kita harus meletakkannya di dalam CustomScrollView
     return Scaffold(
       backgroundColor: context.uiTheme.background,
+      appBar: AppBar(
+        title: Text(
+          'App Dashboard Appbar',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontSize: size(20),
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Toggle Skeleton',
+            icon: Icon(
+              _isLoading ? Icons.visibility_off : Icons.visibility,
+            ),
+            onPressed: () {
+              setState(() {
+                _isLoading = !_isLoading;
+              });
+            },
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           AppDashboardAppbar(
             title: 'Halo, Ryan!',
             subtitle: 'Selamat datang kembali di Dashboard',
+            avatarSize: 56,
+            titleSize: 18,
+            subtitleSize: 13,
+            isLoading: _isLoading,
             isDarkMode: _isDark,
             onThemeToggle: () {
               setState(() {

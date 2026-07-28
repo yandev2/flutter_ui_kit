@@ -604,10 +604,33 @@ AppButton(
   isLoading: true, // Akan otomatis merender CircularProgressIndicator
   onPressed: () {},
 )
+
+// 6. Custom Text Style
+AppButton(
+  text: 'Subscribe',
+  textStyle: const TextStyle(
+    letterSpacing: 1.2,
+    fontWeight: FontWeight.w600,
+  ),
+  onPressed: () {},
+)
 ```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `textStyle` | `TextStyle?` | Gaya teks custom (fontFamily, letterSpacing, dll.) |
+| `textColor` | `Color?` | Override warna teks (prioritas di atas `textStyle.color`) |
+| `textSize` | `double?` | Override ukuran font (prioritas di atas `textStyle.fontSize`) |
 
 ### AppDialog
 Sebuah helper dan komponen untuk memunculkan modal dialog dinamis. Terintegrasi mulus dengan `showDialog` murni bawaan Flutter dan mewarisi properti tema aplikasi (sehingga anti repot saat pindah mode Terang/Gelap). Komponen ini juga memakai ukuran responsif secara menyeluruh!
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|------------|
+| `description` | `String?` | Teks deskripsi; jika `null`, widget deskripsi disembunyikan |
+| `titleSize` | `double?` | Ukuran font title (default `20`, diskalakan via `size()`) |
+
+Gunakan `AppDialog.show(...)` atau top-level `showAppDialog(...)` — keduanya setara.
 
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
@@ -633,7 +656,16 @@ AppDialog.show(
   onRight: () => hapusData(), // onLeft otomatis melakukan Navigator.pop(context) jika tidak diisi
 );
 
-// 3. Dialog dengan Gambar dan Konten Custom
+// 3. Dialog tanpa deskripsi + title custom size
+showAppDialog(
+  context,
+  title: 'Konfirmasi',
+  titleSize: 22,
+  variant: AppDialogVariant.info,
+  textRight: 'OK',
+);
+
+// 4. Dialog dengan Gambar dan Konten Custom
 AppDialog.show(
   context,
   title: 'Promo Spesial',
@@ -1132,6 +1164,14 @@ CustomScrollView(
 ### AppMainAppbar
 Komponen `SliverPersistentHeader` untuk halaman utama dengan judul berefek parallax dan kotak pencarian (atau filter tab) yang menempel (pinned) di bagian bawah. Search field memakai `AppTextField` dengan `fillColor: uiTheme.surface` agar kontras dengan background app bar.
 
+| Parameter | Tipe | Keterangan |
+|-----------|------|------------|
+| `titleStyle` | `TextStyle?` | Style kustom untuk judul (font, ukuran, letter spacing, dll.) |
+| `appBarHeight` | `double?` | Tinggi area appbar saat collapsed/search (default `70`, diskalakan via `sizeHeight()`) |
+| `titleBottomPadding` | `double?` | Padding bawah pada area judul (diskalakan via `sizeHeight()`) |
+| `pinned` | `bool` | App bar tetap di atas saat scroll (default `true`) |
+| `floating` | `bool` | App bar muncul kembali saat scroll ke atas (default `false`) |
+
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
 
@@ -1139,6 +1179,13 @@ CustomScrollView(
   slivers: [
     AppMainAppbar(
       title: 'Daftar Produk',
+      titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+      appBarHeight: 76,
+      titleBottomPadding: 6,
+      pinned: true,
+      floating: false,
       searchHint: 'Cari nama produk...',
       onBack: () => Navigator.pop(context),
       onSearch: (val) {
@@ -1236,6 +1283,11 @@ AppTimeline(
 ### AppProgressBar
 Komponen batang progres dinamis dengan dukungan judul, sub-judul, ikon awalan (opsional), dan *Skeletonizer*. Lebar batang fleksibel dan bertransisi secara mulus ketika nilai `progress` (0.0 sampai 1.0) berubah.
 
+| Parameter | Tipe | Keterangan |
+|-----------|------|------------|
+| `titleSize` | `double?` | Ukuran font title (diskalakan via `size()`) |
+| `subtitleSize` | `double?` | Ukuran font subtitle (diskalakan via `size()`) |
+
 ```dart
 import 'package:ui_component_flutter/ui_component_flutter.dart';
 
@@ -1243,6 +1295,8 @@ AppProgressBar(
   progress: 0.75, // 75%
   title: 'Mengunggah Data',
   subtitle: '75%',
+  titleSize: 18,
+  subtitleSize: 12,
   icon: HeroIcons.cloudArrowUp, // Opsional
   color: context.uiTheme.primary, // Bisa diganti warnanya
   isLoading: false,

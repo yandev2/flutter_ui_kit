@@ -40,9 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaleInit(
-      
-      config: AppScaleConfig(
-         minScale: 1.4,
+      config: AppScaleConfig.adaptive(
         designSize: const Size(375, 812),
       ),
       builder: (context, child) {

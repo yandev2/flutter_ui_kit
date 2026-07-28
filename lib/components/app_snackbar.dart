@@ -63,6 +63,8 @@ class AppSnackbar {
           )
         : EdgeInsets.all(size(16));
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final snackBar = SnackBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -70,70 +72,69 @@ class AppSnackbar {
       margin: margin,
       duration: duration,
       behavior: SnackBarBehavior.floating,
-      content: Container(
-        padding: EdgeInsets.symmetric(horizontal: size(16), vertical: size(16)),
-        decoration: BoxDecoration(
-          color: uiTheme.surface,
+      content: Material(
+        color: uiTheme.surface,
+        elevation: isDark ? 8 : 6,
+        shadowColor: uiTheme.shadowColor,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(size(12)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: size(10),
-              offset: Offset(0, size(4)),
-            ),
-          ],
+          side: BorderSide(color: uiTheme.borderColor),
         ),
-        child: Row(
-          crossAxisAlignment: subtitle != null
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.center,
-          children: [
-            if (hasIcon) ...[finalIcon, SizedBox(width: size(12))],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: uiTheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    SizedBox(height: size(4)),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: size(16), vertical: size(16)),
+          child: Row(
+            crossAxisAlignment: subtitle != null
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
+            children: [
+              if (hasIcon) ...[finalIcon, SizedBox(width: size(12))],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: uiTheme.hintColor,
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: uiTheme.onSurface,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    if (subtitle != null) ...[
+                      SizedBox(height: size(4)),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: uiTheme.hintColor,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            if (actionLabel != null) ...[
-              SizedBox(width: size(12)),
-              GestureDetector(
-                onTap: () {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  if (onAction != null) onAction();
-                },
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: size(4)),
-                  child: Text(
-                    actionLabel,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: uiTheme.primary,
-                      fontWeight: FontWeight.bold,
+              if (actionLabel != null) ...[
+                SizedBox(width: size(12)),
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    if (onAction != null) onAction();
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: size(4)),
+                    child: Text(
+                      actionLabel,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: uiTheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

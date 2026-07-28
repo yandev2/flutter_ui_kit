@@ -96,9 +96,8 @@ class _AppOtpFormState extends State<AppOtpForm> {
       widget.codeLength,
       (_) => TextEditingController(),
     );
-    _focusNodes = List.generate(
-      widget.codeLength,
-      (index) => FocusNode(
+    _focusNodes = List.generate(widget.codeLength, (index) {
+      final node = FocusNode(
         onKeyEvent: (node, event) {
           if (event is! KeyDownEvent ||
               event.logicalKey != LogicalKeyboardKey.backspace) {
@@ -112,8 +111,12 @@ class _AppOtpFormState extends State<AppOtpForm> {
           }
           return KeyEventResult.ignored;
         },
-      ),
-    );
+      );
+      node.addListener(() {
+        if (mounted) setState(() {});
+      });
+      return node;
+    });
 
     if (widget.autofocus && _focusNodes.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -226,7 +229,10 @@ class _AppOtpFormState extends State<AppOtpForm> {
           controller: _controllers[index],
           focusNode: _focusNodes[index],
           enabled: !widget.isLoading,
+          expands: true,
+          maxLines: null,
           textAlign: TextAlign.center,
+          textAlignVertical: TextAlignVertical.center,
           keyboardType: TextInputType.number,
           maxLength: 1,
           autofillHints: index == 0 ? const [AutofillHints.oneTimeCode] : null,
@@ -236,10 +242,12 @@ class _AppOtpFormState extends State<AppOtpForm> {
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontSize: _otpFontSize(boxSize),
             fontWeight: FontWeight.bold,
+            height: 1,
             color: uiTheme.onSurface,
           ),
           decoration: const InputDecoration(
             counterText: '',
+            isDense: true,
             filled: true,
             fillColor: Colors.transparent,
             border: InputBorder.none,
@@ -257,12 +265,8 @@ class _AppOtpFormState extends State<AppOtpForm> {
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final boxBg =
-        widget.fieldBackgroundColor ??
-        (isDark
-            ? uiTheme.background
-            : uiTheme.borderColor.withValues(alpha: 0.2));
-    final boxIdleBorder = isDark ? uiTheme.borderColor : Colors.transparent;
+    final boxBg = widget.fieldBackgroundColor ?? uiTheme.background;
+    final boxIdleBorder = uiTheme.borderColor;
     final boxFocusedBorder = uiTheme.primary;
 
     return Skeletonizer(

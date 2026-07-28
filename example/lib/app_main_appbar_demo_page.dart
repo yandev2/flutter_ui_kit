@@ -50,6 +50,12 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
         slivers: [
           AppMainAppbar(
             title: 'Komponen UI',
+            titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+            appBarHeight: 76,
+            titleBottomPadding: 6,
             searchHint: 'Cari komponen...',
             onBack: () => Navigator.pop(context),
             onSearch: (val) {
