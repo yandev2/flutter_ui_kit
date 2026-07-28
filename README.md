@@ -1303,6 +1303,52 @@ AppProgressBar(
 )
 ```
 
+### AppProgressCircle
+Komponen progress lingkaran dengan arc gradient/solid, thumb di ujung arc, teks tengah (label, value, title, description), animasi entrance saat pertama muncul, dan *Skeletonizer*.
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|------------|
+| `progress` | `double` | Nilai 0.0–1.0 |
+| `color` | `Color?` | Warna solid arc (jika `gradientColors` null) |
+| `gradientColors` | `List<Color>?` | 2+ warna untuk gradient sweep |
+| `diameter` | `double?` | Diameter lingkaran (diskalakan via `size()`, default `160`) |
+| `strokeWidth` | `double?` | Ketebalan arc (default `12`) |
+| `label` / `value` / `title` / `description` | `String?` | Teks tengah; `value` default otomatis dari persentase |
+| `labelStyle` / `valueStyle` / `titleStyle` / `descriptionStyle` | `TextStyle?` | Override style penuh per field |
+| `labelSize` / `valueSize` / `titleSize` / `descriptionSize` | `double?` | Shortcut ukuran font |
+| `labelBackgroundColor` | `Color?` | Background pill label |
+| `showThumb` | `bool` | Tampilkan dot di ujung arc (default `true`) |
+| `animateOnAppear` | `bool` | Animasi 0 → progress saat pertama render |
+| `isLoading` | `bool` | Skeleton shimmer |
+
+```dart
+import 'package:ui_component_flutter/ui_component_flutter.dart';
+
+// Solid color
+AppProgressCircle(
+  progress: 0.65,
+  label: 'Storage',
+  title: 'Used Space',
+  description: '65 GB of 100 GB',
+  color: context.uiTheme.warning,
+)
+
+// Gradient (seperti mockup)
+AppProgressCircle(
+  progress: 0.5,
+  label: 'Label',
+  title: 'Your Score',
+  description: 'as on 15 April 2025 6:18 pm',
+  gradientColors: const [
+    Color(0xFF10B981),
+    Color(0xFF8B5CF6),
+  ],
+  diameter: 160,
+  valueSize: 36,
+  isLoading: false,
+)
+```
+
 ---
 
 ## 📦 Dependencies
@@ -1348,3 +1394,4 @@ AppProgressBar(
 | `AppDetailAppbar` | Detail page curved app bar |
 | `AppTimeline` | Vertical/horizontal status timeline |
 | `AppProgressBar` | Animated progress bar |
+| `AppProgressCircle` | Circular progress with gradient, thumb, skeleton |

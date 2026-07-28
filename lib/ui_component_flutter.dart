@@ -48,3 +48,4 @@ export 'components/app_main_appbar.dart';
 export 'components/app_detail_appbar.dart';
 export 'components/app_timeline.dart';
 export 'components/app_progress_bar.dart';
+export 'components/app_progress_circle.dart';

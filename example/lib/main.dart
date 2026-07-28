@@ -30,6 +30,7 @@ import 'app_main_appbar_demo_page.dart';
 import 'app_detail_appbar_demo_page.dart';
 import 'app_timeline_demo_page.dart';
 import 'app_progress_bar_demo_page.dart';
+import 'app_progress_circle_demo_page.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -506,6 +507,20 @@ class MyHomePage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const AppProgressBarDemoPage(),
+                ),
+              );
+            },
+          ),
+          _buildMenuCard(
+            context,
+            title: 'App Progress Circle',
+            description: 'Progress lingkaran gradient, thumb, dan skeleton',
+            icon: Icons.donut_large,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AppProgressCircleDemoPage(),
                 ),
               );
             },
