@@ -17,6 +17,10 @@ class AppMainAppbar extends StatefulWidget {
   /// Tinggi area appbar (collapsed/search). Nilai desain, diskalakan via `sizeHeight()`.
   final double? appBarHeight;
 
+  /// Tinggi area tab filter (nilai desain, diskalakan via `sizeHeight()`).
+  /// Hanya dipakai jika [tabFilter] disediakan. Default `70`.
+  final double? tabFilterHeight;
+
   /// Padding bawah pada area title. Nilai desain, diskalakan via `sizeHeight()`.
   final double? titleBottomPadding;
 
@@ -39,6 +43,7 @@ class AppMainAppbar extends StatefulWidget {
     this.backgroundColor,
     this.titleStyle,
     this.appBarHeight,
+    this.tabFilterHeight,
     this.titleBottomPadding,
     this.pinned = true,
     this.floating = false,
@@ -99,6 +104,7 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
         backgroundColor: widget.backgroundColor,
         titleStyle: widget.titleStyle,
         appBarHeight: widget.appBarHeight,
+        tabFilterHeight: widget.tabFilterHeight,
         titleBottomPadding: widget.titleBottomPadding,
       ),
     );
@@ -120,6 +126,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
   final Color? backgroundColor;
   final TextStyle? titleStyle;
   final double? appBarHeight;
+  final double? tabFilterHeight;
   final double? titleBottomPadding;
 
   _AppbarDelegate({
@@ -137,13 +144,18 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     this.backgroundColor,
     this.titleStyle,
     this.appBarHeight,
+    this.tabFilterHeight,
     this.titleBottomPadding,
   });
 
   // Base constants
   double get _titleHeight => sizeHeight(45);
   double get _searchHeight => sizeHeight(appBarHeight ?? 70);
-  double get _collapsedHeight => sizeHeight(appBarHeight ?? 70);
+  double get _tabFilterHeight =>
+      sizeHeight(tabFilterHeight ?? appBarHeight ?? 70);
+  double get _bottomAreaHeight =>
+      tabFilter != null ? _tabFilterHeight : _searchHeight;
+  double get _collapsedHeight => _bottomAreaHeight;
 
   TextStyle _resolvedTitleStyle(ThemeData theme, UIComponentTheme uiTheme) {
     final defaults = theme.textTheme.titleMedium?.copyWith(
@@ -168,7 +180,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     if (onSearch == null && tabFilter == null) {
       return _collapsedHeight + topPadding;
     }
-    return _titleHeight + _searchHeight + topPadding;
+    return _titleHeight + _bottomAreaHeight + topPadding;
   }
 
   @override
@@ -184,6 +196,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
         backgroundColor != oldDelegate.backgroundColor ||
         titleStyle != oldDelegate.titleStyle ||
         appBarHeight != oldDelegate.appBarHeight ||
+        tabFilterHeight != oldDelegate.tabFilterHeight ||
         titleBottomPadding != oldDelegate.titleBottomPadding;
   }
 
@@ -203,7 +216,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
 
     final hasSearchOrTab = onSearch != null || tabFilter != null;
     final searchBottomAreaHeight = hasSearchOrTab
-        ? _searchHeight
+        ? _bottomAreaHeight
         : sizeHeight(20);
 
     return Container(
@@ -309,7 +322,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
               bottom: 0,
               left: 0,
               right: 0,
-              height: _searchHeight,
+              height: _tabFilterHeight,
               child: Container(
                 decoration: BoxDecoration(
                   color: uiTheme.background,
@@ -317,6 +330,11 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
                     top: Radius.circular(borderRadius),
                   ),
                 ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: size(16),
+                  vertical: sizeHeight(8),
+                ),
+                alignment: Alignment.center,
                 child: tabFilter!,
               ),
             ),

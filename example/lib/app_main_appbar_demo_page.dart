@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:ui_component_flutter/ui_component_flutter.dart';
 
+enum _DemoMode { search, tabFilter }
+
 class AppMainAppbarDemoPage extends StatefulWidget {
   const AppMainAppbarDemoPage({super.key});
 
@@ -10,7 +12,9 @@ class AppMainAppbarDemoPage extends StatefulWidget {
 }
 
 class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
+  _DemoMode _demoMode = _DemoMode.search;
   String _searchQuery = '';
+  String _selectedPeriod = 'daily';
 
   final List<String> _components = [
     'Typography',
@@ -42,57 +46,126 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
     'App Main Appbar',
   ];
 
+  void _toggleDemoMode() {
+    setState(() {
+      _demoMode = _demoMode == _DemoMode.search
+          ? _DemoMode.tabFilter
+          : _DemoMode.search;
+      _searchQuery = '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.uiTheme.background,
       body: CustomScrollView(
         slivers: [
-          AppMainAppbar(
-            title: 'Komponen UI',
-            titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
-            appBarHeight: 76,
-            titleBottomPadding: 6,
-            searchHint: 'Cari komponen...',
-            onBack: () => Navigator.pop(context),
-            onSearch: (val) {
-              setState(() {
-                _searchQuery = val;
-              });
-            },
-            onReset: () {
-              setState(() {
-                _searchQuery = '';
-              });
-              AppSnackbar.info(context, title: 'Pencarian di-reset');
-            },
-            actions: [
-              IconButton(
-                icon: HeroIcon(
-                  HeroIcons.funnel,
-                  color: context.uiTheme.onPrimary,
+          if (_demoMode == _DemoMode.search)
+            AppMainAppbar(
+              title: 'Komponen UI',
+              titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+              appBarHeight: 76,
+              titleBottomPadding: 6,
+              searchHint: 'Cari komponen...',
+              onBack: () => Navigator.pop(context),
+              onSearch: (val) {
+                setState(() {
+                  _searchQuery = val;
+                });
+              },
+              onReset: () {
+                setState(() {
+                  _searchQuery = '';
+                });
+                AppSnackbar.info(context, title: 'Pencarian di-reset');
+              },
+              actions: [
+                IconButton(
+                  icon: HeroIcon(
+                    HeroIcons.adjustmentsHorizontal,
+                    color: context.uiTheme.onPrimary,
+                  ),
+                  tooltip: 'Switch ke Tab Filter demo',
+                  onPressed: _toggleDemoMode,
                 ),
-                onPressed: () {
-                  AppSnackbar.success(context, title: 'Menu filter ditekan');
+                IconButton(
+                  icon: HeroIcon(
+                    HeroIcons.funnel,
+                    color: context.uiTheme.onPrimary,
+                  ),
+                  onPressed: () {
+                    AppSnackbar.success(context, title: 'Menu filter ditekan');
+                  },
+                ),
+                IconButton(
+                  icon: HeroIcon(
+                    HeroIcons.ellipsisVertical,
+                    color: context.uiTheme.onPrimary,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            )
+          else
+            AppMainAppbar(
+              title: 'Laporan',
+              titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+              tabFilterHeight: 48,
+              titleBottomPadding: 6,
+              onBack: () => Navigator.pop(context),
+              tabFilter: AppSegmentedSwitch<String>(
+                options: {
+                  'daily': 'Harian',
+                  'weekly': 'Mingguan',
+                  'monthly': 'Bulanan',
                 },
+                selectedValue: _selectedPeriod,
+                onChanged: (val) {
+                  setState(() => _selectedPeriod = val);
+                },
+                height: 32,
+                textSize: size(12),
+                padding: EdgeInsets.all(size(2)),
               ),
-              IconButton(
-                icon: HeroIcon(
-                  HeroIcons.ellipsisVertical,
-                  color: context.uiTheme.onPrimary,
+              actions: [
+                IconButton(
+                  icon: HeroIcon(
+                    HeroIcons.adjustmentsHorizontal,
+                    color: context.uiTheme.onPrimary,
+                  ),
+                  tooltip: 'Switch ke Search demo',
+                  onPressed: _toggleDemoMode,
                 ),
-                onPressed: () {},
-              ),
-            ],
-          ),
+              ],
+            ),
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              final itemName = _components[index];
-              // Simulasi filter pencarian
-              if (_searchQuery.isNotEmpty &&
+              if (_demoMode == _DemoMode.tabFilter && index == 0) {
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(size(16), size(16), size(16), size(8)),
+                  child: Text(
+                    'Periode aktif: $_selectedPeriod',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: context.uiTheme.primary,
+                    ),
+                  ),
+                );
+              }
+
+              final itemIndex =
+                  _demoMode == _DemoMode.tabFilter ? index - 1 : index;
+              if (itemIndex < 0) return const SizedBox.shrink();
+
+              final itemName = _components[itemIndex];
+              if (_demoMode == _DemoMode.search &&
+                  _searchQuery.isNotEmpty &&
                   !itemName.toLowerCase().contains(
                     _searchQuery.toLowerCase(),
                   )) {
@@ -133,7 +206,7 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
                   ),
                 ),
               );
-            }, childCount: _components.length),
+            }, childCount: _components.length + (_demoMode == _DemoMode.tabFilter ? 1 : 0)),
           ),
         ],
       ),

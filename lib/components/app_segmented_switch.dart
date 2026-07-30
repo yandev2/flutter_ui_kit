@@ -17,6 +17,10 @@ class AppSegmentedSwitch<T> extends StatefulWidget {
   final MainAxisSize mainAxisSize;
   final double? textSize;
   final EdgeInsetsGeometry? padding;
+
+  /// Tinggi switch (nilai desain, diskalakan via `sizeHeight()`). Default `48`.
+  final double height;
+
   final bool isLoading;
 
   const AppSegmentedSwitch({
@@ -33,6 +37,7 @@ class AppSegmentedSwitch<T> extends StatefulWidget {
     this.mainAxisSize = MainAxisSize.max,
     this.textSize,
     this.padding,
+    this.height = 48.0,
     this.isLoading = false,
   }) : assert(options.length > 1, 'Must provide at least 2 options');
 
@@ -110,7 +115,7 @@ class _AppSegmentedSwitchState<T> extends State<AppSegmentedSwitch<T>> {
     return Skeletonizer(
       enabled: widget.isLoading,
       child: Container(
-        height: scale.sizeHeight(48),
+        height: scale.sizeHeight(widget.height),
         padding: widget.padding ?? EdgeInsets.all(scale.size(4)),
         decoration: BoxDecoration(color: bgColor, borderRadius: radius),
         child: Stack(
@@ -159,7 +164,7 @@ class _AppSegmentedSwitchState<T> extends State<AppSegmentedSwitch<T>> {
                       replace: widget.isLoading,
                       replacement: Bone(
                         width: scale.size(60),
-                        height: scale.size(20),
+                        height: scale.size(widget.height * 20 / 48),
                         borderRadius: BorderRadius.circular(scale.size(4)),
                       ),
                       child: Row(

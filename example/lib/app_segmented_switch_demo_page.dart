@@ -22,6 +22,9 @@ class _AppSegmentedSwitchDemoPageState
   // Demo 3: T = int
   int _selectedInt = 1;
 
+  // Demo 4: T = String (compact height)
+  String _selectedCompact = 'A';
+
   bool _isLoading = false;
 
   @override
@@ -146,6 +149,36 @@ class _AppSegmentedSwitchDemoPageState
             Text(
               'Selected Value: $_selectedInt',
               style: TextStyle(color: context.uiTheme.error),
+            ),
+            SizedBox(height: scale.sizeHeight(32)),
+
+            // ==========================================
+            // DEMO 4: Custom height
+            // ==========================================
+            Text(
+              '4. Custom Height',
+              style: TextStyle(
+                fontSize: scale.size(16),
+                fontWeight: FontWeight.bold,
+                color: context.uiTheme.onSurface,
+              ),
+            ),
+            SizedBox(height: scale.sizeHeight(16)),
+            AppSegmentedSwitch<String>(
+              options: {'A': 'Tab A', 'B': 'Tab B', 'C': 'Tab C'},
+              selectedValue: _selectedCompact,
+              onChanged: (val) {
+                setState(() => _selectedCompact = val);
+              },
+              height: 32,
+              textSize: scale.size(12),
+              padding: EdgeInsets.all(scale.size(2)),
+              isLoading: _isLoading,
+            ),
+            SizedBox(height: scale.sizeHeight(16)),
+            Text(
+              'Selected Value: $_selectedCompact',
+              style: TextStyle(color: context.uiTheme.primary),
             ),
           ],
         ),
