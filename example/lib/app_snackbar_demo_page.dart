@@ -116,6 +116,51 @@ class _AppSnackbarDemoPageState extends State<AppSnackbarDemoPage> {
                 );
               },
             ),
+            SizedBox(height: size(16)),
+            AppButton(
+              text: 'Show Top Snackbar (Custom Offset)',
+              isMax: true,
+              onPressed: () {
+                AppSnackbar.info(
+                  context,
+                  title: 'Custom Top Offset',
+                  subtitle: 'Positioned below app bar area (offset: 80).',
+                  positionTop: true,
+                  offset: 80,
+                );
+              },
+            ),
+            SizedBox(height: size(16)),
+            AppButton(
+              text: 'Show Bottom Snackbar (Custom Offset)',
+              isMax: true,
+              onPressed: () {
+                AppSnackbar.success(
+                  context,
+                  title: 'Custom Bottom Offset',
+                  subtitle: 'Raised above bottom edge (offset: 32).',
+                  offset: 32,
+                );
+              },
+            ),
+            SizedBox(height: size(16)),
+            AppButton(
+              text: 'Show Snackbar (Custom Text Size)',
+              isMax: true,
+              onPressed: () {
+                AppSnackbar.show(
+                  context,
+                  title: 'Custom Typography',
+                  subtitle: 'Smaller title and subtitle text.',
+                  type: AppSnackbarType.normal,
+                  actionLabel: 'OK',
+                  onAction: () {},
+                  titleSize: 12,
+                  subtitleSize: 10,
+                  actionLabelSize: 12,
+                );
+              },
+            ),
           ],
         ),
       ),

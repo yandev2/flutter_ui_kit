@@ -15,6 +15,21 @@ class AppSnackbar {
     VoidCallback? onAction,
     Duration duration = const Duration(seconds: 3),
     bool positionTop = false,
+
+    /// Jarak dari tepi layar (nilai desain, diskalakan via `size()`).
+    /// Jika [positionTop] true → offset dari atas (+ safe area top).
+    /// Jika [positionTop] false → offset dari bawah (+ safe area bottom).
+    /// Default: `150` untuk top, `16` untuk bottom.
+    double? offset,
+
+    /// Ukuran font title (nilai desain, diskalakan via `size()`).
+    double? titleSize,
+
+    /// Ukuran font subtitle/deskripsi (nilai desain, diskalakan via `size()`).
+    double? subtitleSize,
+
+    /// Ukuran font action label (nilai desain, diskalakan via `size()`).
+    double? actionLabelSize,
   }) {
     final uiTheme = context.uiTheme;
     final theme = Theme.of(context);
@@ -54,14 +69,21 @@ class AppSnackbar {
     final Widget finalIcon = icon ?? defaultIcon ?? const SizedBox.shrink();
     final bool hasIcon = finalIcon is! SizedBox;
 
-    // Menghitung margin jika posisinya Top (mengakali SnackBar murni flutter)
+    final resolvedOffset = offset ?? (positionTop ? 150.0 : 16.0);
+    final horizontal = size(16);
+    final padding = MediaQuery.paddingOf(context);
+
     final EdgeInsetsGeometry margin = positionTop
         ? EdgeInsets.only(
-            bottom: context.screenHeight - size(150),
-            left: size(16),
-            right: size(16),
+            top: padding.top + size(resolvedOffset),
+            left: horizontal,
+            right: horizontal,
           )
-        : EdgeInsets.all(size(16));
+        : EdgeInsets.only(
+            bottom: padding.bottom + size(resolvedOffset),
+            left: horizontal,
+            right: horizontal,
+          );
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -99,6 +121,7 @@ class AppSnackbar {
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: uiTheme.onSurface,
                         fontWeight: FontWeight.bold,
+                        fontSize: titleSize != null ? size(titleSize) : null,
                       ),
                     ),
                     if (subtitle != null) ...[
@@ -107,6 +130,8 @@ class AppSnackbar {
                         subtitle,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: uiTheme.hintColor,
+                          fontSize:
+                              subtitleSize != null ? size(subtitleSize) : null,
                         ),
                       ),
                     ],
@@ -128,6 +153,9 @@ class AppSnackbar {
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: uiTheme.primary,
                         fontWeight: FontWeight.bold,
+                        fontSize: actionLabelSize != null
+                            ? size(actionLabelSize)
+                            : null,
                       ),
                     ),
                   ),
@@ -144,13 +172,16 @@ class AppSnackbar {
       ..showSnackBar(snackBar);
   }
 
-  // Helper methods
   static void success(
     BuildContext context, {
     required String title,
     String? subtitle,
     Duration duration = const Duration(seconds: 3),
     bool positionTop = false,
+    double? offset,
+    double? titleSize,
+    double? subtitleSize,
+    double? actionLabelSize,
   }) {
     show(
       context,
@@ -159,6 +190,10 @@ class AppSnackbar {
       type: AppSnackbarType.success,
       duration: duration,
       positionTop: positionTop,
+      offset: offset,
+      titleSize: titleSize,
+      subtitleSize: subtitleSize,
+      actionLabelSize: actionLabelSize,
     );
   }
 
@@ -168,6 +203,10 @@ class AppSnackbar {
     String? subtitle,
     Duration duration = const Duration(seconds: 3),
     bool positionTop = false,
+    double? offset,
+    double? titleSize,
+    double? subtitleSize,
+    double? actionLabelSize,
   }) {
     final uiTheme = context.uiTheme;
     show(
@@ -182,6 +221,10 @@ class AppSnackbar {
       ),
       duration: duration,
       positionTop: positionTop,
+      offset: offset,
+      titleSize: titleSize,
+      subtitleSize: subtitleSize,
+      actionLabelSize: actionLabelSize,
     );
   }
 
@@ -191,6 +234,10 @@ class AppSnackbar {
     String? subtitle,
     Duration duration = const Duration(seconds: 3),
     bool positionTop = false,
+    double? offset,
+    double? titleSize,
+    double? subtitleSize,
+    double? actionLabelSize,
   }) {
     show(
       context,
@@ -199,6 +246,10 @@ class AppSnackbar {
       type: AppSnackbarType.warning,
       duration: duration,
       positionTop: positionTop,
+      offset: offset,
+      titleSize: titleSize,
+      subtitleSize: subtitleSize,
+      actionLabelSize: actionLabelSize,
     );
   }
 
@@ -208,6 +259,10 @@ class AppSnackbar {
     String? subtitle,
     Duration duration = const Duration(seconds: 3),
     bool positionTop = false,
+    double? offset,
+    double? titleSize,
+    double? subtitleSize,
+    double? actionLabelSize,
   }) {
     show(
       context,
@@ -216,6 +271,10 @@ class AppSnackbar {
       type: AppSnackbarType.error,
       duration: duration,
       positionTop: positionTop,
+      offset: offset,
+      titleSize: titleSize,
+      subtitleSize: subtitleSize,
+      actionLabelSize: actionLabelSize,
     );
   }
 }
