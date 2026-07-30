@@ -72,10 +72,13 @@ class AppSnackbar {
     final resolvedOffset = offset ?? (positionTop ? 150.0 : 16.0);
     final horizontal = size(16);
     final padding = MediaQuery.paddingOf(context);
+    final screenHeight = MediaQuery.sizeOf(context).height;
 
+    // SnackBar selalu di-anchor ke bawah Scaffold; untuk top position
+    // gunakan bottom margin besar (bukan margin top).
     final EdgeInsetsGeometry margin = positionTop
         ? EdgeInsets.only(
-            top: padding.top + size(resolvedOffset),
+            bottom: screenHeight - padding.top - size(resolvedOffset),
             left: horizontal,
             right: horizontal,
           )
@@ -94,6 +97,8 @@ class AppSnackbar {
       margin: margin,
       duration: duration,
       behavior: SnackBarBehavior.floating,
+      dismissDirection:
+          positionTop ? DismissDirection.up : DismissDirection.down,
       content: Material(
         color: uiTheme.surface,
         elevation: isDark ? 8 : 6,
