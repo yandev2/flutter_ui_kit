@@ -8,8 +8,19 @@ import '../ui_component_flutter.dart';
 class AppFileUpload extends StatefulWidget {
   final String title;
   final String subtitle;
+
+  /// Path lokal file yang baru dipilih user.
+  /// Hanya set dari callback [onFileSelected] — jangan set ke [initialFileUrl].
   final String? localFilePath;
+
+  /// URL file existing (mis. dari server saat edit dokumen).
+  /// Hanya untuk preview; tidak pernah dikembalikan lewat [onFileSelected].
+  final String? initialFileUrl;
+
   final List<String>? allowedExtensions;
+
+  /// Dipanggil hanya saat user memilih file baru dari file picker.
+  /// [path] selalu berupa path lokal — tidak pernah URL [initialFileUrl].
   final ValueChanged<String>? onFileSelected;
   final VoidCallback? onCancel;
   final String primaryButtonText;
@@ -26,6 +37,7 @@ class AppFileUpload extends StatefulWidget {
     this.title = 'Upload Files',
     this.subtitle = 'Upload your source files here',
     this.localFilePath,
+    this.initialFileUrl,
     this.allowedExtensions,
     this.onFileSelected,
     this.onCancel,
@@ -42,6 +54,10 @@ class AppFileUpload extends StatefulWidget {
 }
 
 class _AppFileUploadState extends State<AppFileUpload> {
+  bool get _hasInitialFileUrl =>
+      widget.initialFileUrl != null &&
+      widget.initialFileUrl!.trim().isNotEmpty;
+
   Future<void> _pickFile() async {
     try {
       final FilePickerResult? result = await FilePicker.pickFiles(
@@ -61,8 +77,96 @@ class _AppFileUploadState extends State<AppFileUpload> {
     }
   }
 
-  String _getFileName(String path) {
-    return path.split('/').last.split('\\').last;
+  String _getDisplayName(String pathOrUrl) {
+    final withoutQuery = pathOrUrl.split('?').first;
+    return withoutQuery.split('/').last.split('\\').last;
+  }
+
+  Widget _buildFilePreview(
+    ThemeData theme,
+    UIComponentTheme uiTheme, {
+    required String displayName,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        HeroIcon(
+          HeroIcons.documentText,
+          size: size(48),
+          color: uiTheme.primary,
+          style: HeroIconStyle.solid,
+        ),
+        SizedBox(height: size(12)),
+        Text(
+          displayName,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: uiTheme.onSurface,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPreview(ThemeData theme, UIComponentTheme uiTheme) {
+    if (widget.localFilePath != null) {
+      return _buildFilePreview(
+        theme,
+        uiTheme,
+        displayName: _getDisplayName(widget.localFilePath!),
+      );
+    }
+
+    if (_hasInitialFileUrl) {
+      return _buildFilePreview(
+        theme,
+        uiTheme,
+        displayName: _getDisplayName(widget.initialFileUrl!),
+      );
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        HeroIcon(
+          HeroIcons.documentArrowUp,
+          size: size(40),
+          color: uiTheme.borderColor,
+          style: HeroIconStyle.outline,
+        ),
+        SizedBox(height: size(12)),
+        RichText(
+          text: TextSpan(
+            text: 'Drag Files here or ',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: size(12),
+              color: uiTheme.hintColor,
+            ),
+            children: [
+              TextSpan(
+                text: 'Browse',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: size(12),
+                  color: uiTheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (widget.allowedExtensions != null) ...[
+          SizedBox(height: size(8)),
+          Text(
+            'Supported formats: ${widget.allowedExtensions!.join(", ")}',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: size(10),
+              color: uiTheme.hintColor,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   @override
@@ -124,68 +228,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
                       uiTheme.background.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(size(12)),
                 ),
-                child: widget.localFilePath != null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          HeroIcon(
-                            HeroIcons.documentText,
-                            size: size(48),
-                            color: uiTheme.primary,
-                            style: HeroIconStyle.solid,
-                          ),
-                          SizedBox(height: size(12)),
-                          Text(
-                            _getFileName(widget.localFilePath!),
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: uiTheme.onSurface,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          HeroIcon(
-                            HeroIcons.documentArrowUp,
-                            size: size(40),
-                            color: uiTheme.borderColor,
-                            style: HeroIconStyle.outline,
-                          ),
-                          SizedBox(height: size(12)),
-                          RichText(
-                            text: TextSpan(
-                              text: 'Drag Files here or ',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: size(12),
-                                color: uiTheme.hintColor,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Browse',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: size(12),
-                                    color: uiTheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (widget.allowedExtensions != null) ...[
-                            SizedBox(height: size(8)),
-                            Text(
-                              'Supported formats: ${widget.allowedExtensions!.join(", ")}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontSize: size(10),
-                                color: uiTheme.hintColor,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                child: _buildPreview(theme, uiTheme),
               ),
             ),
           ),

@@ -11,6 +11,7 @@ class AppFileUploadDemoPage extends StatefulWidget {
 class _AppFileUploadDemoPageState extends State<AppFileUploadDemoPage> {
   String? _selectedFilePath;
   String? _selectedPdfPath;
+  String? _updateDocLocalPath;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,28 @@ class _AppFileUploadDemoPageState extends State<AppFileUploadDemoPage> {
         padding: EdgeInsets.all(AppSpacing.md),
         child: Column(
           children: [
+            AppFileUpload(
+              title: 'Update Document',
+              subtitle: 'Replace existing document on server',
+              initialFileUrl:
+                  'https://example.com/files/employment-contract.pdf',
+              localFilePath: _updateDocLocalPath,
+              allowedExtensions: const ['pdf', 'docx'],
+              onFileSelected: (path) {
+                setState(() {
+                  _updateDocLocalPath = path;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('New file picked: $path')),
+                );
+              },
+              onCancel: () {
+                setState(() {
+                  _updateDocLocalPath = null;
+                });
+              },
+            ),
+            SizedBox(height: size(24)),
             AppFileUpload(
               title: 'Upload Any File',
               subtitle: 'Select any file from your device',

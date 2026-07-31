@@ -26,6 +26,19 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
         children: [
           _buildSectionTitle('1. Basic Text Field'),
           AppTextField(
+            title: 'Username (with initialValue)',
+            hint: 'Masukkan username',
+            prefixIcon: HeroIcons.user,
+            initialValue: 'johndoe',
+            autofillHints: const [AutofillHints.username],
+            textInputAction: TextInputAction.next,
+            onChanged: (val) {
+              // val berisi teks saat ini
+            },
+          ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('2. Basic Text Field (Empty)'),
+          AppTextField(
             title: 'Username',
             hint: 'Masukkan username',
             prefixIcon: HeroIcons.user,
@@ -33,7 +46,7 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             textInputAction: TextInputAction.next,
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('2. Error State Text Field'),
+          _buildSectionTitle('3. Error State Text Field'),
           AppTextField(
             title: 'Email Address',
             hint: 'johndoe@example.com',
@@ -45,7 +58,7 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             inputFormatters: [NoSpaceFormatter()],
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('3. Helper Text Field'),
+          _buildSectionTitle('4. Helper Text Field'),
           AppTextField(
             title: 'Nomor Telepon',
             hint: '0812-3456-7890',
@@ -57,7 +70,7 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             inputFormatters: [MaskInputFormatter(mask: '####-####-####-####')],
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('4. Password Field (Strength Indicator)'),
+          _buildSectionTitle('5. Password Field (Strength Indicator)'),
           AppPasswordField(
             title: 'Password Baru',
             hint: 'Minimal 8 karakter',
@@ -66,13 +79,21 @@ class _AppTextFieldDemoPageState extends State<AppTextFieldDemoPage> {
             },
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('5. Currency Field (Rupiah)'),
+          _buildSectionTitle('6. Currency Field (Rupiah)'),
           AppCurrencyField(
             title: 'Nominal Transfer',
             hint: '0',
             onChanged: (val) {
               // val akan berisi format 'Rp 10.000'
             },
+          ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('7. Multiline with Prefix Icon'),
+          AppTextField(
+            title: 'Catatan',
+            hint: 'Tulis catatan...',
+            prefixIcon: HeroIcons.chatBubbleLeftRight,
+            maxLines: 3,
           ).paddingOnly(bottom: AppSpacing.xl),
         ],
       ),

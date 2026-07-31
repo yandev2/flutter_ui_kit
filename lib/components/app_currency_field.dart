@@ -8,6 +8,7 @@ class AppCurrencyField extends StatelessWidget {
   final String? errorText;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
+  final String? initialValue;
 
   final int decimalDigits;
   final bool showSymbol;
@@ -30,6 +31,7 @@ class AppCurrencyField extends StatelessWidget {
     this.errorText,
     this.onChanged,
     this.controller,
+    this.initialValue,
     this.decimalDigits = 0,
     this.showSymbol = true,
     this.currencyType = AppCurrencyType.rupiah,
@@ -50,6 +52,7 @@ class AppCurrencyField extends StatelessWidget {
       helperText: helperText,
       errorText: errorText,
       controller: controller,
+      initialValue: initialValue,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.done,
       autofillHints:

@@ -9,6 +9,9 @@ enum AppDateTimeFormat {
   /// `15 Desember 2002`
   dmyFullMonth,
 
+  /// `07-05-2020`
+  dmyDash,
+
   /// `Desember 2002`
   monthYear,
 
@@ -56,6 +59,8 @@ extension DateTimeFormatExtension on DateTime {
         return toDmyShortMonth();
       case AppDateTimeFormat.dmyFullMonth:
         return toDmyFullMonth();
+      case AppDateTimeFormat.dmyDash:
+        return toDmyDash();
       case AppDateTimeFormat.monthYear:
         return toMonthYear();
       case AppDateTimeFormat.timeHm:
@@ -69,8 +74,18 @@ extension DateTimeFormatExtension on DateTime {
   /// `15 Des 2002`
   String toDmyShortMonth() => '$day ${_monthsShortId[month - 1]} $year';
 
-  /// `15 Desember 2002`
-  String toDmyFullMonth() => '$day ${_monthsFullId[month - 1]} $year';
+  /// `07 Desember 2002`
+  String toDmyFullMonth() {
+    final d = day.toString().padLeft(2, '0');
+    return '$d ${_monthsFullId[month - 1]} $year';
+  }
+
+  /// `07-05-2020`
+  String toDmyDash() {
+    final d = day.toString().padLeft(2, '0');
+    final m = month.toString().padLeft(2, '0');
+    return '$d-$m-$year';
+  }
 
   /// `Desember 2002`
   String toMonthYear() => '${_monthsFullId[month - 1]} $year';
@@ -132,6 +147,17 @@ extension StringParseDateExtension on String {
           final month = _monthsFullId.indexOf(parts[1]) + 1;
           final year = int.tryParse(parts[2]);
           if (day != null && month > 0 && year != null) {
+            return DateTime(year, month, day);
+          }
+        }
+        break;
+      case AppDateTimeFormat.dmyDash:
+        final dashParts = trimmed.split('-');
+        if (dashParts.length >= 3) {
+          final day = int.tryParse(dashParts[0]);
+          final month = int.tryParse(dashParts[1]);
+          final year = int.tryParse(dashParts[2]);
+          if (day != null && month != null && year != null) {
             return DateTime(year, month, day);
           }
         }

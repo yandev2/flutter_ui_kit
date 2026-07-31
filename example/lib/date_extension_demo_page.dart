@@ -12,6 +12,7 @@ class _DateExtensionDemoPageState extends State<DateExtensionDemoPage> {
   final DateTime _sampleDate = DateTime(2023, 8, 17, 10, 30);
   final String _customStringInput = "17 Agustus 2023";
   final String _isoStringInput = "2023-08-17T10:30:00.000Z";
+  final String _carbonApiInput = "2020-12-07T14:00:00.000000Z";
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +50,11 @@ class _DateExtensionDemoPageState extends State<DateExtensionDemoPage> {
             context,
             'AppDateTimeFormat.dmyFullMonth',
             _sampleDate.formatted(AppDateTimeFormat.dmyFullMonth),
+          ),
+          _buildFormatDemo(
+            context,
+            'AppDateTimeFormat.dmyDash',
+            _sampleDate.formatted(AppDateTimeFormat.dmyDash),
           ),
           _buildFormatDemo(
             context,
@@ -90,6 +96,30 @@ class _DateExtensionDemoPageState extends State<DateExtensionDemoPage> {
             context,
             'Formatted as dmyShortMonth',
             _isoStringInput.toFormattedDate(AppDateTimeFormat.dmyShortMonth),
+          ),
+          SizedBox(height: AppSpacing.xl),
+          _buildSectionTitle(context, '4. Carbon / ISO API String'),
+          Text(
+            'Input Carbon String: "$_carbonApiInput"',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: context.uiTheme.hintColor),
+          ),
+          SizedBox(height: AppSpacing.sm),
+          _buildFormatDemo(
+            context,
+            'toFormattedDate(dmyFullMonth)',
+            _carbonApiInput.toFormattedDate(AppDateTimeFormat.dmyFullMonth),
+          ),
+          _buildFormatDemo(
+            context,
+            'toFormattedDate(dmyDash)',
+            _carbonApiInput.toFormattedDate(AppDateTimeFormat.dmyDash),
+          ),
+          _buildFormatDemo(
+            context,
+            'toFormattedDate(timeHm)',
+            _carbonApiInput.toFormattedDate(AppDateTimeFormat.timeHm),
           ),
         ],
       ),

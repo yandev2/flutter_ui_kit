@@ -13,6 +13,13 @@ class AppTextField extends StatefulWidget {
   final bool obscureText;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
+
+  /// Nilai awal field. Tidak boleh dipakai bersamaan dengan [controller].
+  ///
+  /// Jika [controller] tidak disediakan, [AppTextField] membuat internal
+  /// [TextEditingController] dan otomatis me-dispose-nya saat widget dihapus.
+  final String? initialValue;
+
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final int? maxLines;
@@ -43,6 +50,7 @@ class AppTextField extends StatefulWidget {
     this.obscureText = false,
     this.onChanged,
     this.controller,
+    this.initialValue,
     this.inputFormatters,
     this.keyboardType,
     this.maxLines = 1,
@@ -59,7 +67,10 @@ class AppTextField extends StatefulWidget {
     this.helperSize,
     this.errorSize,
     this.fillColor,
-  });
+  }) : assert(
+         controller == null || initialValue == null,
+         'Cannot provide both controller and initialValue',
+       );
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -67,13 +78,21 @@ class AppTextField extends StatefulWidget {
 
 class _AppTextFieldState extends State<AppTextField> {
   final FocusNode _focusNode = FocusNode();
+  TextEditingController? _internalController;
   bool _isFocused = false;
   String _currentText = '';
+
+  TextEditingController? get _effectiveController =>
+      widget.controller ?? _internalController;
 
   @override
   void initState() {
     super.initState();
-    _currentText = widget.controller?.text ?? '';
+    if (widget.controller == null) {
+      _internalController =
+          TextEditingController(text: widget.initialValue ?? '');
+    }
+    _currentText = _effectiveController?.text ?? '';
     _focusNode.addListener(() {
       setState(() {
         _isFocused = _focusNode.hasFocus;
@@ -82,7 +101,31 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   @override
+  void didUpdateWidget(covariant AppTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.controller != null && _internalController != null) {
+      _internalController!.dispose();
+      _internalController = null;
+    } else if (widget.controller == null && _internalController == null) {
+      _internalController =
+          TextEditingController(text: widget.initialValue ?? '');
+    }
+
+    if (widget.controller == null &&
+        widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _internalController?.text) {
+      _internalController?.text = widget.initialValue ?? '';
+      _currentText = _internalController?.text ?? '';
+    } else if (widget.controller != null) {
+      _currentText = widget.controller!.text;
+    }
+  }
+
+  @override
   void dispose() {
+    _internalController?.dispose();
+    _internalController = null;
     _focusNode.dispose();
     super.dispose();
   }
@@ -91,6 +134,19 @@ class _AppTextFieldState extends State<AppTextField> {
 
   void _handleEditingComplete() {
     widget.onEditingComplete?.call(_fieldValue);
+    if (!mounted) return;
+
+    if (widget.textInputAction == TextInputAction.next) {
+      FocusScope.of(context).nextFocus();
+    } else {
+      _focusNode.unfocus();
+    }
+  }
+
+  void _handleSubmitted(String value) {
+    widget.onSubmitted?.call(value);
+    if (!mounted) return;
+    _focusNode.unfocus();
   }
 
   @override
@@ -111,6 +167,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final verticalPadding = sizeHeight(12);
     final hasPrefix = widget.prefixIcon != null;
     final hasSuffix = widget.suffixWidget != null;
+    final isMultiline = (widget.maxLines ?? 1) > 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +190,9 @@ class _AppTextFieldState extends State<AppTextField> {
             border: Border.all(color: borderColor, width: size(1)),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: isMultiline
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               if (hasPrefix)
                 Padding(
@@ -162,7 +221,7 @@ class _AppTextFieldState extends State<AppTextField> {
                     bottom: verticalPadding,
                   ),
                   child: TextField(
-                    controller: widget.controller,
+                    controller: _effectiveController,
                     focusNode: _focusNode,
                     obscureText: widget.obscureText,
                     readOnly: widget.readOnly,
@@ -171,7 +230,7 @@ class _AppTextFieldState extends State<AppTextField> {
                     enableSuggestions: !widget.obscureText,
                     autofillHints: widget.autofillHints,
                     textInputAction: widget.textInputAction,
-                    onSubmitted: widget.onSubmitted,
+                    onSubmitted: _handleSubmitted,
                     onEditingComplete: _handleEditingComplete,
                     onTapOutside: (_) => _focusNode.unfocus(),
                     onChanged: (value) {

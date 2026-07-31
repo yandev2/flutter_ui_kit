@@ -10,6 +10,8 @@ class StringExtensionDemoPage extends StatefulWidget {
 }
 
 class _StringExtensionDemoPageState extends State<StringExtensionDemoPage> {
+  static const _carbonApi = '2020-12-07T14:00:00.000000Z';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,6 +138,31 @@ class _StringExtensionDemoPageState extends State<StringExtensionDemoPage> {
             color: "StrongP@ssw0rd".isStrongPassword
                 ? context.uiTheme.success
                 : context.uiTheme.error,
+          ),
+
+          SizedBox(height: AppSpacing.xl),
+          _buildSectionTitle(context, '6. Carbon / API Date Formatters'),
+          Text(
+            'Input: "$_carbonApi"',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: context.uiTheme.hintColor),
+          ),
+          SizedBox(height: AppSpacing.sm),
+          _buildFormatDemo(
+            context,
+            'toDateFullMonthId()',
+            _carbonApi.toDateFullMonthId(),
+          ),
+          _buildFormatDemo(
+            context,
+            'toTimeHm()',
+            _carbonApi.toTimeHm(),
+          ),
+          _buildFormatDemo(
+            context,
+            'toDateDmyDash()',
+            _carbonApi.toDateDmyDash(),
           ),
         ],
       ),

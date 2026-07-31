@@ -15,6 +15,8 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
   _DemoMode _demoMode = _DemoMode.search;
   String _searchQuery = '';
   String _selectedPeriod = 'daily';
+  bool _pinned = true;
+  bool _floating = false;
 
   final List<String> _components = [
     'Typography',
@@ -44,6 +46,13 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
     'App Snackbar',
     'App Dashboard Appbar',
     'App Main Appbar',
+    'App Detail Appbar',
+    'App Progress Bar',
+    'App Progress Circle',
+    'App Timeline',
+    'App Radio',
+    'App Selection Tile',
+    'App Image Viewer',
   ];
 
   void _toggleDemoMode() {
@@ -64,6 +73,8 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
           if (_demoMode == _DemoMode.search)
             AppMainAppbar(
               title: 'Komponen UI',
+              pinned: _pinned,
+              floating: _floating,
               titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
@@ -110,9 +121,67 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
                 ),
               ],
             )
-          else
+          else ...[
+            if (!_pinned)
+              SliverToBoxAdapter(
+                child: Container(
+                  color: context.uiTheme.primary,
+                  padding: EdgeInsets.fromLTRB(
+                    size(16),
+                    size(16),
+                    size(16),
+                    size(24),
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: size(40),
+                        backgroundColor: context.uiTheme.onPrimary.withValues(
+                          alpha: 0.2,
+                        ),
+                        child: Text(
+                          'AW',
+                          style: TextStyle(
+                            color: context.uiTheme.onPrimary,
+                            fontSize: size(24),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: size(12)),
+                      Text(
+                        'Andi Wijaya',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: context.uiTheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: size(8)),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: size(12),
+                          vertical: size(4),
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.uiTheme.success.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(size(12)),
+                        ),
+                        child: Text(
+                          'aktif',
+                          style: TextStyle(
+                            color: context.uiTheme.success,
+                            fontSize: size(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             AppMainAppbar(
               title: 'Laporan',
+              pinned: _pinned,
+              floating: _floating,
               titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
@@ -145,11 +214,38 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
                 ),
               ],
             ),
+          ],
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(size(16), size(8), size(16), size(8)),
+              child: Wrap(
+                spacing: size(8),
+                runSpacing: size(8),
+                children: [
+                  FilterChip(
+                    label: Text('pinned: $_pinned'),
+                    selected: _pinned,
+                    onSelected: (val) => setState(() => _pinned = val),
+                  ),
+                  FilterChip(
+                    label: Text('floating: $_floating'),
+                    selected: _floating,
+                    onSelected: (val) => setState(() => _floating = val),
+                  ),
+                ],
+              ),
+            ),
+          ),
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               if (_demoMode == _DemoMode.tabFilter && index == 0) {
                 return Padding(
-                  padding: EdgeInsets.fromLTRB(size(16), size(16), size(16), size(8)),
+                  padding: EdgeInsets.fromLTRB(
+                    size(16),
+                    size(8),
+                    size(16),
+                    size(8),
+                  ),
                   child: Text(
                     'Periode aktif: $_selectedPeriod',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -197,7 +293,8 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
                       Expanded(
                         child: Text(
                           itemName,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
                             color: context.uiTheme.onSurface,
                           ),
                         ),

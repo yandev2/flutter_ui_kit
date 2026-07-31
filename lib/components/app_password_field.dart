@@ -12,6 +12,7 @@ class AppPasswordField extends StatefulWidget {
   final bool showStrengthIndicator;
   final ValueChanged<String>? onChanged;
   final TextEditingController? controller;
+  final String? initialValue;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
 
@@ -34,6 +35,7 @@ class AppPasswordField extends StatefulWidget {
     this.showStrengthIndicator = true,
     this.onChanged,
     this.controller,
+    this.initialValue,
     this.inputFormatters,
     this.keyboardType,
     this.titleSize,
@@ -52,6 +54,13 @@ class AppPasswordField extends StatefulWidget {
 class _AppPasswordFieldState extends State<AppPasswordField> {
   bool _obscureText = true;
   String _passwordText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordText =
+        widget.controller?.text ?? widget.initialValue ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +100,7 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
           keyboardType:
               widget.keyboardType ?? TextInputType.visiblePassword,
           controller: widget.controller,
+          initialValue: widget.initialValue,
           inputFormatters: [
             NoSpaceFormatter(),
             if (widget.inputFormatters != null) ...widget.inputFormatters!,

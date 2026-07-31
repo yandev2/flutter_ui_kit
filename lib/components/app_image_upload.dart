@@ -9,9 +9,20 @@ import 'utils/offline_image.dart';
 class AppImageUpload extends StatefulWidget {
   final String title;
   final String subtitle;
+
+  /// Path lokal gambar yang baru dipilih user.
+  /// Hanya set dari callback [onImageSelected] — jangan set ke [initialImageUrl].
   final String? localImagePath;
+
+  /// URL foto existing (mis. dari server saat edit profile).
+  /// Hanya untuk preview; tidak pernah dikembalikan lewat [onImageSelected].
+  final String? initialImageUrl;
+
   final bool sourceCamera;
   final bool sourceGallery;
+
+  /// Dipanggil hanya saat user memilih gambar baru dari kamera/galeri.
+  /// [path] selalu berupa path lokal — tidak pernah URL [initialImageUrl].
   final ValueChanged<String>? onImageSelected;
   final VoidCallback? onCancel;
   final String primaryButtonText;
@@ -28,6 +39,7 @@ class AppImageUpload extends StatefulWidget {
     this.title = 'Upload Files',
     this.subtitle = 'Upload your source files here',
     this.localImagePath,
+    this.initialImageUrl,
     this.sourceCamera = true,
     this.sourceGallery = true,
     this.onImageSelected,
@@ -46,6 +58,13 @@ class AppImageUpload extends StatefulWidget {
 
 class _AppImageUploadState extends State<AppImageUpload> {
   final ImagePicker _picker = ImagePicker();
+
+  bool get _hasInitialImageUrl =>
+      widget.initialImageUrl != null &&
+      widget.initialImageUrl!.trim().isNotEmpty;
+
+  bool get _hasPreview =>
+      widget.localImagePath != null || _hasInitialImageUrl;
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -116,6 +135,62 @@ class _AppImageUploadState extends State<AppImageUpload> {
     );
   }
 
+  Widget _buildPreview(ThemeData theme, UIComponentTheme uiTheme) {
+    if (widget.localImagePath != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(size(12)),
+        child: buildPathImage(
+          imagePath: widget.localImagePath!,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    if (_hasInitialImageUrl) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(size(12)),
+        child: AppImage(
+          imageUrl: widget.initialImageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          borderRadius: BorderRadius.circular(size(12)),
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        HeroIcon(
+          HeroIcons.photo,
+          size: size(40),
+          color: uiTheme.borderColor,
+          style: HeroIconStyle.outline,
+        ),
+        SizedBox(height: size(12)),
+        RichText(
+          text: TextSpan(
+            text: 'Drag Files here or ',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: size(12),
+              color: uiTheme.hintColor,
+            ),
+            children: [
+              TextSpan(
+                text: 'Browse',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: size(12),
+                  color: uiTheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -167,8 +242,8 @@ class _AppImageUploadState extends State<AppImageUpload> {
               ),
               child: Container(
                 width: double.infinity,
-                height: widget.localImagePath == null ? size(160) : null,
-                constraints: widget.localImagePath != null
+                height: _hasPreview ? null : size(160),
+                constraints: _hasPreview
                     ? BoxConstraints(maxHeight: size(360), minHeight: size(160))
                     : null,
                 decoration: BoxDecoration(
@@ -177,45 +252,7 @@ class _AppImageUploadState extends State<AppImageUpload> {
                       uiTheme.background.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(size(12)),
                 ),
-                child: widget.localImagePath != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(size(12)),
-                        child: buildPathImage(
-                          imagePath: widget.localImagePath!,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          HeroIcon(
-                            HeroIcons.photo,
-                            size: size(40),
-                            color: uiTheme.borderColor,
-                            style: HeroIconStyle.outline,
-                          ),
-                          SizedBox(height: size(12)),
-                          RichText(
-                            text: TextSpan(
-                              text: 'Drag Files here or ',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: size(12),
-                                color: uiTheme.hintColor,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: 'Browse',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: size(12),
-                                    color: uiTheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                child: _buildPreview(theme, uiTheme),
               ),
             ),
           ),

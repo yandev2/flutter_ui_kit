@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'date_extension.dart';
+
 /// Ekstensi super lengkap untuk manipulasi tipe data [String].
 extension StringFormatExtension on String {
   // --- Numeric Parsers ---
@@ -124,4 +126,20 @@ extension StringFormatExtension on String {
     );
     return exp.hasMatch(this);
   }
+}
+
+/// Formatter string tanggal/waktu dari API Laravel Carbon (ISO string).
+extension StringCarbonDateExtension on String {
+  /// Carbon/ISO API → `07 Desember 2020`
+  ///
+  /// Waktu diinterpretasikan sesuai timezone [DateTime] hasil parse
+  /// (ISO dengan `Z` = UTC, ditampilkan ke komponen tanggal lokal device).
+  String toDateFullMonthId() =>
+      toFormattedDate(AppDateTimeFormat.dmyFullMonth);
+
+  /// Carbon/ISO API → `14:00`
+  String toTimeHm() => toFormattedDate(AppDateTimeFormat.timeHm);
+
+  /// Carbon/ISO API → `07-05-2020`
+  String toDateDmyDash() => toFormattedDate(AppDateTimeFormat.dmyDash);
 }

@@ -17,14 +17,15 @@ class AppMainAppbar extends StatefulWidget {
   /// Tinggi area appbar (collapsed/search). Nilai desain, diskalakan via `sizeHeight()`.
   final double? appBarHeight;
 
-  /// Tinggi area tab filter (nilai desain, diskalakan via `sizeHeight()`).
+  /// Tinggi area tab filter (nilai desain, diskalakan via `sizeHeight()`.
   /// Hanya dipakai jika [tabFilter] disediakan. Default `70`.
   final double? tabFilterHeight;
 
   /// Padding bawah pada area title. Nilai desain, diskalakan via `sizeHeight()`.
   final double? titleBottomPadding;
 
-  /// App bar tetap di atas saat scroll. Default `true`.
+  /// Jika true, appbar penuh (title + search/tab) fixed saat scroll.
+  /// Jika false, title + ikon collapse; yang menempel hanya area search/tab.
   final bool pinned;
 
   /// App bar muncul kembali saat scroll ke atas. Default `false`.
@@ -84,7 +85,7 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
     final topPadding = MediaQuery.paddingOf(context).top;
 
     return SliverPersistentHeader(
-      pinned: widget.pinned,
+      pinned: true,
       floating: widget.floating,
       delegate: _AppbarDelegate(
         title: widget.title,
@@ -106,6 +107,7 @@ class _AppMainAppbarState extends State<AppMainAppbar> {
         appBarHeight: widget.appBarHeight,
         tabFilterHeight: widget.tabFilterHeight,
         titleBottomPadding: widget.titleBottomPadding,
+        pinned: widget.pinned,
       ),
     );
   }
@@ -128,6 +130,7 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
   final double? appBarHeight;
   final double? tabFilterHeight;
   final double? titleBottomPadding;
+  final bool pinned;
 
   _AppbarDelegate({
     required this.title,
@@ -146,16 +149,24 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     this.appBarHeight,
     this.tabFilterHeight,
     this.titleBottomPadding,
+    required this.pinned,
   });
 
-  // Base constants
   double get _titleHeight => sizeHeight(45);
   double get _searchHeight => sizeHeight(appBarHeight ?? 70);
   double get _tabFilterHeight =>
       sizeHeight(tabFilterHeight ?? appBarHeight ?? 70);
   double get _bottomAreaHeight =>
       tabFilter != null ? _tabFilterHeight : _searchHeight;
-  double get _collapsedHeight => _bottomAreaHeight;
+
+  bool get _hasTitleRow => onSearch != null || tabFilter != null;
+
+  double get _bottomOnlyExtent => _bottomAreaHeight + topPadding;
+
+  double get _fullExtent {
+    if (!_hasTitleRow) return _bottomOnlyExtent;
+    return _titleHeight + _bottomAreaHeight + topPadding;
+  }
 
   TextStyle _resolvedTitleStyle(ThemeData theme, UIComponentTheme uiTheme) {
     final defaults = theme.textTheme.titleMedium?.copyWith(
@@ -176,15 +187,13 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
       titleBottomPadding != null ? sizeHeight(titleBottomPadding!) : 0;
 
   @override
-  double get maxExtent {
-    if (onSearch == null && tabFilter == null) {
-      return _collapsedHeight + topPadding;
-    }
-    return _titleHeight + _bottomAreaHeight + topPadding;
-  }
+  double get maxExtent => _fullExtent;
 
   @override
-  double get minExtent => _collapsedHeight + topPadding;
+  double get minExtent {
+    if (pinned || !_hasTitleRow) return _fullExtent;
+    return _bottomOnlyExtent;
+  }
 
   @override
   bool shouldRebuild(covariant _AppbarDelegate oldDelegate) {
@@ -197,7 +206,8 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
         titleStyle != oldDelegate.titleStyle ||
         appBarHeight != oldDelegate.appBarHeight ||
         tabFilterHeight != oldDelegate.tabFilterHeight ||
-        titleBottomPadding != oldDelegate.titleBottomPadding;
+        titleBottomPadding != oldDelegate.titleBottomPadding ||
+        pinned != oldDelegate.pinned;
   }
 
   @override
@@ -209,10 +219,15 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     final theme = Theme.of(context);
     final uiTheme = context.uiTheme;
 
-    // Fade out opacity for title when scrolled up
-    double titleOpacity = 1.0 - (shrinkOffset / _titleHeight);
-    if (titleOpacity < 0) titleOpacity = 0.0;
-    if (titleOpacity > 1) titleOpacity = 1.0;
+    final collapseRange = (maxExtent - minExtent).clamp(0.0, _titleHeight);
+    final collapseProgress = collapseRange == 0
+        ? 0.0
+        : (shrinkOffset / collapseRange).clamp(0.0, 1.0);
+
+    final titleOpacity = pinned ? 1.0 : 1.0 - collapseProgress;
+    final titleTop = pinned
+        ? topPadding
+        : topPadding - (shrinkOffset * 0.5).clamp(0.0, topPadding);
 
     final hasSearchOrTab = onSearch != null || tabFilter != null;
     final searchBottomAreaHeight = hasSearchOrTab
@@ -222,70 +237,71 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
     return Container(
       color: backgroundColor ?? uiTheme.primary,
       child: Stack(
+        clipBehavior: Clip.hardEdge,
         children: [
-          Positioned(
-            top: topPadding - (shrinkOffset * 0.5), // Light parallax effect
-            left: 0,
-            right: 0,
-            height: _titleHeight,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: _resolvedTitleBottomPadding),
-              child: Opacity(
-                opacity: titleOpacity,
-                child: Stack(
-                  children: [
-                    if (onBack != null)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          icon: HeroIcon(
-                            HeroIcons.arrowLeft,
-                            size: size(20),
-                            color: uiTheme.onPrimary,
+          if (_hasTitleRow && titleOpacity > 0)
+            Positioned(
+              top: titleTop,
+              left: 0,
+              right: 0,
+              height: _titleHeight,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: _resolvedTitleBottomPadding),
+                child: Opacity(
+                  opacity: titleOpacity,
+                  child: Stack(
+                    children: [
+                      if (onBack != null)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: HeroIcon(
+                              HeroIcons.arrowLeft,
+                              size: size(20),
+                              color: uiTheme.onPrimary,
+                            ),
+                            onPressed: onBack,
                           ),
-                          onPressed: onBack,
+                        ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          title,
+                          style: _resolvedTitleStyle(theme, uiTheme),
                         ),
                       ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        title,
-                        style: _resolvedTitleStyle(theme, uiTheme),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Builder(
+                          builder: (context) {
+                            if (hasSearchText) {
+                              return IconButton(
+                                icon: HeroIcon(
+                                  HeroIcons.xMark,
+                                  color: uiTheme.onPrimary,
+                                  style: HeroIconStyle.solid,
+                                  size: size(24),
+                                ),
+                                tooltip: 'Reset Filter',
+                                onPressed: onReset,
+                              );
+                            }
+                            if (actions != null) {
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: actions!,
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Builder(
-                        builder: (context) {
-                          if (hasSearchText) {
-                            return IconButton(
-                              icon: HeroIcon(
-                                HeroIcons.xMark,
-                                color: uiTheme.onPrimary,
-                                style: HeroIconStyle.solid,
-                                size: size(24),
-                              ),
-                              tooltip: 'Reset Filter',
-                              onPressed: onReset,
-                            );
-                          }
-                          if (actions != null) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: actions!,
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Search Bar or Tab Filter pinned to the bottom
           if (tabFilter == null)
             Positioned(
               bottom: 0,
@@ -308,7 +324,6 @@ class _AppbarDelegate extends SliverPersistentHeaderDelegate {
                     ? const SizedBox.shrink()
                     : AppTextField(
                         fillColor: uiTheme.surface,
-
                         controller: textController,
                         hint: searchHint,
                         prefixIcon: HeroIcons.magnifyingGlass,

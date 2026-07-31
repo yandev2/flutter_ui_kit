@@ -10,6 +10,7 @@ class AppImageUploadDemoPage extends StatefulWidget {
 
 class _AppImageUploadDemoPageState extends State<AppImageUploadDemoPage> {
   String? _selectedImagePath;
+  String? _profileLocalPath;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,26 @@ class _AppImageUploadDemoPageState extends State<AppImageUploadDemoPage> {
         padding: EdgeInsets.all(AppSpacing.md),
         child: Column(
           children: [
+            AppImageUpload(
+              title: 'Update Profile Picture',
+              subtitle: 'PNG, JPG, or JPEG (Max 5MB)',
+              initialImageUrl: 'https://i.pravatar.cc/300',
+              localImagePath: _profileLocalPath,
+              onImageSelected: (path) {
+                setState(() {
+                  _profileLocalPath = path;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('New image picked: $path')),
+                );
+              },
+              onCancel: () {
+                setState(() {
+                  _profileLocalPath = null;
+                });
+              },
+            ),
+            SizedBox(height: size(24)),
             AppImageUpload(
               title: 'Upload Profile Picture',
               subtitle: 'PNG, JPG, or JPEG (Max 5MB)',
