@@ -5,22 +5,30 @@ import 'package:dotted_border/dotted_border.dart';
 
 import '../ui_component_flutter.dart';
 
+CrossAxisAlignment _crossAxisFromTextAlign(TextAlign align) {
+  switch (align) {
+    case TextAlign.left:
+    case TextAlign.start:
+      return CrossAxisAlignment.start;
+    case TextAlign.right:
+    case TextAlign.end:
+      return CrossAxisAlignment.end;
+    default:
+      return CrossAxisAlignment.center;
+  }
+}
+
 class AppFileUpload extends StatefulWidget {
   final String title;
   final String subtitle;
 
   /// Path lokal file yang baru dipilih user.
-  /// Hanya set dari callback [onFileSelected] — jangan set ke [initialFileUrl].
   final String? localFilePath;
 
   /// URL file existing (mis. dari server saat edit dokumen).
-  /// Hanya untuk preview; tidak pernah dikembalikan lewat [onFileSelected].
   final String? initialFileUrl;
 
   final List<String>? allowedExtensions;
-
-  /// Dipanggil hanya saat user memilih file baru dari file picker.
-  /// [path] selalu berupa path lokal — tidak pernah URL [initialFileUrl].
   final ValueChanged<String>? onFileSelected;
   final VoidCallback? onCancel;
   final String primaryButtonText;
@@ -28,6 +36,9 @@ class AppFileUpload extends StatefulWidget {
 
   final double? titleSize;
   final double? descriptionSize;
+  final double? buttonHeight;
+  final double? fileAreaMinHeight;
+  final TextAlign headerAlignment;
 
   final Color? backgroundColor;
   final Color? fileAreaColor;
@@ -45,6 +56,9 @@ class AppFileUpload extends StatefulWidget {
     this.secondaryButtonText = 'Cancel',
     this.titleSize,
     this.descriptionSize,
+    this.buttonHeight,
+    this.fileAreaMinHeight,
+    this.headerAlignment = TextAlign.center,
     this.backgroundColor,
     this.fileAreaColor,
   });
@@ -60,7 +74,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
 
   Future<void> _pickFile() async {
     try {
-      final FilePickerResult? result = await FilePicker.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: widget.allowedExtensions != null ? FileType.custom : FileType.any,
         allowedExtensions: widget.allowedExtensions,
         // ignore: deprecated_member_use
@@ -68,9 +82,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
       );
 
       if (result != null && result.files.single.path != null) {
-        if (widget.onFileSelected != null) {
-          widget.onFileSelected!(result.files.single.path!);
-        }
+        widget.onFileSelected?.call(result.files.single.path!);
       }
     } catch (e) {
       debugPrint('Error picking file: $e');
@@ -137,6 +149,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
         ),
         SizedBox(height: size(12)),
         RichText(
+          textAlign: widget.headerAlignment,
           text: TextSpan(
             text: 'Drag Files here or ',
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -159,6 +172,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
           SizedBox(height: size(8)),
           Text(
             'Supported formats: ${widget.allowedExtensions!.join(", ")}',
+            textAlign: widget.headerAlignment,
             style: theme.textTheme.bodySmall?.copyWith(
               fontSize: size(10),
               color: uiTheme.hintColor,
@@ -173,6 +187,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final uiTheme = context.uiTheme;
+    final headerCrossAxis = _crossAxisFromTextAlign(widget.headerAlignment);
 
     return Container(
       width: double.infinity,
@@ -190,10 +205,11 @@ class _AppFileUploadState extends State<AppFileUpload> {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: headerCrossAxis,
         children: [
           Text(
             widget.title,
+            textAlign: widget.headerAlignment,
             style: theme.textTheme.titleMedium?.copyWith(
               fontSize: widget.titleSize,
               color: uiTheme.onSurface,
@@ -203,6 +219,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
           SizedBox(height: size(4)),
           Text(
             widget.subtitle,
+            textAlign: widget.headerAlignment,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontSize: widget.descriptionSize ?? size(14),
               color: uiTheme.hintColor,
@@ -221,7 +238,9 @@ class _AppFileUploadState extends State<AppFileUpload> {
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(size(16)),
-                constraints: BoxConstraints(minHeight: size(160)),
+                constraints: BoxConstraints(
+                  minHeight: size(widget.fileAreaMinHeight ?? 160),
+                ),
                 decoration: BoxDecoration(
                   color:
                       widget.fileAreaColor ??
@@ -239,6 +258,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
                 child: AppButton(
                   size: AppButtonSize.small,
                   textSize: size(12),
+                  height: widget.buttonHeight,
                   text: widget.primaryButtonText,
                   onPressed: _pickFile,
                   isMax: true,
@@ -250,6 +270,7 @@ class _AppFileUploadState extends State<AppFileUpload> {
                   text: widget.secondaryButtonText,
                   size: AppButtonSize.small,
                   textSize: size(12),
+                  height: widget.buttonHeight,
                   textColor: uiTheme.onSurface,
                   variant: AppButtonVariant.outline,
                   onPressed: widget.onCancel ?? () {},

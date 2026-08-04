@@ -7,6 +7,7 @@ class AppDetailAppbar extends StatelessWidget {
   final bool isBack;
   final VoidCallback? onBack;
   final Color? backgroundColor;
+  final Color? titleColor;
 
   const AppDetailAppbar({
     super.key,
@@ -14,12 +15,14 @@ class AppDetailAppbar extends StatelessWidget {
     this.isBack = true,
     this.onBack,
     this.backgroundColor,
+    this.titleColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
     final bgColor = backgroundColor ?? uiTheme.primary;
+    final resolvedTitleColor = titleColor ?? uiTheme.onPrimary;
 
     return SliverAppBar(
       pinned: true,
@@ -41,7 +44,7 @@ class AppDetailAppbar extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: uiTheme.onPrimary,
+                      color: resolvedTitleColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -58,7 +61,7 @@ class AppDetailAppbar extends StatelessWidget {
                       child: HeroIcon(
                         HeroIcons.arrowLeft,
                         size: size(20),
-                        color: uiTheme.onPrimary,
+                        color: resolvedTitleColor,
                       ),
                     ),
                   ),

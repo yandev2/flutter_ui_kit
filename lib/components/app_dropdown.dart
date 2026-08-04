@@ -14,6 +14,7 @@ class AppDropdown extends StatefulWidget {
   final HeroIcons? prefixIcon;
   final bool isLoading;
   final bool showClearButton;
+  final bool readOnly;
 
   final double? titleSize;
   final double? textSize;
@@ -33,6 +34,7 @@ class AppDropdown extends StatefulWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.showClearButton = true,
+    this.readOnly = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
@@ -69,6 +71,8 @@ class _AppDropdownState extends State<AppDropdown> {
     return _validSingleValue != null;
   }
 
+  bool get _isInteractive => !widget.readOnly && !widget.isLoading;
+
   RelativeRect _menuPosition(RenderBox box) {
     final offset = box.localToGlobal(Offset.zero);
     final boxSize = box.size;
@@ -82,13 +86,13 @@ class _AppDropdownState extends State<AppDropdown> {
 
   BoxDecoration _triggerDecoration() {
     final uiTheme = context.uiTheme;
+    final borderColor = widget.readOnly
+        ? uiTheme.borderColor.withValues(alpha: 0.6)
+        : (_isOpen ? uiTheme.primary : uiTheme.borderColor);
     return BoxDecoration(
       color: widget.fillColor ?? uiTheme.background,
       borderRadius: BorderRadius.circular(size(8)),
-      border: Border.all(
-        color: _isOpen ? uiTheme.primary : uiTheme.borderColor,
-        width: size(1),
-      ),
+      border: Border.all(color: borderColor, width: size(1)),
     );
   }
 
@@ -112,7 +116,7 @@ class _AppDropdownState extends State<AppDropdown> {
   }
 
   void _openSingleMenu() {
-    if (widget.isLoading) return;
+    if (!_isInteractive) return;
 
     final box = _triggerKey.currentContext!.findRenderObject()! as RenderBox;
     final uiTheme = context.uiTheme;
@@ -148,7 +152,7 @@ class _AppDropdownState extends State<AppDropdown> {
   }
 
   void _openMultiMenu() {
-    if (widget.isLoading) return;
+    if (!_isInteractive) return;
 
     final box = _triggerKey.currentContext!.findRenderObject()! as RenderBox;
     final uiTheme = context.uiTheme;
@@ -283,13 +287,14 @@ class _AppDropdownState extends State<AppDropdown> {
 
     return HeroIcon(
       HeroIcons.chevronDown,
-      color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
+      color: _isOpen && _isInteractive ? uiTheme.primary : uiTheme.hintColor,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
+    final contentOpacity = widget.readOnly ? 0.5 : 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,63 +310,69 @@ class _AppDropdownState extends State<AppDropdown> {
           ),
           SizedBox(height: sizeHeight(8)),
         ],
-        Container(
-          key: _triggerKey,
-          padding: EdgeInsets.symmetric(
-            horizontal: size(16),
-            vertical: widget.isMultiSelect && _hasSelection
-                ? sizeHeight(8)
-                : sizeHeight(12),
-          ),
-          decoration: _triggerDecoration(),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (widget.prefixIcon != null) ...[
-                HeroIcon(
-                  widget.prefixIcon!,
-                  color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
-                  size: size(20),
-                ),
-                SizedBox(width: size(12)),
-              ],
-              Expanded(
-                child: GestureDetector(
-                  onTap: _openMenu,
-                  behavior: HitTestBehavior.opaque,
-                  child: widget.isMultiSelect
-                      ? _buildMultiTriggerContent()
-                      : _buildSingleTriggerContent(),
-                ),
+        Opacity(
+          opacity: contentOpacity,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: appFieldMinHeight()),
+            child: Container(
+              key: _triggerKey,
+              padding: EdgeInsets.symmetric(
+                horizontal: appFieldHorizontalPadding(),
+                vertical: appFieldVerticalPadding(),
               ),
-              SizedBox(width: size(8)),
-              if (widget.isMultiSelect &&
-                  widget.showClearButton &&
-                  _hasSelection &&
-                  !widget.isLoading)
-                GestureDetector(
-                  onTap: _clearAllSelected,
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: EdgeInsets.all(size(4)),
-                    child: HeroIcon(
-                      HeroIcons.xMark,
-                      size: size(18),
-                      color: uiTheme.hintColor,
+              decoration: _triggerDecoration(),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (widget.prefixIcon != null) ...[
+                    HeroIcon(
+                      widget.prefixIcon!,
+                      color: _isOpen && _isInteractive
+                          ? uiTheme.primary
+                          : uiTheme.hintColor,
+                      size: size(20),
+                    ),
+                    SizedBox(width: size(12)),
+                  ],
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _isInteractive ? _openMenu : null,
+                      behavior: HitTestBehavior.opaque,
+                      child: widget.isMultiSelect
+                          ? _buildMultiTriggerContent()
+                          : _buildSingleTriggerContent(),
                     ),
                   ),
-                ),
-              if (widget.isMultiSelect &&
-                  widget.showClearButton &&
-                  _hasSelection &&
-                  !widget.isLoading)
-                SizedBox(width: size(4)),
-              GestureDetector(
-                onTap: _openMenu,
-                behavior: HitTestBehavior.opaque,
-                child: _buildTrailingIcons(),
+                  SizedBox(width: size(8)),
+                  if (widget.isMultiSelect &&
+                      widget.showClearButton &&
+                      _hasSelection &&
+                      _isInteractive)
+                    GestureDetector(
+                      onTap: _clearAllSelected,
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: EdgeInsets.all(size(4)),
+                        child: HeroIcon(
+                          HeroIcons.xMark,
+                          size: size(18),
+                          color: uiTheme.hintColor,
+                        ),
+                      ),
+                    ),
+                  if (widget.isMultiSelect &&
+                      widget.showClearButton &&
+                      _hasSelection &&
+                      _isInteractive)
+                    SizedBox(width: size(4)),
+                  GestureDetector(
+                    onTap: _isInteractive ? _openMenu : null,
+                    behavior: HitTestBehavior.opaque,
+                    child: _buildTrailingIcons(),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ],

@@ -60,7 +60,17 @@ class _AppDropdownDemoPageState extends State<AppDropdownDemoPage> {
             onMultiChanged: (val) => setState(() => _multiValues = val),
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('3. Selection Tile'),
+          _buildSectionTitle('3. Read Only Dropdown'),
+          AppDropdown(
+            title: 'Kategori (Locked)',
+            hint: 'Tidak bisa diubah',
+            items: _items,
+            value: 'Flutter',
+            readOnly: true,
+            onChanged: (_) {},
+          ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('4. Selection Tile'),
           AppSelectionTile(
             control: Checkbox(
               value: _tileSelected,
@@ -77,7 +87,7 @@ class _AppDropdownDemoPageState extends State<AppDropdownDemoPage> {
             onChanged: (val) => setState(() => _tileSelected = val),
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('4. Selection Pill'),
+          _buildSectionTitle('5. Selection Pill'),
           Wrap(
             spacing: 8,
             children: [
@@ -90,7 +100,7 @@ class _AppDropdownDemoPageState extends State<AppDropdownDemoPage> {
             ],
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('5. Radio Button Selection'),
+          _buildSectionTitle('6. Radio Button Selection'),
           AppRadio<String>(
             value: 'option_1',
             groupValue: _radioValue,

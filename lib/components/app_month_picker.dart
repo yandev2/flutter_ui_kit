@@ -9,6 +9,7 @@ class AppMonthPicker extends StatefulWidget {
   final String? hint;
   final HeroIcons? prefixIcon;
   final bool isLoading;
+  final bool readOnly;
 
   final double? titleSize;
   final double? textSize;
@@ -39,6 +40,7 @@ class AppMonthPicker extends StatefulWidget {
     this.hint,
     this.prefixIcon,
     this.isLoading = false,
+    this.readOnly = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
@@ -52,6 +54,8 @@ class AppMonthPicker extends StatefulWidget {
 class _AppMonthPickerState extends State<AppMonthPicker> {
   bool _isOpen = false;
 
+  bool get _isInteractive => !widget.readOnly && !widget.isLoading;
+
   @override
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
@@ -59,6 +63,11 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
         widget.value != null && widget.value! >= 1 && widget.value! <= 12
         ? AppMonthPicker.monthNames[widget.value! - 1]
         : null;
+
+    final borderColor = widget.readOnly
+        ? uiTheme.borderColor.withValues(alpha: 0.6)
+        : (_isOpen ? uiTheme.primary : uiTheme.borderColor);
+    final contentOpacity = widget.readOnly ? 0.5 : 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +84,15 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
           SizedBox(height: sizeHeight(8)),
         ],
         PopupMenuButton<int>(
-          onOpened: () => setState(() => _isOpen = true),
+          enabled: _isInteractive,
+          onOpened: _isInteractive ? () => setState(() => _isOpen = true) : null,
           onCanceled: () => setState(() => _isOpen = false),
-          onSelected: widget.isLoading
-              ? null
-              : (val) {
+          onSelected: _isInteractive
+              ? (val) {
                   setState(() => _isOpen = false);
                   widget.onChanged(val);
-                },
+                }
+              : null,
           position: PopupMenuPosition.under,
           offset: Offset(0, sizeHeight(8)),
           color: uiTheme.surface,
@@ -99,61 +109,68 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
               child: _MonthPopup(initialMonth: widget.value),
             ),
           ],
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: size(16),
-              vertical: sizeHeight(12),
-            ),
-            decoration: BoxDecoration(
-              color: widget.fillColor ?? uiTheme.background,
-              borderRadius: BorderRadius.circular(size(8)),
-              border: Border.all(
-                color: _isOpen ? uiTheme.primary : uiTheme.borderColor,
-                width: size(1),
-              ),
-            ),
-            child: Row(
-              children: [
-                if (widget.prefixIcon != null) ...[
-                  HeroIcon(
-                    widget.prefixIcon!,
-                    color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
-                    size: size(20),
-                  ),
-                  SizedBox(width: size(12)),
-                ],
-                Expanded(
-                  child: Text(
-                    displayValue ?? widget.hint ?? '',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: displayValue != null
-                          ? uiTheme.onBackground
-                          : uiTheme.hintColor,
-                      fontSize:
-                          (displayValue != null
-                              ? widget.textSize
-                              : widget.hintSize) ??
-                          size(14),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+          child: Opacity(
+            opacity: contentOpacity,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: appFieldMinHeight()),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: appFieldHorizontalPadding(),
+                  vertical: appFieldVerticalPadding(),
                 ),
-                if (widget.isLoading)
-                  SizedBox(
-                    width: size(16),
-                    height: size(16),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: uiTheme.primary,
+                decoration: BoxDecoration(
+                  color: widget.fillColor ?? uiTheme.background,
+                  borderRadius: BorderRadius.circular(size(8)),
+                  border: Border.all(color: borderColor, width: size(1)),
+                ),
+                child: Row(
+                  children: [
+                    if (widget.prefixIcon != null) ...[
+                      HeroIcon(
+                        widget.prefixIcon!,
+                        color: _isOpen && _isInteractive
+                            ? uiTheme.primary
+                            : uiTheme.hintColor,
+                        size: size(20),
+                      ),
+                      SizedBox(width: size(12)),
+                    ],
+                    Expanded(
+                      child: Text(
+                        displayValue ?? widget.hint ?? '',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: displayValue != null
+                              ? uiTheme.onBackground
+                              : uiTheme.hintColor,
+                          fontSize:
+                              (displayValue != null
+                                  ? widget.textSize
+                                  : widget.hintSize) ??
+                              size(14),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  )
-                else
-                  HeroIcon(
-                    HeroIcons.calendarDays,
-                    color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
-                    size: size(18),
-                  ),
-              ],
+                    if (widget.isLoading)
+                      SizedBox(
+                        width: size(16),
+                        height: size(16),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: uiTheme.primary,
+                        ),
+                      )
+                    else
+                      HeroIcon(
+                        HeroIcons.calendarDays,
+                        color: _isOpen && _isInteractive
+                            ? uiTheme.primary
+                            : uiTheme.hintColor,
+                        size: size(18),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

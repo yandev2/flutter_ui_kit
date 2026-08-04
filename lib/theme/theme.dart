@@ -9,6 +9,7 @@ export 'app_spacing.dart';
 export 'app_typography.dart';
 export 'ui_component_theme.dart';
 export 'app_scale.dart';
+export 'app_field_metrics.dart';
 
 class AppTheme {
   // Light Theme Instance

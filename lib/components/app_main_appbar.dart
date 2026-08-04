@@ -12,6 +12,8 @@ class AppMainAppbar extends StatefulWidget {
   final double? borderRadius;
   final String? searchHint;
   final Color? backgroundColor;
+
+  /// Gaya teks judul. Untuk warna kustom, set [TextStyle.color] di sini.
   final TextStyle? titleStyle;
 
   /// Tinggi area appbar (collapsed/search). Nilai desain, diskalakan via `sizeHeight()`.

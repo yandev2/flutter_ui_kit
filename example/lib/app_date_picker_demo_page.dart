@@ -44,13 +44,30 @@ class _AppDatePickerDemoPageState extends State<AppDatePickerDemoPage> {
             onChanged: (val) => setState(() => _selectedDate2 = val),
           ).paddingOnly(bottom: AppSpacing.xl),
 
-          _buildSectionTitle('3. Loading State'),
+          _buildSectionTitle('3. Min/Max Date Range'),
+          AppDatePicker(
+            title: 'Tanggal Booking',
+            hint: 'Pilih tanggal (7 hari ke depan)',
+            minDate: DateTime.now(),
+            maxDate: DateTime.now().add(const Duration(days: 7)),
+            value: _selectedDate3,
+            onChanged: (val) => setState(() => _selectedDate3 = val),
+          ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('4. Read Only'),
+          AppDatePicker(
+            title: 'Tanggal Dibuat',
+            value: DateTime(2024, 6, 15),
+            readOnly: true,
+            onChanged: (_) {},
+          ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('5. Loading State'),
           AppDatePicker(
             title: 'Tanggal Keberangkatan',
             hint: 'Sedang memuat tanggal...',
             isLoading: true,
-            value: _selectedDate3,
-            onChanged: (val) => setState(() => _selectedDate3 = val),
+            onChanged: (val) {},
           ).paddingOnly(bottom: AppSpacing.xl),
         ],
       ),

@@ -78,6 +78,7 @@ class _AppMainAppbarDemoPageState extends State<AppMainAppbarDemoPage> {
               titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
+                color: Colors.yellowAccent,
               ),
               appBarHeight: 76,
               titleBottomPadding: 6,

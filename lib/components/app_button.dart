@@ -28,6 +28,9 @@ class AppButton extends StatelessWidget {
   final bool isMax;
   final bool isLoading;
 
+  /// Override tinggi tombol (nilai desain, diskalakan via `sizeHeight()`).
+  final double? height;
+
   final double? iconSize;
   final double? textSize;
   final TextStyle? textStyle;
@@ -47,6 +50,7 @@ class AppButton extends StatelessWidget {
     this.gradientColors,
     this.isMax = false,
     this.isLoading = false,
+    this.height,
     this.iconSize,
     this.textSize,
     this.textStyle,
@@ -73,6 +77,7 @@ class AppButton extends StatelessWidget {
   }) : text = null,
        customIcon = null,
        isMax = false,
+       height = null,
        iconPosition = IconPosition.left;
 
   const AppButton.text({
@@ -89,13 +94,15 @@ class AppButton extends StatelessWidget {
     this.gradientColors,
     this.isMax = false,
     this.isLoading = false,
+    this.height,
     this.iconSize,
     this.textSize,
     this.textStyle,
   }) : variant = AppButtonVariant.text;
 
   // Resolving Dimensions
-  double get _height {
+  double get _resolvedHeight {
+    if (height != null) return scale.sizeHeight(height!);
     switch (size) {
       case AppButtonSize.small:
         return scale.sizeHeight(32);
@@ -283,16 +290,18 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget innerContent = Container(
+    Widget innerContent = SizedBox(
       width: isMax
           ? double.infinity
           : ((shape == AppButtonShape.circle || shape == AppButtonShape.square)
-                ? _height
+                ? _resolvedHeight
                 : null),
-      height: _height,
-      padding: _padding,
-      alignment: Alignment.center,
-      child: _buildContent(context),
+      height: _resolvedHeight,
+      child: Container(
+        padding: _padding,
+        alignment: Alignment.center,
+        child: _buildContent(context),
+      ),
     );
 
     Widget buttonContent = Ink(
@@ -334,23 +343,30 @@ class AppButton extends StatelessWidget {
     );
 
     if (variant == AppButtonVariant.dashed) {
-      buttonContent = DottedBorder(
-        options: RoundedRectDottedBorderOptions(
-          color: _baseColor(context),
-          strokeWidth: 1.5,
-          dashPattern: const [6, 4],
-          radius: Radius.circular(_borderRadius),
-          padding: EdgeInsets.zero,
+      buttonContent = SizedBox(
+        width: isMax ? double.infinity : null,
+        child: DottedBorder(
+          options: RoundedRectDottedBorderOptions(
+            color: _baseColor(context),
+            strokeWidth: 1.5,
+            dashPattern: const [6, 4],
+            radius: Radius.circular(_borderRadius),
+            padding: EdgeInsets.zero,
+          ),
+          child: buttonContent,
         ),
-        child: buttonContent,
       );
     }
 
-    return Material(
+    Widget result = Material(
       color: Colors.transparent,
-      child: isMax
-          ? SizedBox(width: double.infinity, child: buttonContent)
-          : buttonContent, // Langsung return tanpa outer Row+Flexible agar kompatibel dengan LayoutBuilder
+      child: buttonContent,
     );
+
+    if (isMax) {
+      result = SizedBox(width: double.infinity, child: result);
+    }
+
+    return result;
   }
 }

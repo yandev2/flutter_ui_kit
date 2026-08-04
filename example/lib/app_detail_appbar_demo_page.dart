@@ -10,7 +10,11 @@ class AppDetailAppbarDemoPage extends StatelessWidget {
       backgroundColor: context.uiTheme.background,
       body: CustomScrollView(
         slivers: [
-          const AppDetailAppbar(title: 'Detail Pembayaran', isBack: true),
+          AppDetailAppbar(
+            title: 'Detail Pembayaran',
+            isBack: true,
+            titleColor: Colors.amber,
+          ),
           SliverPadding(
             padding: EdgeInsets.all(AppSpacing.md),
             sliver: SliverList(

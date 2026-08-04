@@ -211,6 +211,24 @@ class AppButtonDemoPage extends StatelessWidget {
               ),
             ],
           ).paddingOnly(bottom: AppSpacing.xl),
+
+          _buildSectionTitle('9. isMax Full Width'),
+          AppButton(
+            text: 'Full Width in Column',
+            isMax: true,
+            onPressed: () {},
+          ).paddingOnly(bottom: AppSpacing.sm),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton(
+                  text: 'isMax in Expanded',
+                  isMax: true,
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ).paddingOnly(bottom: AppSpacing.xl),
         ],
       ),
     );

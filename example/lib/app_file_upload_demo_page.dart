@@ -98,6 +98,16 @@ class _AppFileUploadDemoPageState extends State<AppFileUploadDemoPage> {
                 });
               },
             ),
+            SizedBox(height: size(24)),
+            AppFileUpload(
+              title: 'Custom Layout',
+              subtitle: 'Left-aligned header, taller area & buttons',
+              headerAlignment: TextAlign.left,
+              fileAreaMinHeight: 200,
+              buttonHeight: 40,
+              allowedExtensions: const ['pdf'],
+              onFileSelected: (_) {},
+            ),
           ],
         ),
       ),

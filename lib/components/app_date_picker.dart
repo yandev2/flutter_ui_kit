@@ -2,20 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import '../theme/theme.dart';
 
+DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+
+bool _isDateInRange(DateTime date, DateTime? minDate, DateTime? maxDate) {
+  final d = _dateOnly(date);
+  if (minDate != null && d.isBefore(_dateOnly(minDate))) return false;
+  if (maxDate != null && d.isAfter(_dateOnly(maxDate))) return false;
+  return true;
+}
+
+bool _hasSelectableDayInMonth(
+  DateTime month,
+  DateTime? minDate,
+  DateTime? maxDate,
+) {
+  final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
+  for (var day = 1; day <= daysInMonth; day++) {
+    if (_isDateInRange(DateTime(month.year, month.month, day), minDate, maxDate)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /// Komponen Date Picker dengan desain modern dan interaktif.
-///
-/// Komponen ini memunculkan popup kalender untuk memilih tanggal.
-/// Sudah dilengkapi dengan dukungan judul, hint, dan status loading.
-///
-/// Example:
-/// ```dart
-/// AppDatePicker(
-///   title: 'Tanggal Lahir',
-///   hint: 'Pilih tanggal',
-///   value: _selectedDate,
-///   onChanged: (val) => setState(() => _selectedDate = val),
-/// )
-/// ```
 class AppDatePicker extends StatefulWidget {
   final String? title;
   final DateTime? value;
@@ -23,6 +33,9 @@ class AppDatePicker extends StatefulWidget {
   final String? hint;
   final HeroIcons? prefixIcon;
   final bool isLoading;
+  final DateTime? minDate;
+  final DateTime? maxDate;
+  final bool readOnly;
 
   final double? titleSize;
   final double? textSize;
@@ -54,6 +67,9 @@ class AppDatePicker extends StatefulWidget {
     this.hint,
     this.prefixIcon,
     this.isLoading = false,
+    this.minDate,
+    this.maxDate,
+    this.readOnly = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
@@ -68,6 +84,8 @@ class AppDatePicker extends StatefulWidget {
 class _AppDatePickerState extends State<AppDatePicker> {
   bool _isOpen = false;
 
+  bool get _isInteractive => !widget.readOnly && !widget.isLoading;
+
   @override
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
@@ -76,6 +94,11 @@ class _AppDatePickerState extends State<AppDatePicker> {
               ? widget.formatResult!(widget.value!)
               : '${widget.value!.day.toString().padLeft(2, '0')} ${AppDatePicker.monthNames[widget.value!.month - 1]} ${widget.value!.year}')
         : null;
+
+    final borderColor = widget.readOnly
+        ? uiTheme.borderColor.withValues(alpha: 0.6)
+        : (_isOpen ? uiTheme.primary : uiTheme.borderColor);
+    final contentOpacity = widget.readOnly ? 0.5 : 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,14 +115,15 @@ class _AppDatePickerState extends State<AppDatePicker> {
           SizedBox(height: sizeHeight(8)),
         ],
         PopupMenuButton<DateTime>(
-          onOpened: () => setState(() => _isOpen = true),
+          enabled: _isInteractive,
+          onOpened: _isInteractive ? () => setState(() => _isOpen = true) : null,
           onCanceled: () => setState(() => _isOpen = false),
-          onSelected: widget.isLoading
-              ? null
-              : (val) {
+          onSelected: _isInteractive
+              ? (val) {
                   setState(() => _isOpen = false);
                   widget.onChanged(val);
-                },
+                }
+              : null,
           position: PopupMenuPosition.under,
           offset: Offset(0, sizeHeight(8)),
           color: uiTheme.surface,
@@ -113,60 +137,71 @@ class _AppDatePickerState extends State<AppDatePicker> {
             PopupMenuItem<DateTime>(
               enabled: false,
               padding: EdgeInsets.zero,
-              child: _CalendarPopup(initialDate: widget.value),
-            ),
-          ],
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: size(16),
-              vertical: sizeHeight(12),
-            ),
-            decoration: BoxDecoration(
-              color: widget.fillColor ?? uiTheme.background,
-              borderRadius: BorderRadius.circular(size(8)),
-              border: Border.all(
-                color: _isOpen ? uiTheme.primary : uiTheme.borderColor,
-                width: size(1),
+              child: _CalendarPopup(
+                initialDate: widget.value,
+                minDate: widget.minDate,
+                maxDate: widget.maxDate,
               ),
             ),
-            child: Row(
-              children: [
-                if (widget.prefixIcon != null) ...[
-                  HeroIcon(
-                    widget.prefixIcon!,
-                    color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
-                    size: size(20),
-                  ),
-                  SizedBox(width: size(12)),
-                ],
-                Expanded(
-                  child: Text(
-                    displayValue ?? widget.hint ?? '',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontSize: widget.textSize ?? size(14),
-                      color: displayValue == null
-                          ? uiTheme.hintColor
-                          : uiTheme.onBackground,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+          ],
+          child: Opacity(
+            opacity: contentOpacity,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: appFieldMinHeight()),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: appFieldHorizontalPadding(),
+                  vertical: appFieldVerticalPadding(),
                 ),
-                if (widget.isLoading)
-                  SizedBox(
-                    width: size(16),
-                    height: size(16),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: uiTheme.primary,
+                decoration: BoxDecoration(
+                  color: widget.fillColor ?? uiTheme.background,
+                  borderRadius: BorderRadius.circular(size(8)),
+                  border: Border.all(color: borderColor, width: size(1)),
+                ),
+                child: Row(
+                  children: [
+                    if (widget.prefixIcon != null) ...[
+                      HeroIcon(
+                        widget.prefixIcon!,
+                        color: _isOpen && _isInteractive
+                            ? uiTheme.primary
+                            : uiTheme.hintColor,
+                        size: size(20),
+                      ),
+                      SizedBox(width: size(12)),
+                    ],
+                    Expanded(
+                      child: Text(
+                        displayValue ?? widget.hint ?? '',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontSize: widget.textSize ?? size(14),
+                          color: displayValue == null
+                              ? uiTheme.hintColor
+                              : uiTheme.onBackground,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  )
-                else
-                  HeroIcon(
-                    HeroIcons.calendar,
-                    color: _isOpen ? uiTheme.primary : uiTheme.hintColor,
-                    size: size(20),
-                  ),
-              ],
+                    if (widget.isLoading)
+                      SizedBox(
+                        width: size(16),
+                        height: size(16),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: uiTheme.primary,
+                        ),
+                      )
+                    else
+                      HeroIcon(
+                        HeroIcons.calendar,
+                        color: _isOpen && _isInteractive
+                            ? uiTheme.primary
+                            : uiTheme.hintColor,
+                        size: size(20),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -177,8 +212,14 @@ class _AppDatePickerState extends State<AppDatePicker> {
 
 class _CalendarPopup extends StatefulWidget {
   final DateTime? initialDate;
+  final DateTime? minDate;
+  final DateTime? maxDate;
 
-  const _CalendarPopup({this.initialDate});
+  const _CalendarPopup({
+    this.initialDate,
+    this.minDate,
+    this.maxDate,
+  });
 
   @override
   State<_CalendarPopup> createState() => _CalendarPopupState();
@@ -199,13 +240,31 @@ class _CalendarPopupState extends State<_CalendarPopup> {
         : DateTime(DateTime.now().year, DateTime.now().month);
   }
 
+  bool get _canGoPrevMonth => _hasSelectableDayInMonth(
+    DateTime(currentMonth.year, currentMonth.month - 1),
+    widget.minDate,
+    widget.maxDate,
+  );
+
+  bool get _canGoNextMonth => _hasSelectableDayInMonth(
+    DateTime(currentMonth.year, currentMonth.month + 1),
+    widget.minDate,
+    widget.maxDate,
+  );
+
+  bool get _canConfirm =>
+      selectedDate != null &&
+      _isDateInRange(selectedDate!, widget.minDate, widget.maxDate);
+
   void _prevMonth() {
+    if (!_canGoPrevMonth) return;
     setState(() {
       currentMonth = DateTime(currentMonth.year, currentMonth.month - 1);
     });
   }
 
   void _nextMonth() {
+    if (!_canGoNextMonth) return;
     setState(() {
       currentMonth = DateTime(currentMonth.year, currentMonth.month + 1);
     });
@@ -216,14 +275,13 @@ class _CalendarPopupState extends State<_CalendarPopup> {
     final uiTheme = context.uiTheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // Calculate days
-    final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
     final daysInMonth = DateTime(
       currentMonth.year,
       currentMonth.month + 1,
       0,
     ).day;
-    final firstWeekday = firstDayOfMonth.weekday; // 1 = Mon, 7 = Sun
+    final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+    final firstWeekday = firstDayOfMonth.weekday;
     final emptyStart = firstWeekday == 7 ? 0 : firstWeekday;
 
     final daysInPrevMonth = DateTime(
@@ -232,19 +290,20 @@ class _CalendarPopupState extends State<_CalendarPopup> {
       0,
     ).day;
 
-    List<Widget> dayWidgets = [];
+    final dayWidgets = <Widget>[];
 
-    // Header
-    Widget header = Row(
+    final header = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
           icon: HeroIcon(
             HeroIcons.chevronLeft,
             size: size(15),
-            color: uiTheme.onSurface,
+            color: _canGoPrevMonth
+                ? uiTheme.onSurface
+                : uiTheme.hintColor.withValues(alpha: 0.4),
           ),
-          onPressed: _prevMonth,
+          onPressed: _canGoPrevMonth ? _prevMonth : null,
           style: IconButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(size(8)),
@@ -263,9 +322,11 @@ class _CalendarPopupState extends State<_CalendarPopup> {
           icon: HeroIcon(
             HeroIcons.chevronRight,
             size: size(15),
-            color: uiTheme.onSurface,
+            color: _canGoNextMonth
+                ? uiTheme.onSurface
+                : uiTheme.hintColor.withValues(alpha: 0.4),
           ),
-          onPressed: _nextMonth,
+          onPressed: _canGoNextMonth ? _nextMonth : null,
           style: IconButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(size(8)),
@@ -276,8 +337,7 @@ class _CalendarPopupState extends State<_CalendarPopup> {
       ],
     );
 
-    // Weekdays
-    Widget weekdaysRow = Row(
+    final weekdaysRow = Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: weekDays
           .map(
@@ -296,15 +356,13 @@ class _CalendarPopupState extends State<_CalendarPopup> {
           .toList(),
     );
 
-    // Grid cells
-    int totalCells = emptyStart + daysInMonth;
-    int totalRows = (totalCells / 7).ceil();
-    int cellCount = totalRows * 7;
+    final totalCells = emptyStart + daysInMonth;
+    final totalRows = (totalCells / 7).ceil();
+    final cellCount = totalRows * 7;
 
-    for (int i = 0; i < cellCount; i++) {
+    for (var i = 0; i < cellCount; i++) {
       if (i < emptyStart) {
-        // Prev month days
-        int day = daysInPrevMonth - emptyStart + i + 1;
+        final day = daysInPrevMonth - emptyStart + i + 1;
         dayWidgets.add(
           Container(
             width: size(36),
@@ -319,9 +377,14 @@ class _CalendarPopupState extends State<_CalendarPopup> {
           ),
         );
       } else if (i >= emptyStart && i < emptyStart + daysInMonth) {
-        // Current month days
-        int day = i - emptyStart + 1;
-        bool isSelected =
+        final day = i - emptyStart + 1;
+        final date = DateTime(currentMonth.year, currentMonth.month, day);
+        final isSelectable = _isDateInRange(
+          date,
+          widget.minDate,
+          widget.maxDate,
+        );
+        final isSelected =
             selectedDate != null &&
             selectedDate!.year == currentMonth.year &&
             selectedDate!.month == currentMonth.month &&
@@ -329,15 +392,13 @@ class _CalendarPopupState extends State<_CalendarPopup> {
 
         dayWidgets.add(
           GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedDate = DateTime(
-                  currentMonth.year,
-                  currentMonth.month,
-                  day,
-                );
-              });
-            },
+            onTap: isSelectable
+                ? () {
+                    setState(() {
+                      selectedDate = date;
+                    });
+                  }
+                : null,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: size(36),
@@ -350,7 +411,11 @@ class _CalendarPopupState extends State<_CalendarPopup> {
               child: Text(
                 day.toString(),
                 style: textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? uiTheme.onPrimary : uiTheme.onSurface,
+                  color: !isSelectable
+                      ? uiTheme.hintColor.withValues(alpha: 0.4)
+                      : isSelected
+                      ? uiTheme.onPrimary
+                      : uiTheme.onSurface,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 ),
               ),
@@ -358,8 +423,7 @@ class _CalendarPopupState extends State<_CalendarPopup> {
           ),
         );
       } else {
-        // Next month days
-        int day = i - (emptyStart + daysInMonth) + 1;
+        final day = i - (emptyStart + daysInMonth) + 1;
         dayWidgets.add(
           Container(
             width: size(36),
@@ -376,11 +440,11 @@ class _CalendarPopupState extends State<_CalendarPopup> {
       }
     }
 
-    List<Widget> rows = [];
-    for (int r = 0; r < totalRows; r++) {
-      List<Widget> rowChildren = [];
-      for (int c = 0; c < 7; c++) {
-        int index = r * 7 + c;
+    final rows = <Widget>[];
+    for (var r = 0; r < totalRows; r++) {
+      final rowChildren = <Widget>[];
+      for (var c = 0; c < 7; c++) {
+        final index = r * 7 + c;
         if (index < dayWidgets.length) {
           rowChildren.add(dayWidgets[index]);
         } else {
@@ -398,10 +462,9 @@ class _CalendarPopupState extends State<_CalendarPopup> {
       }
     }
 
-    Widget grid = Column(mainAxisSize: MainAxisSize.min, children: rows);
+    final grid = Column(mainAxisSize: MainAxisSize.min, children: rows);
 
-    // Bottom buttons
-    Widget buttons = Row(
+    final buttons = Row(
       children: [
         Expanded(
           child: OutlinedButton(
@@ -425,12 +488,13 @@ class _CalendarPopupState extends State<_CalendarPopup> {
         SizedBox(width: size(12)),
         Expanded(
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context, selectedDate);
-            },
+            onPressed: _canConfirm
+                ? () => Navigator.pop(context, selectedDate)
+                : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: uiTheme.primary,
               foregroundColor: uiTheme.onPrimary,
+              disabledBackgroundColor: uiTheme.borderColor,
               padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(size(8)),
@@ -438,9 +502,7 @@ class _CalendarPopupState extends State<_CalendarPopup> {
             ),
             child: Text(
               'Pilih',
-              style: textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ),

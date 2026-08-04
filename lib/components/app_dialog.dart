@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heroicons/heroicons.dart';
 import '../theme/theme.dart';
 import '../theme/app_scale.dart' as scale;
 import 'app_image.dart';
@@ -12,6 +13,7 @@ Future<void> showAppDialog(
   required String title,
   String? description,
   double? titleSize,
+  double? descriptionSize,
   String? textLeft,
   String? textRight,
   VoidCallback? onLeft,
@@ -32,6 +34,7 @@ Future<void> showAppDialog(
         title: title,
         description: description,
         titleSize: titleSize,
+        descriptionSize: descriptionSize,
         textLeft: textLeft,
         textRight: textRight,
         onLeft: onLeft,
@@ -51,8 +54,11 @@ class AppDialog extends StatelessWidget {
   final String title;
   final String? description;
 
-  /// Ukuran font title (nilai desain, diskalakan via `size()`). Default `20`.
+  /// Ukuran font title (nilai desain, diskalakan via `size()`). Default `16`.
   final double? titleSize;
+
+  /// Ukuran font description (nilai desain, diskalakan via `size()`). Default `12`.
+  final double? descriptionSize;
   final String? textLeft;
   final String? textRight;
   final VoidCallback? onLeft;
@@ -69,6 +75,7 @@ class AppDialog extends StatelessWidget {
     required this.title,
     this.description,
     this.titleSize,
+    this.descriptionSize,
     this.textLeft,
     this.textRight,
     this.onLeft,
@@ -93,6 +100,20 @@ class AppDialog extends StatelessWidget {
     }
   }
 
+  ({HeroIcons icon, Color color}) _variantIcon(BuildContext context) {
+    final uiTheme = context.uiTheme;
+    switch (variant) {
+      case AppDialogVariant.success:
+        return (icon: HeroIcons.checkCircle, color: uiTheme.success);
+      case AppDialogVariant.error:
+        return (icon: HeroIcons.exclamationCircle, color: uiTheme.error);
+      case AppDialogVariant.warning:
+        return (icon: HeroIcons.exclamationTriangle, color: uiTheme.warning);
+      case AppDialogVariant.info:
+        return (icon: HeroIcons.informationCircle, color: uiTheme.primary);
+    }
+  }
+
   /// Helper untuk menampilkan dialog secara statis.
   static Future<void> show(
     BuildContext context, {
@@ -100,6 +121,7 @@ class AppDialog extends StatelessWidget {
     required String title,
     String? description,
     double? titleSize,
+    double? descriptionSize,
     String? textLeft,
     String? textRight,
     VoidCallback? onLeft,
@@ -117,6 +139,7 @@ class AppDialog extends StatelessWidget {
       title: title,
       description: description,
       titleSize: titleSize,
+      descriptionSize: descriptionSize,
       textLeft: textLeft,
       textRight: textRight,
       onLeft: onLeft,
@@ -132,11 +155,11 @@ class AppDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dynamic color for secondary button based on theme
-    final Color secondaryBtnBg = Theme.of(context).brightness == Brightness.dark
+    final secondaryBtnBg = Theme.of(context).brightness == Brightness.dark
         ? context.uiTheme.surface
         : context.uiTheme.background;
-    final Color secondaryBtnText = context.uiTheme.onSurface;
+    final secondaryBtnText = context.uiTheme.onSurface;
+    final variantIcon = _variantIcon(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -166,30 +189,44 @@ class AppDialog extends StatelessWidget {
                 ),
                 SizedBox(height: scale.sizeHeight(20)),
               ],
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: scale.size(titleSize ?? 20),
-                  fontWeight: FontWeight.bold,
-                  color: context.uiTheme.onSurface,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HeroIcon(
+                    variantIcon.icon,
+                    size: scale.size(22),
+                    color: variantIcon.color,
+                    style: HeroIconStyle.outline,
+                  ),
+                  SizedBox(width: scale.size(8)),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: scale.size(titleSize ?? 16),
+                        fontWeight: FontWeight.bold,
+                        color: context.uiTheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               if (description != null) ...[
-                SizedBox(height: scale.sizeHeight(12)),
+                SizedBox(height: scale.sizeHeight(8)),
                 Text(
                   description!,
                   style: TextStyle(
-                    fontSize: scale.size(14),
+                    fontSize: scale.size(descriptionSize ?? 12),
                     color: context.uiTheme.onSurface.withValues(alpha: 0.7),
                     height: 1.5,
                   ),
                 ),
               ],
               if (content != null) ...[
-                SizedBox(height: scale.sizeHeight(20)),
+                SizedBox(height: scale.sizeHeight(16)),
                 content!,
               ],
-              SizedBox(height: scale.sizeHeight(24)),
+              SizedBox(height: scale.sizeHeight(20)),
               Row(
                 children: [
                   if (textLeft != null) ...[
@@ -198,7 +235,7 @@ class AppDialog extends StatelessWidget {
                         onPressed: onLeft ?? () => Navigator.of(context).pop(),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.symmetric(
-                            vertical: scale.sizeHeight(15),
+                            vertical: scale.sizeHeight(10),
                           ),
                           backgroundColor: secondaryBtnBg,
                           shape: RoundedRectangleBorder(
@@ -210,7 +247,7 @@ class AppDialog extends StatelessWidget {
                           style: TextStyle(
                             color: secondaryBtnText,
                             fontWeight: FontWeight.w600,
-                            fontSize: scale.size(14),
+                            fontSize: scale.size(12),
                           ),
                         ),
                       ),
@@ -225,7 +262,7 @@ class AppDialog extends StatelessWidget {
                             onRight ?? () => Navigator.of(context).pop(),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
-                            vertical: scale.sizeHeight(15),
+                            vertical: scale.sizeHeight(10),
                           ),
                           backgroundColor: _rightButtonColor(context),
                           elevation: 0,
@@ -238,7 +275,7 @@ class AppDialog extends StatelessWidget {
                           style: TextStyle(
                             color: context.uiTheme.onPrimary,
                             fontWeight: FontWeight.w600,
-                            fontSize: scale.size(14),
+                            fontSize: scale.size(12),
                           ),
                         ),
                       ),
