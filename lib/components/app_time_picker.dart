@@ -41,12 +41,20 @@ class AppTimePicker extends StatefulWidget {
   final HeroIcons? prefixIcon;
   final bool isLoading;
   final bool readOnly;
+  final bool hideSuffixIcon;
 
   final double? titleSize;
   final double? textSize;
   final double? hintSize;
 
   final Color? fillColor;
+
+  /// Warna teks tombol "Pilih".
+  /// Default: [Colors.white].
+  final Color? confirmTextColor;
+
+  /// Alias untuk [confirmTextColor].
+  final Color? selectedConfirmTextColor;
 
   const AppTimePicker({
     super.key,
@@ -57,10 +65,13 @@ class AppTimePicker extends StatefulWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.readOnly = false,
+    this.hideSuffixIcon = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
     this.fillColor,
+    this.confirmTextColor,
+    this.selectedConfirmTextColor,
   });
 
   @override
@@ -119,7 +130,11 @@ class _AppTimePickerState extends State<AppTimePicker> {
             PopupMenuItem<AppTimeData>(
               enabled: false,
               padding: EdgeInsets.zero,
-              child: _TimePopup(initialTime: widget.value),
+              child: _TimePopup(
+                initialTime: widget.value,
+                confirmTextColor:
+                    widget.selectedConfirmTextColor ?? widget.confirmTextColor,
+              ),
             ),
           ],
           child: Opacity(
@@ -173,7 +188,7 @@ class _AppTimePickerState extends State<AppTimePicker> {
                           color: uiTheme.primary,
                         ),
                       )
-                    else
+                    else if (!widget.hideSuffixIcon)
                       HeroIcon(
                         HeroIcons.clock,
                         color: _isOpen && _isInteractive
@@ -194,8 +209,12 @@ class _AppTimePickerState extends State<AppTimePicker> {
 
 class _TimePopup extends StatefulWidget {
   final AppTimeData? initialTime;
+  final Color? confirmTextColor;
 
-  const _TimePopup({this.initialTime});
+  const _TimePopup({
+    this.initialTime,
+    this.confirmTextColor,
+  });
 
   @override
   State<_TimePopup> createState() => _TimePopupState();
@@ -435,7 +454,7 @@ class _TimePopupState extends State<_TimePopup> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: uiTheme.primary,
-                  foregroundColor: uiTheme.onPrimary,
+                  foregroundColor: widget.confirmTextColor ?? Colors.white,
                   padding: EdgeInsets.symmetric(vertical: sizeHeight(14)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(size(8)),
@@ -444,6 +463,7 @@ class _TimePopupState extends State<_TimePopup> {
                 child: Text(
                   'Pilih',
                   style: textTheme.bodyMedium?.copyWith(
+                    color: widget.confirmTextColor ?? Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

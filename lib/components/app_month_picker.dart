@@ -10,6 +10,7 @@ class AppMonthPicker extends StatefulWidget {
   final HeroIcons? prefixIcon;
   final bool isLoading;
   final bool readOnly;
+  final bool hideSuffixIcon;
 
   final double? titleSize;
   final double? textSize;
@@ -17,7 +18,18 @@ class AppMonthPicker extends StatefulWidget {
 
   final Color? fillColor;
 
-  static const List<String> monthNames = [
+  /// Kode bahasa untuk nama bulan ('en' atau 'id').
+  /// Default: 'en'.
+  final String? locale;
+
+  /// Warna teks tombol "Pilih".
+  /// Default: [Colors.white].
+  final Color? confirmTextColor;
+
+  /// Alias untuk [confirmTextColor].
+  final Color? selectedConfirmTextColor;
+
+  static const List<String> monthNamesEn = [
     'January',
     'February',
     'March',
@@ -32,6 +44,30 @@ class AppMonthPicker extends StatefulWidget {
     'December',
   ];
 
+  static const List<String> monthNamesId = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  static const List<String> monthNames = monthNamesEn;
+
+  static List<String> getMonthNames([String? locale]) {
+    if (locale?.toLowerCase() == 'id') {
+      return monthNamesId;
+    }
+    return monthNamesEn;
+  }
+
   const AppMonthPicker({
     super.key,
     this.title,
@@ -41,10 +77,14 @@ class AppMonthPicker extends StatefulWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.readOnly = false,
+    this.hideSuffixIcon = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
     this.fillColor,
+    this.confirmTextColor,
+    this.selectedConfirmTextColor,
+    this.locale = 'en',
   });
 
   @override
@@ -59,9 +99,10 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
   @override
   Widget build(BuildContext context) {
     final uiTheme = context.uiTheme;
+    final monthNames = AppMonthPicker.getMonthNames(widget.locale);
     final displayValue =
         widget.value != null && widget.value! >= 1 && widget.value! <= 12
-        ? AppMonthPicker.monthNames[widget.value! - 1]
+        ? monthNames[widget.value! - 1]
         : null;
 
     final borderColor = widget.readOnly
@@ -106,7 +147,12 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
             PopupMenuItem<int>(
               enabled: false,
               padding: EdgeInsets.zero,
-              child: _MonthPopup(initialMonth: widget.value),
+              child: _MonthPopup(
+                initialMonth: widget.value,
+                locale: widget.locale,
+                confirmTextColor:
+                    widget.selectedConfirmTextColor ?? widget.confirmTextColor,
+              ),
             ),
           ],
           child: Opacity(
@@ -160,7 +206,7 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
                           color: uiTheme.primary,
                         ),
                       )
-                    else
+                    else if (!widget.hideSuffixIcon)
                       HeroIcon(
                         HeroIcons.calendarDays,
                         color: _isOpen && _isInteractive
@@ -181,8 +227,14 @@ class _AppMonthPickerState extends State<AppMonthPicker> {
 
 class _MonthPopup extends StatefulWidget {
   final int? initialMonth;
+  final String? locale;
+  final Color? confirmTextColor;
 
-  const _MonthPopup({this.initialMonth});
+  const _MonthPopup({
+    this.initialMonth,
+    this.locale,
+    this.confirmTextColor,
+  });
 
   @override
   State<_MonthPopup> createState() => _MonthPopupState();
@@ -272,9 +324,11 @@ class _MonthPopupState extends State<_MonthPopup> {
                     childCount: months.length,
                     builder: (context, index) {
                       final isSelected = months[index] == selectedMonth;
+                      final monthNames =
+                          AppMonthPicker.getMonthNames(widget.locale);
                       return Center(
                         child: Text(
-                          AppMonthPicker.monthNames[months[index] - 1],
+                          monthNames[months[index] - 1],
                           style: textTheme.bodyMedium?.copyWith(
                             fontSize: isSelected ? size(20) : size(16),
                             fontWeight: isSelected
@@ -320,7 +374,7 @@ class _MonthPopupState extends State<_MonthPopup> {
                   onPressed: () => Navigator.pop(context, selectedMonth),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: uiTheme.primary,
-                    foregroundColor: uiTheme.onPrimary,
+                    foregroundColor: widget.confirmTextColor ?? Colors.white,
                     padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(size(8)),
@@ -329,6 +383,7 @@ class _MonthPopupState extends State<_MonthPopup> {
                   child: Text(
                     'Pilih',
                     style: textTheme.bodyMedium?.copyWith(
+                      color: widget.confirmTextColor ?? Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

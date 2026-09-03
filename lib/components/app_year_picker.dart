@@ -21,12 +21,20 @@ class AppYearPicker extends StatefulWidget {
   final HeroIcons? prefixIcon;
   final bool isLoading;
   final bool readOnly;
+  final bool hideSuffixIcon;
 
   final double? titleSize;
   final double? textSize;
   final double? hintSize;
 
   final Color? fillColor;
+
+  /// Warna teks tombol "Pilih".
+  /// Default: [Colors.white].
+  final Color? confirmTextColor;
+
+  /// Alias untuk [confirmTextColor].
+  final Color? selectedConfirmTextColor;
 
   const AppYearPicker({
     super.key,
@@ -37,10 +45,13 @@ class AppYearPicker extends StatefulWidget {
     this.prefixIcon,
     this.isLoading = false,
     this.readOnly = false,
+    this.hideSuffixIcon = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
     this.fillColor,
+    this.confirmTextColor,
+    this.selectedConfirmTextColor,
   });
 
   @override
@@ -99,7 +110,11 @@ class _AppYearPickerState extends State<AppYearPicker> {
             PopupMenuItem<int>(
               enabled: false,
               padding: EdgeInsets.zero,
-              child: _YearPopup(initialYear: widget.value),
+              child: _YearPopup(
+                initialYear: widget.value,
+                confirmTextColor:
+                    widget.selectedConfirmTextColor ?? widget.confirmTextColor,
+              ),
             ),
           ],
           child: Opacity(
@@ -153,7 +168,7 @@ class _AppYearPickerState extends State<AppYearPicker> {
                           color: uiTheme.primary,
                         ),
                       )
-                    else
+                    else if (!widget.hideSuffixIcon)
                       HeroIcon(
                         HeroIcons.calendarDays,
                         color: _isOpen && _isInteractive
@@ -174,8 +189,12 @@ class _AppYearPickerState extends State<AppYearPicker> {
 
 class _YearPopup extends StatefulWidget {
   final int? initialYear;
+  final Color? confirmTextColor;
 
-  const _YearPopup({this.initialYear});
+  const _YearPopup({
+    this.initialYear,
+    this.confirmTextColor,
+  });
 
   @override
   State<_YearPopup> createState() => _YearPopupState();
@@ -266,16 +285,29 @@ class _YearPopupState extends State<_YearPopup> {
                     builder: (context, index) {
                       final isSelected = years[index] == selectedYear;
                       return Center(
-                        child: Text(
-                          years[index].toString(),
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontSize: isSelected ? size(20) : size(16),
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? uiTheme.onSurface
-                                : uiTheme.hintColor,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            setState(() {
+                              selectedYear = years[index];
+                            });
+                            _controller.animateToItem(
+                              index,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text(
+                            years[index].toString(),
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontSize: isSelected ? size(20) : size(16),
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: isSelected
+                                  ? uiTheme.onSurface
+                                  : uiTheme.hintColor,
+                            ),
                           ),
                         ),
                       );
@@ -313,7 +345,7 @@ class _YearPopupState extends State<_YearPopup> {
                   onPressed: () => Navigator.pop(context, selectedYear),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: uiTheme.primary,
-                    foregroundColor: uiTheme.onPrimary,
+                    foregroundColor: widget.confirmTextColor ?? Colors.white,
                     padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(size(8)),
@@ -322,6 +354,7 @@ class _YearPopupState extends State<_YearPopup> {
                   child: Text(
                     'Pilih',
                     style: textTheme.bodyMedium?.copyWith(
+                      color: widget.confirmTextColor ?? Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

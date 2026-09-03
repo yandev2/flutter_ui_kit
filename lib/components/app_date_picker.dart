@@ -36,6 +36,7 @@ class AppDatePicker extends StatefulWidget {
   final DateTime? minDate;
   final DateTime? maxDate;
   final bool readOnly;
+  final bool hideSuffixIcon;
 
   final double? titleSize;
   final double? textSize;
@@ -43,6 +44,17 @@ class AppDatePicker extends StatefulWidget {
 
   final Color? fillColor;
   final String Function(DateTime)? formatResult;
+
+  /// Warna teks tombol "Pilih" ketika tanggal sudah dipilih.
+  /// Default: [Colors.white].
+  final Color? confirmTextColor;
+
+  /// Alias untuk [confirmTextColor].
+  final Color? selectedConfirmTextColor;
+
+  /// Warna teks tombol "Pilih" ketika tanggal belum dipilih.
+  /// Default: [uiTheme.onSurface] (menyesuaikan mode tema: hitam pada light mode, putih pada dark mode).
+  final Color? unselectedConfirmTextColor;
 
   static const List<String> monthNames = [
     'Januari',
@@ -70,11 +82,15 @@ class AppDatePicker extends StatefulWidget {
     this.minDate,
     this.maxDate,
     this.readOnly = false,
+    this.hideSuffixIcon = false,
     this.titleSize,
     this.textSize,
     this.hintSize,
     this.fillColor,
     this.formatResult,
+    this.confirmTextColor,
+    this.selectedConfirmTextColor,
+    this.unselectedConfirmTextColor,
   });
 
   @override
@@ -141,6 +157,9 @@ class _AppDatePickerState extends State<AppDatePicker> {
                 initialDate: widget.value,
                 minDate: widget.minDate,
                 maxDate: widget.maxDate,
+                confirmTextColor:
+                    widget.selectedConfirmTextColor ?? widget.confirmTextColor,
+                unselectedConfirmTextColor: widget.unselectedConfirmTextColor,
               ),
             ),
           ],
@@ -191,7 +210,7 @@ class _AppDatePickerState extends State<AppDatePicker> {
                           color: uiTheme.primary,
                         ),
                       )
-                    else
+                    else if (!widget.hideSuffixIcon)
                       HeroIcon(
                         HeroIcons.calendar,
                         color: _isOpen && _isInteractive
@@ -214,11 +233,15 @@ class _CalendarPopup extends StatefulWidget {
   final DateTime? initialDate;
   final DateTime? minDate;
   final DateTime? maxDate;
+  final Color? confirmTextColor;
+  final Color? unselectedConfirmTextColor;
 
   const _CalendarPopup({
     this.initialDate,
     this.minDate,
     this.maxDate,
+    this.confirmTextColor,
+    this.unselectedConfirmTextColor,
   });
 
   @override
@@ -493,8 +516,10 @@ class _CalendarPopupState extends State<_CalendarPopup> {
                 : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: uiTheme.primary,
-              foregroundColor: uiTheme.onPrimary,
+              foregroundColor: widget.confirmTextColor ?? Colors.white,
               disabledBackgroundColor: uiTheme.borderColor,
+              disabledForegroundColor:
+                  widget.unselectedConfirmTextColor ?? uiTheme.onSurface,
               padding: EdgeInsets.symmetric(vertical: sizeHeight(12)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(size(8)),
@@ -502,7 +527,12 @@ class _CalendarPopupState extends State<_CalendarPopup> {
             ),
             child: Text(
               'Pilih',
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              style: textTheme.bodyMedium?.copyWith(
+                color: _canConfirm
+                    ? (widget.confirmTextColor ?? Colors.white)
+                    : (widget.unselectedConfirmTextColor ?? uiTheme.onSurface),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
